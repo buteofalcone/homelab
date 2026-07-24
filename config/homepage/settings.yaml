@@ -4,4 +4,4 @@ color: slate
 headerStyle: clean
 target: _blank
 statusStyle: dot
-showStats: true
+showStats: false
