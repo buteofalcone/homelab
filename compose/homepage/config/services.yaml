@@ -1,0 +1,5 @@
+- Server:
+    - Homepage:
+        href: http://hp-server:3000
+        description: Homelab dashboard
+        icon: homepage.png
