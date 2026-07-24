@@ -1,0 +1,21 @@
+- Management:
+    - Portainer:
+        icon: portainer.svg
+        href: https://{{HOMEPAGE_VAR_SERVER_IP}}:9443
+        description: Docker management
+        server: local
+        container: portainer
+
+    - Beszel:
+        icon: beszel.svg
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:8090
+        description: Server metrics
+        server: local
+        container: beszel
+
+    - Uptime Kuma:
+        icon: uptime-kuma.svg
+        href: http://{{HOMEPAGE_VAR_SERVER_IP}}:3001
+        description: Service monitoring
+        server: local
+        container: uptime-kuma

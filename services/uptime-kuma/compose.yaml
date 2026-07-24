@@ -1,2 +1,14 @@
-# uptime-kuma
-services: {}
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    container_name: uptime-kuma
+    restart: unless-stopped
+    ports:
+      - "${UPTIME_KUMA_PORT:-3001}:3001"
+    volumes:
+      - /srv/appdata/uptime-kuma:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"

@@ -1,2 +1,13 @@
 [Unit]
-Description=Homelab backup
+Description=Restic backup of the homelab server
+Documentation=https://github.com/buteofalcone/homelab
+RequiresMountsFor=/srv/storage
+After=docker.service
+ConditionPathExists=/opt/homelab/.env
+
+[Service]
+Type=oneshot
+ExecStart=/opt/homelab/scripts/backup.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7
