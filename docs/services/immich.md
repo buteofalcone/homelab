@@ -1,6 +1,6 @@
 # Immich
 
-Start:
+## Start
 
 ```bash
 make immich
@@ -9,6 +9,23 @@ make immich
 Direct URL: `http://SERVER_IP:2283`  
 HTTPS URL: `https://immich.BASE_DOMAIN`
 
-Photos are stored at `/srv/storage/photos`. PostgreSQL and machine-learning cache are stored on SSD under `/srv/appdata/immich`.
+The first user created in the web interface becomes the administrator.
 
-Immich evolves quickly. Read release notes before every update and keep another copy of all photos.
+## Storage
+
+Immich-managed assets are stored under `/srv/storage/photos`. PostgreSQL data and the machine-learning model cache are stored on SSD under `/srv/appdata/immich`.
+
+Do not manually copy an existing photo archive into Immich's managed `/data` directory. Mount existing archives separately and add them through Immich External Libraries, preferably read-only until the library has been verified.
+
+## Backup
+
+A complete backup requires both:
+
+- the PostgreSQL database;
+- all files under `/srv/storage/photos`.
+
+The homelab backup script creates an Immich PostgreSQL dump before Restic runs. Immich should never be the only copy of important photos and videos.
+
+## Resources and updates
+
+Immich is resource-intensive and evolves quickly. On this server, the initial machine-learning indexing may cause sustained CPU load. Read release notes before upgrades and keep automatic Watchtower updates disabled for the Immich stack.
