@@ -1,2 +1,3 @@
 local:
-  socket: /var/run/docker.sock
+  host: homepage-docker-proxy
+  port: 2375
