@@ -1,0 +1,9 @@
+include:
+  - ./services/homepage/compose.yaml
+  - ./services/portainer/compose.yaml
+  - ./services/beszel/compose.yaml
+  - ./services/uptime-kuma/compose.yaml
+  - ./services/paperless/compose.yaml
+  - ./services/nextcloud/compose.yaml
+  - ./services/immich/compose.yaml
+  - ./services/jellyfin/compose.yaml
