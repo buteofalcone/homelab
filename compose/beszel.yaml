@@ -6,7 +6,7 @@ services:
     ports:
       - "${BESZEL_PORT:-8090}:8090"
     environment:
-      APP_URL: "http://${SERVER_IP:-192.168.1.130}:${BESZEL_PORT:-8090}"
+      APP_URL: "https://beszel.${BASE_DOMAIN:-home.arpa}"
     volumes:
       - /srv/appdata/beszel:/beszel_data
       - beszel_socket:/beszel_socket

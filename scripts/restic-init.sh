@@ -4,7 +4,10 @@ source "$(dirname "$0")/lib.sh"
 require_root
 load_env
 
-command -v restic >/dev/null 2>&1 || apt-get update && apt-get install -y restic
+if ! command -v restic >/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y restic
+fi
 
 install -d -m 0700 "$(dirname "${RESTIC_PASSWORD_FILE}")"
 install -d -m 0700 "${RESTIC_REPOSITORY}"

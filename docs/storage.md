@@ -2,15 +2,27 @@
 
 ```text
 SSD
-├── /                  Ubuntu
-├── /opt/homelab       Git repository
-└── /srv/appdata       Container state
+├── /                    Ubuntu
+├── /opt/homelab         Git repository
+└── /srv/appdata
+    ├── homepage
+    ├── portainer
+    ├── beszel
+    ├── uptime-kuma
+    ├── caddy
+    ├── nextcloud
+    ├── immich
+    ├── jellyfin
+    └── _backup-dumps
 
 HDD
 └── /srv/storage
-    ├── files
+    ├── files/nextcloud
+    ├── photos
+    ├── media
     ├── backups
-    └── downloads
+    ├── downloads
+    └── restores
 ```
 
-The HDD should be mounted persistently through `/etc/fstab`.
+The HDD must be mounted persistently at `/srv/storage` through `/etc/fstab`. Installation aborts if this path is merely an ordinary directory on the system SSD.

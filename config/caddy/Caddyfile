@@ -1,0 +1,50 @@
+{
+	local_certs
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
+
+home.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy homepage:3000
+}
+
+portainer.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy portainer:9000
+}
+
+beszel.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy beszel:8090
+}
+
+uptime.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy uptime-kuma:3001
+}
+
+nextcloud.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy nextcloud:80
+}
+
+immich.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy immich-server:2283
+}
+
+jellyfin.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy jellyfin:8096
+}

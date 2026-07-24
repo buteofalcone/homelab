@@ -1,0 +1,43 @@
+- Management:
+    - Portainer:
+        icon: portainer.svg
+        href: https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Docker management
+        server: local
+        container: portainer
+
+    - Beszel:
+        icon: beszel.svg
+        href: https://beszel.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Server metrics
+        server: local
+        container: beszel
+
+    - Uptime Kuma:
+        icon: uptime-kuma.svg
+        href: https://uptime.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Service monitoring
+        server: local
+        container: uptime-kuma
+
+- Applications:
+    - Nextcloud:
+        icon: nextcloud.svg
+        href: https://nextcloud.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Files and sync
+        server: local
+        container: nextcloud
+
+    - Immich:
+        icon: immich.svg
+        href: https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Photo library
+        server: local
+        container: immich-server
+
+    - Jellyfin:
+        icon: jellyfin.svg
+        href: https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Media server
+        server: local
+        container: jellyfin

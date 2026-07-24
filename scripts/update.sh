@@ -3,13 +3,16 @@ set -Eeuo pipefail
 source "$(dirname "$0")/lib.sh"
 load_env
 
-cd "${REPO_DIR}"
+profile_args=()
+for profile in "$@"; do
+  profile_args+=(--profile "${profile}")
+done
 
+cd "${REPO_DIR}"
 git status --short
 git pull --ff-only
-docker compose config >/dev/null
-docker compose pull
-docker compose up -d --remove-orphans
+compose "${profile_args[@]}" config --quiet
+compose "${profile_args[@]}" pull
+compose "${profile_args[@]}" up -d --remove-orphans
 docker image prune -f
-
-docker compose ps
+compose "${profile_args[@]}" ps

@@ -14,9 +14,18 @@ require_root() {
 }
 
 load_env() {
-  [[ -f "${ENV_FILE}" ]] || die "Missing ${ENV_FILE}. Copy .env.example to .env first."
+  [[ -f "${ENV_FILE}" ]] || die "Missing ${ENV_FILE}. Run ./scripts/bootstrap.sh first."
   set -a
   # shellcheck disable=SC1090
   source "${ENV_FILE}"
   set +a
+}
+
+compose() {
+  docker compose --project-directory "${REPO_DIR}" "$@"
+}
+
+container_running() {
+  local container="$1"
+  [[ "$(docker inspect -f '{{.State.Running}}' "${container}" 2>/dev/null || true)" == "true" ]]
 }

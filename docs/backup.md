@@ -1,9 +1,11 @@
 # Backup policy
 
-The nightly Restic job backs up:
+Before each Restic snapshot, the backup job creates logical PostgreSQL dumps for running Nextcloud and Immich database containers.
 
-- `/srv/appdata`
-- `/opt/homelab`
+The local Restic job backs up:
+
+- `/srv/appdata`, excluding live PostgreSQL data directories
+- `/opt/homelab`, excluding `.git` and `.env`
 - `/etc/homelab`
 
 Retention:
@@ -12,4 +14,4 @@ Retention:
 - 5 weekly snapshots
 - 12 monthly snapshots
 
-The Git working tree's `.env` file is excluded because it may contain secrets. Host-only secrets are stored under `/etc/homelab` and are included in the encrypted Restic repository.
+HDD-resident Nextcloud files, Immich photos and Jellyfin media are not copied into the Restic repository on the same HDD. Such a copy would not protect against HDD loss. Back these directories up to an external disk, another machine or cloud object storage.
