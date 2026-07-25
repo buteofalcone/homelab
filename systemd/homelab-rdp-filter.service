@@ -1,0 +1,14 @@
+[Unit]
+Description=Restrict GNOME Remote Desktop to Tailscale
+Documentation=file:/opt/homelab/docs/remote-management.md
+Before=gnome-remote-desktop.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStartPre=/bin/sh -c '/usr/sbin/nft list table inet homelab_rdp >/dev/null 2>&1 && /usr/sbin/nft delete table inet homelab_rdp || :'
+ExecStart=/usr/sbin/nft -f /etc/homelab/rdp-tailscale.nft
+ExecStop=-/usr/sbin/nft delete table inet homelab_rdp
+
+[Install]
+WantedBy=multi-user.target

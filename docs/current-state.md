@@ -80,11 +80,16 @@ These bindings are currently suitable only for a trusted LAN unless host and ups
 
 ## Remote management
 
-- Tailscale is installed and `tailscaled` is active.
-- Tailnet enrollment, MagicDNS, ACLs, and SSH through Tailscale were not verified during this audit.
-- Cockpit is not installed and `cockpit.socket` is inactive.
-- GNOME Remote Desktop / RDP state was not audited.
-- Current Codex access from SilverBrick uses the LAN SSH alias `hp-server` and a dedicated ED25519 key.
+- Tailscale is installed and active on HP Server (`100.65.83.35`) and SilverBrick (`100.91.171.26`).
+- MagicDNS resolves the server as `hp-server.tail7cb430.ts.net`.
+- Standard OpenSSH through the Tailscale address and MagicDNS name was verified from SilverBrick.
+- The `hp-server` SSH alias uses MagicDNS; `hp-server-lan` is retained as a LAN recovery alias.
+- Cockpit is installed and its systemd socket listens only on `100.65.83.35:9090`.
+- Cockpit HTTPS was reachable through Tailscale and unreachable through `192.168.1.130:9090`.
+- GNOME Remote Login is enabled on TCP 3389 with TLS and separate RDP gateway credentials.
+- `homelab-rdp-filter.service` allows TCP 3389 on `tailscale0` and rejects it on other interfaces.
+- RDP TCP connectivity was verified through Tailscale and rejected through `192.168.1.130`.
+- Tailscale ACLs and router configuration have not yet been audited.
 
 No public port forwarding should be introduced for SSH, Cockpit, RDP, or application services.
 

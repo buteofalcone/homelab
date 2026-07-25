@@ -109,3 +109,5 @@ make snapshots
 The local Restic repository protects application state on the SSD. It does not protect HDD-resident files or photos from failure of the HDD itself. Add an external or off-site backup before treating Nextcloud or Immich as the only copy of important data.
 
 See `docs/` for architecture, storage, backup and restore details.
+
+Remote access through Tailscale, Cockpit, and GNOME Remote Login is documented in `docs/remote-management.md`.

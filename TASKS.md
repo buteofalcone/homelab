@@ -6,15 +6,16 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 
 - [x] Install Tailscale on HP Server
 - [x] Confirm `tailscaled` is active
-- [ ] Verify the HP Server is enrolled in the intended tailnet
-- [ ] Enable and verify MagicDNS
-- [ ] Verify SSH over the Tailscale address or MagicDNS name
-- [ ] Install Tailscale on SilverBrick and both MacBooks as needed
+- [x] Verify the HP Server and SilverBrick are enrolled in the same tailnet
+- [x] Enable and verify MagicDNS from SilverBrick
+- [x] Verify standard OpenSSH over the Tailscale address and MagicDNS name
+- [x] Install Tailscale on SilverBrick
+- [ ] Install Tailscale on both MacBooks as needed
 - [ ] Review and restrict Tailscale ACLs
-- [ ] Install Cockpit
-- [ ] Restrict Cockpit access to `tailscale0`
-- [ ] Configure GNOME Remote Desktop / RDP
-- [ ] Restrict RDP access to `tailscale0`
+- [x] Install Cockpit
+- [x] Restrict Cockpit to the HP Server Tailscale address
+- [x] Configure GNOME Remote Login / RDP
+- [x] Restrict RDP to `tailscale0` with a dedicated nftables rule
 - [ ] Test remote recovery access without router port forwarding
 
 ## Monitoring
@@ -79,6 +80,7 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 - [x] Create `AGENTS.md`
 - [x] Create `TASKS.md`
 - [x] Create `docs/current-state.md`
+- [x] Document Tailscale, Cockpit, and RDP remote management
 - [ ] Document a new-server bootstrap procedure
 - [ ] Document disaster recovery from Git, database dumps, and Restic
 - [ ] Document Time Machine setup and restore
