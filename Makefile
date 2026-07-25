@@ -5,7 +5,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 .DEFAULT_GOAL := help
 
 .PHONY: help bootstrap validate install base apps nextcloud immich jellyfin beszel-agent \
-        ps logs pull update update-all doctor backup snapshots restore \
+        ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore \
         caddy-reload caddy-root stop down
 
 help:
@@ -24,6 +24,8 @@ help:
 	  'make update         Update base services only' \
 	  'make update-all     Update all enabled profiles' \
 	  'make doctor         Run diagnostics' \
+	  'make health         Run storage and SMART checks (requires sudo)' \
+	  'make install-monitoring-timer  Install the 15-minute health timer' \
 	  'make backup         Run Restic backup' \
 	  'make snapshots      List Restic snapshots' \
 	  'make caddy-reload   Reload Caddyfile without downtime' \
@@ -54,7 +56,7 @@ apps:
 	@$(COMPOSE) --profile nextcloud --profile immich --profile jellyfin up -d
 
 beszel-agent:
-	@$(COMPOSE) --profile beszel-agent up -d
+	@$(COMPOSE) --profile beszel-agent up -d --no-deps beszel-agent
 
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps
@@ -77,6 +79,12 @@ update-all:
 
 doctor:
 	@./scripts/doctor.sh
+
+health:
+	@sudo ./scripts/health-check.sh
+
+install-monitoring-timer:
+	@sudo ./scripts/install-monitoring-timer.sh
 
 backup:
 	@sudo ./scripts/backup.sh

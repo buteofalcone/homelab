@@ -20,22 +20,22 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 
 ## Monitoring
 
-- [ ] Create the HP Server system in Beszel Hub
-- [ ] Store valid Beszel agent credentials without exposing them
-- [ ] Start and verify the Beszel agent
-- [ ] Configure Uptime Kuma monitors for Homepage, Portainer, Beszel, Nextcloud, Immich, Jellyfin, Cockpit, and internet connectivity
-- [ ] Add a storage-mount push monitor
-- [ ] Add a backup heartbeat monitor
+- [x] Create the HP Server system in Beszel Hub
+- [x] Store valid Beszel agent credentials without exposing them
+- [x] Start and verify the Beszel agent
+- [x] Configure Uptime Kuma monitors for Homepage, Portainer, Beszel, Nextcloud, Immich, Jellyfin, Cockpit, and internet connectivity
+- [x] Add a storage-mount push monitor
+- [x] Add a backup heartbeat monitor
 - [ ] Configure Telegram or email notifications
 - [x] Install `smartmontools` (`smartctl` is present)
-- [ ] Inventory disks with `smartctl --scan`
-- [ ] Record baseline SMART health without destructive tests
-- [ ] Add SMART, temperature, and disk-usage alerts
+- [x] Inventory disks with `smartctl --scan`
+- [x] Record baseline SMART health without destructive tests
+- [x] Add SMART, temperature, and disk-usage alerts
 
 ## Backup and recovery
 
 - [x] Confirm `homelab-backup.timer` is installed and active
-- [ ] Review the latest backup service result and logs without exposing secrets
+- [x] Review the latest backup service result and logs without exposing secrets
 - [ ] Verify that the Restic repository is initialized and readable
 - [ ] Verify recent snapshots and PostgreSQL dumps
 - [ ] Perform a test restore into `/srv/storage/restores`
