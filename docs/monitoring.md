@@ -25,6 +25,10 @@ UPTIME_KUMA_SMART_PUSH_URL=http://127.0.0.1:3001/api/push/REPLACE_ME
 
 The backup script sends `up` only after Restic backup, retention, pruning, and repository checks all complete. An early failure sends `down` while preserving the original exit status.
 
+## Notifications
+
+Uptime Kuma sends Telegram notifications through the HP Server alerts integration. It is enabled by default for new monitors and was applied to all existing monitors. A test notification was delivered successfully on 2026-07-26. Bot tokens and chat IDs must never be committed to Git.
+
 ## Host health timer
 
 Install the timer once:

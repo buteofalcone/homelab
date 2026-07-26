@@ -26,7 +26,7 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 - [x] Configure Uptime Kuma monitors for Homepage, Portainer, Beszel, Nextcloud, Immich, Jellyfin, Cockpit, and internet connectivity
 - [x] Add a storage-mount push monitor
 - [x] Add a backup heartbeat monitor
-- [ ] Configure Telegram or email notifications
+- [x] Configure Telegram notifications in Uptime Kuma
 - [x] Install `smartmontools` (`smartctl` is present)
 - [x] Inventory disks with `smartctl --scan`
 - [x] Record baseline SMART health without destructive tests
