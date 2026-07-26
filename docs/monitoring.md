@@ -2,7 +2,7 @@
 
 ## Uptime Kuma
 
-Uptime Kuma runs at `https://uptime.home.arpa`. The recommended HTTP monitors use Docker service DNS names so checks stay inside the Compose network:
+Uptime Kuma runs at `https://uptime.butenko.online`. The recommended HTTP monitors use Docker service DNS names so checks stay inside the Compose network:
 
 | Monitor | URL |
 | --- | --- |

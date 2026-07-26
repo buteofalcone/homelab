@@ -60,29 +60,23 @@ make immich
 make jellyfin
 ```
 
-## Local HTTPS
+## Private HTTPS over Tailscale
 
-The default local domain is `home.arpa`. Configure local DNS or client hosts files so these names resolve to `SERVER_IP`:
+The production domain is `butenko.online`. Cloudflare DNS-only records resolve these names to the server's Tailscale IP:
 
 ```text
-home.home.arpa
-portainer.home.arpa
-beszel.home.arpa
-uptime.home.arpa
-nextcloud.home.arpa
-immich.home.arpa
-jellyfin.home.arpa
+home.butenko.online
+portainer.butenko.online
+beszel.butenko.online
+uptime.butenko.online
+nextcloud.butenko.online
+immich.butenko.online
+jellyfin.butenko.online
 ```
 
-Caddy uses its internal certificate authority. Export the root certificate:
+Caddy uses the Cloudflare DNS challenge to obtain publicly trusted certificates without exposing ports 80 or 443 on the router. The scoped API token lives only in `/etc/homelab/caddy.env` with root-only permissions.
 
-```bash
-make caddy-root
-```
-
-Then import `/srv/storage/files/homelab-caddy-root.crt` into each client operating system or browser trust store.
-
-Direct ports remain available for initial setup and troubleshooting.
+Clients must be connected to the tailnet, but do not need custom DNS entries or a private CA certificate. Direct ports remain available for initial setup and troubleshooting on trusted networks.
 
 ## Daily operation
 
@@ -111,3 +105,4 @@ The local Restic repository protects application state on the SSD. It does not p
 See `docs/` for architecture, storage, backup, restore, remote management, and monitoring details.
 
 Remote access through Tailscale, Cockpit, and GNOME Remote Login is documented in `docs/remote-management.md`.
+Family application access is documented in `docs/family-access.md`.

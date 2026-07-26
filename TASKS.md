@@ -27,6 +27,7 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 - [x] Add a storage-mount push monitor
 - [x] Add a backup heartbeat monitor
 - [x] Configure Telegram notifications in Uptime Kuma
+- [x] Configure private family HTTPS with butenko.online, Cloudflare DNS, and public certificates
 - [x] Install `smartmontools` (`smartctl` is present)
 - [x] Inventory disks with `smartctl --scan`
 - [x] Record baseline SMART health without destructive tests

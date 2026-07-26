@@ -1,19 +1,17 @@
 # Caddy
 
-Caddy provides local HTTPS through its internal certificate authority.
+Caddy provides publicly trusted HTTPS for private services over Tailscale.
 
-Configure DNS for `*.BASE_DOMAIN` to point at the server. Wildcard DNS is convenient but not required; individual records also work.
+Cloudflare DNS-only A records point each service name at the server's Tailscale IP. Caddy uses the DNS challenge, so no router port forwarding is required. The scoped Cloudflare token is stored in `/etc/homelab/caddy.env` and must never be committed to Git.
+
+Create or update the required DNS records:
+
+```bash
+sudo ./scripts/configure-cloudflare-dns.sh
+```
 
 Reload after editing `config/caddy/Caddyfile`:
 
 ```bash
 make caddy-reload
 ```
-
-Export the local CA:
-
-```bash
-make caddy-root
-```
-
-Each client must trust the exported root certificate.

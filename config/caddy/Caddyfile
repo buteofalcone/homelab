@@ -1,5 +1,5 @@
 {
-	local_certs
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
 	servers {
 		trusted_proxies static private_ranges
 	}

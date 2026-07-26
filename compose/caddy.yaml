@@ -1,6 +1,9 @@
 services:
   caddy:
-    image: caddy:2-alpine
+    build:
+      context: ..
+      dockerfile: docker/caddy/Dockerfile
+    image: homelab-caddy:2-cloudflare
     container_name: caddy
     restart: unless-stopped
     ports:
@@ -8,9 +11,10 @@ services:
       - "${CADDY_HTTPS_PORT:-443}:443"
       - "${CADDY_HTTPS_PORT:-443}:443/udp"
     environment:
-      BASE_DOMAIN: "${BASE_DOMAIN:-home.arpa}"
+      BASE_DOMAIN: "${BASE_DOMAIN:-butenko.online}"
     volumes:
       - /opt/homelab/config/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /etc/homelab/caddy.env:/run/secrets/caddy.env:ro
       - /srv/appdata/caddy/data:/data
       - /srv/appdata/caddy/config:/config
     networks:

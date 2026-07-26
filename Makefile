@@ -6,7 +6,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .PHONY: help bootstrap validate install base apps nextcloud immich jellyfin beszel-agent \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore \
-        caddy-reload caddy-root stop down
+        configure-cloudflare-dns caddy-reload stop down
 
 help:
 	@printf '%s\n' \
@@ -28,8 +28,8 @@ help:
 	  'make install-monitoring-timer  Install the 15-minute health timer' \
 	  'make backup         Run Restic backup' \
 	  'make snapshots      List Restic snapshots' \
-	  'make caddy-reload   Reload Caddyfile without downtime' \
-	  'make caddy-root     Export Caddy local CA certificate'
+	  'make configure-cloudflare-dns  Create private service DNS records' \
+	  'make caddy-reload   Reload Caddyfile without downtime'
 
 bootstrap:
 	@./scripts/bootstrap.sh
@@ -95,11 +95,11 @@ snapshots:
 restore:
 	@sudo ./scripts/restore.sh "$${SNAPSHOT:-latest}" "$${TARGET:-/srv/storage/restores/latest}"
 
+configure-cloudflare-dns:
+	@sudo ./scripts/configure-cloudflare-dns.sh
+
 caddy-reload:
 	@$(COMPOSE) exec -w /etc/caddy caddy caddy reload
-
-caddy-root:
-	@sudo ./scripts/export-caddy-root.sh
 
 stop:
 	@$(COMPOSE) $(PROFILES_ALL) stop

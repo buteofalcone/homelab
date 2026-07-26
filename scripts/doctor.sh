@@ -36,7 +36,7 @@ check "Homepage HTTP" curl -fsS "http://127.0.0.1:${HOMEPAGE_PORT:-3000}"
 check "Beszel HTTP" curl -fsS "http://127.0.0.1:${BESZEL_PORT:-8090}"
 check "Uptime Kuma HTTP" curl -fsS "http://127.0.0.1:${UPTIME_KUMA_PORT:-3001}"
 check "Portainer HTTPS" curl -kfsS "https://127.0.0.1:${PORTAINER_PORT:-9443}"
-check "Caddy HTTPS" curl -kfsS --resolve "home.${BASE_DOMAIN}:443:127.0.0.1" "https://home.${BASE_DOMAIN}/"
+check "Caddy trusted HTTPS" curl -fsS --resolve "home.${BASE_DOMAIN}:443:127.0.0.1" "https://home.${BASE_DOMAIN}/"
 
 check_optional_http nextcloud "Nextcloud HTTP" "http://127.0.0.1:${NEXTCLOUD_PORT:-8080}/status.php"
 check_optional_http immich-server "Immich HTTP" "http://127.0.0.1:${IMMICH_PORT:-2283}/api/server/ping"
