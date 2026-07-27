@@ -13,7 +13,7 @@ This backlog reflects the server audit updated on 2026-07-27. A checked item mea
 - [x] Document the boundary between Git-managed configuration, secrets, and mutable application state
 - [x] Audit bootstrap and restore gaps without changing running services
 - [x] Validate the Milestone 2A audit
-- [ ] Commit and push the Milestone 2A audit
+- [x] Commit and push the Milestone 2A audit
 
 ## Remote management
 
