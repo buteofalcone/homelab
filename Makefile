@@ -1,10 +1,10 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
-PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent
+PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap validate install base apps nextcloud immich jellyfin beszel-agent \
+.PHONY: help bootstrap validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore \
         configure-cloudflare-dns caddy-reload stop down
 
@@ -19,6 +19,8 @@ help:
 	  'make jellyfin       Start Jellyfin' \
 	  'make apps           Start all optional applications' \
 	  'make beszel-agent   Start the local Beszel agent' \
+	  'make timemachine-bootstrap  Provision Time Machine secrets, storage and Avahi' \
+	  'make timemachine    Start the provisioned Time Machine service' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
 	  'make update         Update base services only' \
@@ -57,6 +59,12 @@ apps:
 
 beszel-agent:
 	@$(COMPOSE) --profile beszel-agent up -d --no-deps beszel-agent
+
+timemachine-bootstrap:
+	@sudo ./services/timemachine/bootstrap.sh
+
+timemachine:
+	@$(COMPOSE) --profile timemachine up -d --build timemachine
 
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps

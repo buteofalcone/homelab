@@ -7,6 +7,12 @@ while IFS= read -r -d '' script; do
   bash -n "${script}"
 done < <(find "${REPO_DIR}/scripts" -type f -name '*.sh' -print0)
 
-compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent config --quiet
+if [[ -d "${REPO_DIR}/services" ]]; then
+  while IFS= read -r -d '' script; do
+    bash -n "${script}"
+  done < <(find "${REPO_DIR}/services" -type f -name '*.sh' -print0)
+fi
+
+compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine config --quiet
 
 echo "Shell and Docker Compose validation passed."

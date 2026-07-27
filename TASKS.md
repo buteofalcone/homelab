@@ -62,12 +62,13 @@ This backlog reflects the server audit updated on 2026-07-27. A checked item mea
 ## Time Machine
 
 - [x] Keep `/srv/storage` as the stable path across the future 500 GB to 8–16 TB migration
-- [ ] Create `services/timemachine/` with Compose, `smb.conf`, README, and bootstrap helper
-- [ ] Define separate per-Mac shares or quotas without consuming the temporary disk uncontrollably
-- [ ] Install and configure Docker-based Samba and Avahi integration
-- [ ] Configure SMB with `vfs_fruit`; do not use AFP
-- [ ] Create a separate A1502 Time Machine share or account
-- [ ] Create a separate A1466 Time Machine share or account
+- [x] Create `services/timemachine/` with Compose, `smb.conf`, README, and bootstrap helper
+- [x] Define separate per-Mac shares and conservative test limits for the temporary disk
+- [x] Provision and verify Docker-based Samba and Avahi integration on the server
+- [x] Configure SMB with `vfs_fruit`; do not use AFP
+- [x] Create a separate A1502 Time Machine share and account
+- [x] Create a separate A1466 Time Machine share and account
+- [ ] Verify that each Mac can see and mount only its intended share
 - [ ] Enable backup encryption on each Mac
 - [ ] Test a complete backup from each Mac
 - [ ] Test restoration of one file

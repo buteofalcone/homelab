@@ -38,6 +38,7 @@ The following Compose services were running:
 - Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`.
 - Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
 - Media: `jellyfin`.
+- Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
 
 `watchtower` is declared but intentionally not running. Stateful application updates remain manual.
 
@@ -63,6 +64,8 @@ Cockpit listens only on `100.65.83.35:9090`. RDP listens on TCP 3389, with the r
 
 Direct application ports currently listen on all host interfaces for trusted-LAN setup and recovery. This exposure is documented but still requires a deliberate security review.
 
+Time Machine SMB listens on TCP 445 for trusted-LAN and Tailscale clients. Connectivity through the server's Tailscale address was verified from SilverBrick. Avahi publishes `hp-server Time Machine` through Bonjour for local-LAN discovery.
+
 ## Monitoring
 
 - Beszel Hub and Agent are running.
@@ -70,6 +73,7 @@ Direct application ports currently listen on all host interfaces for trusted-LAN
 - Telegram notifications are configured in Uptime Kuma runtime state.
 - `homelab-health.timer` runs every 15 minutes; its most recent run completed successfully on 2026-07-27.
 - Both disks passed the recorded SMART baseline. The temporary 500 GB HDD has high power-on hours and must not become the only copy of important data.
+- Docker-based Samba Time Machine is running with separate accounts, directories, and 100 GB test limits for A1502 and A1466. No full Mac backup has been authorized or verified yet.
 
 ## Backup
 

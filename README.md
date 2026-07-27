@@ -19,6 +19,7 @@ A maintainable single-server homelab for an HP EliteDesk running Ubuntu, Docker 
 - Immich
 - Jellyfin
 - Beszel agent
+- Time Machine for the two family Macs
 
 **Host services**
 
@@ -68,6 +69,7 @@ make install
 make nextcloud
 make immich
 make jellyfin
+make timemachine-bootstrap
 ```
 
 The current workflow assumes Ubuntu, Docker, Git, the `/srv/storage` mount, and required host packages already exist. A complete empty-machine `clone -> bootstrap -> restore` workflow is the Milestone 2C target and is not yet complete. See `docs/reproducibility-audit.md` for the audited gaps.

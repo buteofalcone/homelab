@@ -10,6 +10,7 @@ include:
   - ./compose/nextcloud.yaml
   - ./compose/immich.yaml
   - ./compose/jellyfin.yaml
+  - ./services/timemachine/compose.yaml
 
 networks:
   homelab:
