@@ -1,11 +1,10 @@
 [Unit]
-Description=Nightly homelab backup
+Description=Nightly Homelab backup
 
 [Timer]
-OnCalendar=*-*-* 03:15:00
-RandomizedDelaySec=15m
+OnCalendar=*-*-* 03:30:00
 Persistent=true
-Unit=homelab-backup.service
+RandomizedDelaySec=10m
 
 [Install]
 WantedBy=timers.target

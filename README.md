@@ -4,7 +4,7 @@ A maintainable single-server homelab for an HP EliteDesk running Ubuntu, Docker 
 
 ## Stack
 
-**Always-on management layer**
+**Always-on Compose management layer**
 
 - Homepage
 - Portainer CE
@@ -20,19 +20,27 @@ A maintainable single-server homelab for an HP EliteDesk running Ubuntu, Docker 
 - Jellyfin
 - Beszel agent
 
+**Host services**
+
+- Tailscale and OpenSSH
+- Cockpit, restricted to the Tailscale address
+- GNOME Remote Desktop / RDP, restricted to `tailscale0`
+- Restic backup and host-health systemd timers
+
 Paperless-ngx is intentionally not included.
 
 ## Repository layout
 
 ```text
-compose/                 One Compose file per service or application stack
+compose/                 One Compose file per existing service or application stack
+services/                New self-contained services, beginning with Time Machine
 config/                  Static application configuration
 scripts/                 Bootstrap, operations, backup and restore scripts
-systemd/                 Nightly backup unit and timer
+systemd/                 Host services and timers installed from tracked sources
 docs/services/           Service-specific runbooks
 ```
 
-Runtime data never lives in Git:
+Mutable runtime data and secrets never live in Git:
 
 ```text
 /opt/homelab             Repository
@@ -41,7 +49,9 @@ Runtime data never lives in Git:
 /etc/homelab             Host-only secrets
 ```
 
-## First deployment
+Git is the source of truth for infrastructure definitions and recovery logic. Application databases, user files, monitor history, credentials, and enrollment state are restored from backups or supplied interactively; they are not source-controlled.
+
+## Deployment on a prepared host
 
 ```bash
 cd /opt/homelab
@@ -60,6 +70,8 @@ make immich
 make jellyfin
 ```
 
+The current workflow assumes Ubuntu, Docker, Git, the `/srv/storage` mount, and required host packages already exist. A complete empty-machine `clone -> bootstrap -> restore` workflow is the Milestone 2C target and is not yet complete. See `docs/reproducibility-audit.md` for the audited gaps.
+
 ## Private HTTPS over Tailscale
 
 The production domain is `butenko.online`. Cloudflare DNS-only records resolve these names to the server's Tailscale IP:
@@ -74,7 +86,7 @@ immich.butenko.online
 jellyfin.butenko.online
 ```
 
-Caddy uses the Cloudflare DNS challenge to obtain publicly trusted certificates without exposing ports 80 or 443 on the router. The scoped API token lives only in `/etc/homelab/caddy.env` with root-only permissions.
+Caddy uses the Cloudflare DNS challenge to obtain Let's Encrypt certificates without exposing ports 80 or 443 on the router. The scoped API token lives only in `/etc/homelab/caddy.env` with root-only permissions.
 
 Clients must be connected to the tailnet, but do not need custom DNS entries or a private CA certificate. Direct ports remain available for initial setup and troubleshooting on trusted networks.
 
@@ -102,7 +114,7 @@ make snapshots
 
 The local Restic repository protects application state on the SSD. It does not protect HDD-resident files or photos from failure of the HDD itself. Add an external or off-site backup before treating Nextcloud or Immich as the only copy of important data.
 
-See `docs/` for architecture, storage, backup, restore, remote management, and monitoring details.
+See `docs/` for the observed state, target architecture, reproducibility audit, storage, backup, restore, remote management, and monitoring details.
 
 Remote access through Tailscale, Cockpit, and GNOME Remote Login is documented in `docs/remote-management.md`.
 Family application access is documented in `docs/family-access.md`.

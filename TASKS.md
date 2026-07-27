@@ -1,6 +1,19 @@
 # Homelab Backlog
 
-This backlog reflects the server audit performed on 2026-07-25. A checked item means only that the stated prerequisite was observed; it does not imply that the entire feature is configured or tested.
+This backlog reflects the server audit updated on 2026-07-27. A checked item means only that the stated prerequisite was observed; it does not imply that the entire feature is configured or tested.
+
+## Milestone 2A — Repository consistency
+
+- [x] Push the existing local commits to `origin/feature/base-management-stack`
+- [x] Update architecture and current-state documentation for the working domain, services, monitoring, and remote management
+- [x] Compare declared Compose services with running containers
+- [x] Verify Homepage runtime configuration against Git
+- [x] Verify tracked Cockpit, RDP, and health systemd configuration against runtime
+- [x] Capture the installed backup unit and schedule in Git
+- [x] Document the boundary between Git-managed configuration, secrets, and mutable application state
+- [x] Audit bootstrap and restore gaps without changing running services
+- [x] Validate the Milestone 2A audit
+- [ ] Commit and push the Milestone 2A audit
 
 ## Remote management
 
@@ -37,8 +50,9 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 
 - [x] Confirm `homelab-backup.timer` is installed and active
 - [x] Review the latest backup service result and logs without exposing secrets
-- [ ] Verify that the Restic repository is initialized and readable
-- [ ] Verify recent snapshots and PostgreSQL dumps
+- [x] Confirm the latest scheduled Restic job exited successfully
+- [ ] Independently verify that the Restic repository is initialized and readable
+- [ ] Verify recent snapshots and PostgreSQL dumps without relying only on the timer exit status
 - [ ] Perform a test restore into `/srv/storage/restores`
 - [ ] Document the restore result and recovery time
 - [ ] Store the Restic password securely off-server
@@ -47,9 +61,10 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 
 ## Time Machine
 
-- [ ] Decide on a dedicated HDD: 2 TB minimum, 4 TB recommended
-- [ ] Decide the final mount path and per-Mac quotas
-- [ ] Install and configure Samba and Avahi
+- [x] Keep `/srv/storage` as the stable path across the future 500 GB to 8–16 TB migration
+- [ ] Create `services/timemachine/` with Compose, `smb.conf`, README, and bootstrap helper
+- [ ] Define separate per-Mac shares or quotas without consuming the temporary disk uncontrollably
+- [ ] Install and configure Docker-based Samba and Avahi integration
 - [ ] Configure SMB with `vfs_fruit`; do not use AFP
 - [ ] Create a separate A1502 Time Machine share or account
 - [ ] Create a separate A1466 Time Machine share or account
@@ -82,7 +97,9 @@ This backlog reflects the server audit performed on 2026-07-25. A checked item m
 - [x] Create `TASKS.md`
 - [x] Create `docs/current-state.md`
 - [x] Document Tailscale, Cockpit, and RDP remote management
-- [ ] Document a new-server bootstrap procedure
-- [ ] Document disaster recovery from Git, database dumps, and Restic
+- [x] Separate target architecture from observed current state
+- [x] Document reproducibility gaps and Milestone 2C acceptance criteria
+- [ ] Implement and document a new-server bootstrap procedure
+- [ ] Implement and test disaster recovery from Git, database dumps, and Restic
 - [ ] Document Time Machine setup and restore
 - [ ] Document remote access and loss-of-Tailscale recovery

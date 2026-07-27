@@ -1,9 +1,8 @@
 [Unit]
-Description=Restic backup of the homelab server
-Documentation=https://github.com/buteofalcone/homelab
+Description=Homelab Restic backup
 RequiresMountsFor=/srv/storage
-After=docker.service
-ConditionPathExists=/opt/homelab/.env
+After=docker.service network-online.target
+Wants=network-online.target
 
 [Service]
 Type=oneshot
