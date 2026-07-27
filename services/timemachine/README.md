@@ -56,6 +56,8 @@ journalctl -u avahi-daemon.service --since '10 minutes ago' --no-pager
 
 Expected result: the container is healthy, both shares appear in `testparm`, and the Avahi log reports that `hp-server Time Machine` was successfully established.
 
+During an active backup Samba may briefly log `fruit_tmsize_do_dirent ... failed` while macOS rewrites the sparsebundle `Info.plist`. If the `band-size` key is present after the backup and the warning stops, the reported-size calculation can resume normally. Investigate before continuing only if the warning persists after backup completion or the share stops mounting.
+
 ## After installing the 8-16 TB disk
 
 Keep the mount path `/srv/storage` unchanged. Update only these values in `/opt/homelab/.env` to the approved per-Mac limits, for example:

@@ -73,7 +73,7 @@ Time Machine SMB listens on TCP 445 for trusted-LAN and Tailscale clients. Conne
 - Telegram notifications are configured in Uptime Kuma runtime state.
 - `homelab-health.timer` runs every 15 minutes; its most recent run completed successfully on 2026-07-27.
 - Both disks passed the recorded SMART baseline. The temporary 500 GB HDD has high power-on hours and must not become the only copy of important data.
-- Docker-based Samba Time Machine is running with separate accounts, directories, and 100 GB test limits for A1502 and A1466. No full Mac backup has been authorized or verified yet.
+- Docker-based Samba Time Machine is running with separate accounts, directories, and 100 GB test limits for A1502 and A1466. MacBook A1466 completed its first small test backup on 2026-07-27, using approximately 4.6 GB. A1502 remains untested.
 
 ## Backup
 

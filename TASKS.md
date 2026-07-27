@@ -70,7 +70,8 @@ This backlog reflects the server audit updated on 2026-07-27. A checked item mea
 - [x] Create a separate A1466 Time Machine share and account
 - [ ] Verify that each Mac can see and mount only its intended share
 - [ ] Enable backup encryption on each Mac
-- [ ] Test a complete backup from each Mac
+- [x] Complete a small first backup from MacBook A1466
+- [ ] Test a complete backup from MacBook A1502
 - [ ] Test restoration of one file
 
 ## Jellyfin
