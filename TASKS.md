@@ -1,6 +1,6 @@
 # Homelab Backlog
 
-This backlog reflects the server audit updated on 2026-07-27. A checked item means only that the stated prerequisite was observed; it does not imply that the entire feature is configured or tested.
+This backlog reflects the server audit and roadmap updated on 2026-07-28. A checked item means only that the stated prerequisite was observed; it does not imply that the entire feature is configured or tested.
 
 ## Milestone 2A — Repository consistency
 
@@ -48,6 +48,8 @@ This backlog reflects the server audit updated on 2026-07-27. A checked item mea
 
 ## Backup and recovery
 
+External/off-site backup and physical HDD migration are deferred until September 2026 when another disk is available. The current same-HDD Restic limitation remains accepted and documented in the meantime.
+
 - [x] Confirm `homelab-backup.timer` is installed and active
 - [x] Review the latest backup service result and logs without exposing secrets
 - [x] Confirm the latest scheduled Restic job exited successfully
@@ -57,10 +59,12 @@ This backlog reflects the server audit updated on 2026-07-27. A checked item mea
 - [x] Document the targeted restore result
 - [ ] Measure and document a complete application recovery time
 - [ ] Store the Restic password securely off-server
-- [ ] Add an external or off-site backup target
+- [ ] Add an external or off-site backup target (deferred until September 2026)
 - [ ] Add backup failure and stale-snapshot alerts
 
 ## Time Machine
+
+Further Time Machine verification is intentionally paused after the successful A1466 backup. A1502, encryption, and file-restore checks are deferred by owner decision, not reported as completed.
 
 - [x] Keep `/srv/storage` as the stable path across the future 500 GB to 8–16 TB migration
 - [x] Create `services/timemachine/` with Compose, `smb.conf`, README, and bootstrap helper
@@ -74,6 +78,56 @@ This backlog reflects the server audit updated on 2026-07-27. A checked item mea
 - [x] Complete a small first backup from MacBook A1466
 - [ ] Test a complete backup from MacBook A1502
 - [ ] Test restoration of one file
+
+## Disaster Recovery — active
+
+- [ ] Implement an idempotent clean-Ubuntu host bootstrap
+- [ ] Add a safety-gated storage and `/etc/fstab` runbook without automatic formatting
+- [ ] Create an offline recovery-secret inventory template without secret values
+- [ ] Automate Nextcloud PostgreSQL import and integrity verification
+- [ ] Automate Immich PostgreSQL import and integrity verification
+- [ ] Restore and verify management-service state
+- [ ] Add a single post-restore verification command
+- [ ] Complete a measured clean-machine recovery drill
+
+## n8n — after initial DR bootstrap
+
+- [ ] Create `services/n8n/` with n8n and dedicated PostgreSQL
+- [ ] Store the n8n encryption key outside Git
+- [ ] Add database dump and restore coverage
+- [ ] Add `n8n.butenko.online`, Caddy, Cloudflare DNS-only, and Uptime Kuma
+- [ ] Select and configure the SilverBrick LLM runtime
+- [ ] Restrict the SilverBrick LLM API to the HP Server through Tailscale
+- [ ] Handle SilverBrick offline and timeout behavior in workflows
+
+## EPUB library — after initial DR bootstrap
+
+- [ ] Create `services/calibre-web/`
+- [ ] Store application state under `/srv/appdata/calibre-web`
+- [ ] Store books under `/srv/storage/books`
+- [ ] Add `books.butenko.online`, Caddy, Cloudflare DNS-only, and Uptime Kuma
+- [ ] Verify browser-to-Apple Books or OPDS-reader workflow on iPad
+- [ ] Add full Calibre only if conversion or metadata maintenance requires it
+
+## September 2026 storage work
+
+- [ ] Install and SMART-test the new 8-16 TB HDD
+- [ ] Migrate data while preserving the `/srv/storage` mount path
+- [ ] Verify containers, Restic, Time Machine, ownership, and free space
+- [ ] Increase Time Machine limits only after the new disk is verified
+
+## Media automation — after initial DR bootstrap
+
+Installation and connection testing may proceed before September. Automatic or high-volume downloading stays disabled until the larger HDD is installed.
+
+- [ ] Deploy qBittorrent with `/srv/storage` mounted consistently as `/data`
+- [ ] Deploy Sonarr with the same `/data` path for hardlink imports
+- [ ] Configure `/data/downloads/torrents` and `/data/media/TV`
+- [ ] Add Prowlarr if centralized indexer management is required
+- [ ] Connect Sonarr to qBittorrent with a dedicated category
+- [ ] Verify Jellyfin discovers imported episodes
+- [ ] Add monitoring, backup coverage, private HTTPS, and access controls
+- [ ] Enable automatic downloading only after the larger HDD is verified
 
 ## Jellyfin
 

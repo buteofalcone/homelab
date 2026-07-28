@@ -51,8 +51,12 @@ This target is not yet achieved. The current scripts deploy containers on a prep
 
 ## Roadmap
 
-1. Repository consistency and recovery audit.
-2. Docker-based Time Machine service under `services/timemachine/`.
-3. Replacement of the temporary HDD without changing service paths.
-4. Verified Time Machine and homelab restores, plus an external/off-site copy.
-5. AdGuard Home after router access becomes available.
+The detailed execution order and service dependencies are maintained in `docs/roadmap.md`.
+
+Current sequence:
+
+1. Disaster Recovery bootstrap, secret inventory, and application-aware restore.
+2. n8n with a Tailscale-only LLM dependency on SilverBrick.
+3. Calibre-Web EPUB library for iPad access.
+4. qBittorrent, Sonarr, and optional Prowlarr may be installed for controlled testing; automatic downloading waits for the larger disk.
+5. In September 2026: larger HDD, external backup, and AdGuard Home after router access becomes available.
