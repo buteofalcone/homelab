@@ -20,34 +20,41 @@ Required work:
 - an explicit, safety-gated storage and `/etc/fstab` step that never formats a disk automatically;
 - offline recovery inventory for Restic, Cloudflare, Tailscale, RDP, Time Machine, and application administrator credentials;
 - application-aware Nextcloud and Immich database restore;
-- restoration of Portainer, Beszel, Uptime Kuma, Caddy, Jellyfin, n8n, and future service state;
+- restoration of Portainer, Beszel, Uptime Kuma, Caddy, Jellyfin, agent services, and future service state;
 - post-restore health checks and a measured recovery drill.
 
 Time Machine is accepted as working after the successful A1466 test. Further A1502, encryption, and file-restore testing is intentionally paused by owner decision.
 
-### 2. n8n
+### 2. Git-native agentic workflows
 
-Deploy after the first Disaster Recovery bootstrap milestone so its state is protected from the beginning.
+n8n is intentionally excluded. Build agentic workflows as small, reviewable Python services whose prompts, tool schemas, policies, tests, and deployment configuration live in Git.
 
-Planned components and dependencies:
+Planned architecture:
 
-- `services/n8n/` with Docker Compose and a dedicated profile;
-- n8n application state under `/srv/appdata/n8n`;
-- a dedicated PostgreSQL database under `/srv/appdata/n8n-postgres`;
-- persistent n8n encryption key in `/etc/homelab`, never Git;
-- Caddy route and Cloudflare DNS-only record for `n8n.butenko.online`;
-- Uptime Kuma monitor and Restic database dump/restore support;
-- LLM API hosted on SilverBrick, reached only through Tailscale.
+- **Open WebUI** on the HP Server as the private family AI chat and approval interface;
+- an agent runtime on the HP Server, starting with one orchestrator rather than a multi-agent hierarchy;
+- an OpenAI-compatible model API on SilverBrick, reachable only through Tailscale;
+- small audited tools exposed as Python functions, OpenAPI endpoints, or MCP servers;
+- durable workflow state under `/srv/appdata/agents`, with backups from the first deployment;
+- agent credentials under `/etc/homelab/agents.env`, never Git;
+- systemd timers for scheduled triggers and a small queue with bounded retries when SilverBrick is offline;
+- Caddy, Cloudflare DNS-only, Uptime Kuma, and structured audit logs without sensitive prompt payloads.
 
-The SilverBrick LLM runtime is not yet selected. Ollama or another OpenAI-compatible local API may be used. Before enabling workflows, define:
+Safety policy:
 
-- a stable Tailscale hostname or address;
-- the API port and protocol;
-- whether the runtime supports authentication;
-- a Tailscale ACL that allows only the HP Server to reach the LLM API;
-- an n8n timeout/retry policy for times when SilverBrick is asleep or offline.
+1. Read-only observation and reporting may run automatically.
+2. Reversible writes require a preview and explicit policy.
+3. Downloads, service restarts, configuration changes, and messages sent as a user require human approval.
+4. Disk operations, secret access, deletion, and restore-over-live-data are never autonomous tools.
 
-Core n8n workflows must not make server administration depend on SilverBrick being online.
+First workflows should be narrow and measurable:
+
+- a homelab guardian that summarizes health, backup freshness, storage, and failed services;
+- a Calibre librarian that proposes metadata and EPUB conversion while preserving the source file;
+- a family media concierge that turns an approved request into a Sonarr/Seerr action;
+- a Nextcloud assistant that searches approved family documents but cannot delete or share them autonomously.
+
+The agent runtime must degrade safely when SilverBrick is asleep. Core monitoring, backups, DNS, and server administration must never depend on an LLM.
 
 ### 3. Full Calibre and EPUB library for iPad
 
@@ -125,14 +132,14 @@ Deploy only after router access is available. It will provide local DNS through 
 - verify Jellyfin Intel VA-API hardware transcoding;
 - merge the feature branch after the recovery workflow and new-service plan are stable.
 
-## Interesting application candidates
+## Application candidates tailored to this homelab
 
 These are recommendations, not approved installation tasks:
 
-- **Audiobookshelf** for audiobooks and podcasts, complementary to Calibre and Jellyfin;
-- **Mealie** for family recipes, meal planning, and shopping lists;
-- **FreshRSS** or **Readeck** for a private reading queue and RSS feeds;
-- **Actual Budget** for household budgeting, after a separate backup and security review;
-- **Vaultwarden** for family passwords, but only after external backups and a dedicated recovery drill because losing its database or master passwords is high impact;
-- **Home Assistant** if home automation hardware is added later;
-- **Stirling-PDF** for local PDF conversion and utility tasks.
+- **Open WebUI** as the family-facing AI chat, model selector, knowledge interface, and approval surface for agentic workflows;
+- **Seerr** as the simple family request interface in front of Jellyfin and Sonarr, avoiding direct Sonarr access for family members;
+- **Bazarr** after Sonarr, for automatic Ukrainian and other preferred subtitles;
+- **Paperless-ngx** only if a searchable family archive of scanned documents, invoices, manuals, and warranties is desired;
+- **Navidrome** only if music is important enough to justify a dedicated low-resource, multi-user music server and iOS/Android clients instead of Jellyfin's music interface.
+
+These are candidates, not approved installations. Do not deploy them until the owner selects a concrete use case.

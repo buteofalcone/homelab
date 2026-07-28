@@ -81,7 +81,7 @@ Keep this inventory in an encrypted password manager and in a second recovery-sa
 - Uptime Kuma administrator access and Telegram bot replacement procedure;
 - RDP gateway credentials;
 - separate Time Machine credentials for A1502 and A1466;
-- n8n encryption key and database credentials when n8n is deployed;
+- agent-runtime encryption keys, model API credentials, and approval-service credentials when agentic workflows are deployed;
 - qBittorrent, Sonarr, Prowlarr, and Calibre credentials when those services are deployed.
 
 Do not paste tokens into issue trackers, chat messages, screenshots, shell history, or Git commits. Rotate any credential that has been exposed.

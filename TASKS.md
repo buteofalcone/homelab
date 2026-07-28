@@ -92,15 +92,20 @@ Further Time Machine verification is intentionally paused after the successful A
 - [ ] Add a single post-restore verification command
 - [ ] Complete a measured clean-machine recovery drill
 
-## n8n — after initial DR bootstrap
+## Git-native agentic workflows — after initial DR bootstrap
 
-- [ ] Create `services/n8n/` with n8n and dedicated PostgreSQL
-- [ ] Store the n8n encryption key outside Git
-- [ ] Add database dump and restore coverage
-- [ ] Add `n8n.butenko.online`, Caddy, Cloudflare DNS-only, and Uptime Kuma
-- [ ] Select and configure the SilverBrick LLM runtime
-- [ ] Restrict the SilverBrick LLM API to the HP Server through Tailscale
-- [ ] Handle SilverBrick offline and timeout behavior in workflows
+- [x] Exclude n8n by owner decision
+- [ ] Select the OpenAI-compatible SilverBrick model runtime
+- [ ] Restrict the SilverBrick model API to the HP Server through Tailscale
+- [ ] Create `services/open-webui/` as the private family AI and approval interface
+- [ ] Create a minimal Python agent runtime with prompts, tools, policies, and tests in Git
+- [ ] Implement read-only homelab health tools first
+- [ ] Add explicit approval gates before every external or state-changing action
+- [ ] Persist workflow state under `/srv/appdata/agents` and add backup/restore coverage
+- [ ] Add bounded retries and clear offline behavior for SilverBrick
+- [ ] Add Caddy, DNS-only, monitoring, and privacy-safe audit logging
+- [ ] Build the Calibre librarian workflow
+- [ ] Build the approved family media-request workflow
 
 ## Full Calibre and EPUB library — after initial DR bootstrap
 
