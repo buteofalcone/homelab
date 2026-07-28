@@ -66,6 +66,14 @@ make check-lm-studio
 
 The check calls only `/v1/models`, verifies authentication and the configured model identifier, deletes its temporary response, and prints `LM_STUDIO_API_OK` without printing the token.
 
+The first authenticated HP Server to SilverBrick check completed successfully on 2026-07-28:
+
+```text
+LM_STUDIO_API_OK
+```
+
+An unauthenticated request from the HP Server returned HTTP 401 as expected. The Windows Firewall source restriction remains a separate safety-gated task.
+
 ## Implementation order
 
 1. Verify the authenticated Tailscale-only LM Studio API.
