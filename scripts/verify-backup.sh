@@ -46,7 +46,7 @@ if container_running qbittorrent && container_running sonarr && container_runnin
   echo
   echo 'Checking media automation recovery files in the latest snapshot:'
   for path in \
-    /srv/appdata/qbittorrent/qBittorrent/config/qBittorrent.conf \
+    /srv/appdata/qbittorrent/qBittorrent/qBittorrent.conf \
     /srv/appdata/sonarr/config.xml \
     /srv/appdata/prowlarr/config.xml \
     /etc/homelab/qbittorrent-password \
