@@ -144,11 +144,11 @@ Further Time Machine verification is intentionally paused after the successful A
 
 Installation, indexer integration, and one small lawful automatic-download test may proceed before September. High-volume downloading stays disabled until the larger HDD is installed.
 
-- [ ] Deploy qBittorrent with `/srv/storage` mounted consistently as `/data`
-- [ ] Deploy Sonarr with the same `/data` path for hardlink imports
-- [ ] Configure `/data/downloads/torrents` and `/data/media/TV`
-- [ ] Deploy Prowlarr for centralized indexer management
-- [ ] Connect Sonarr to qBittorrent with a dedicated category
+- [x] Deploy qBittorrent with `/srv/storage` mounted consistently as `/data`
+- [x] Deploy Sonarr with the same `/data` path for hardlink imports
+- [x] Configure `/data/downloads/torrents` and `/data/media/TV`
+- [x] Deploy Prowlarr for centralized indexer management
+- [x] Connect Sonarr to qBittorrent with a dedicated category
 - [ ] Verify Jellyfin discovers imported episodes
 - [ ] Add monitoring, backup coverage, private HTTPS, and access controls
 - [ ] Verify one small lawful automatic download with the temporary free-space floor

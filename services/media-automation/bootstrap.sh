@@ -135,6 +135,8 @@ for config_file in /srv/appdata/sonarr/config.xml /srv/appdata/prowlarr/config.x
 done
 compose --profile media-automation up -d sonarr prowlarr
 
+"${service_dir}/configure-integrations.sh"
+
 install -m 0644 -o "${PUID}" -g "${PGID}" \
   "${repo_dir}/config/homepage/services.yaml" /srv/appdata/homepage/services.yaml
 compose up -d --no-deps homepage

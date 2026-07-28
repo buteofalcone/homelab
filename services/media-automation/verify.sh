@@ -23,7 +23,8 @@ docker exec -e QB_USER="${MEDIA_ADMIN_USER:-butenko}" -e QB_PASSWORD="${media_pa
   body="$(cat /tmp/qb-verify-body)"
   rm -f /tmp/qb-verify-body
   [ "${status}" = 204 ] || { [ "${status}" = 200 ] && [ "${body}" = "Ok." ]; }
-  [ "$(curl -fsS --cookie /tmp/qb-verify-cookie --header "Referer: http://localhost:8080" http://localhost:8080/api/v2/torrents/info)" = "[]" ]
+  curl -fsS --cookie /tmp/qb-verify-cookie --header "Referer: http://localhost:8080" \
+    http://localhost:8080/api/v2/torrents/info >/dev/null
   rm -f /tmp/qb-verify-cookie
 '
 unset media_password
@@ -32,8 +33,31 @@ grep -Fq '<AuthenticationMethod>External</AuthenticationMethod>' /srv/appdata/so
   || die 'Sonarr external authentication is not configured.'
 sonarr_api_key="$(sed -n 's#.*<ApiKey>\([^<]*\)</ApiKey>.*#\1#p' /srv/appdata/sonarr/config.xml)"
 [[ -n ${sonarr_api_key} ]] || die 'Sonarr API key is missing.'
-[[ "$(docker exec -e SONARR_API_KEY="${sonarr_api_key}" sonarr /bin/sh -c 'curl -fsS -H "X-Api-Key: ${SONARR_API_KEY}" http://127.0.0.1:8989/api/v3/series')" == '[]' ]] \
-  || die 'Sonarr already contains series; automatic use is not expected yet.'
+readonly verify_dir="$(mktemp -d)"
+trap 'rm -rf -- "${verify_dir}"' EXIT
+
+sonarr_get() {
+  local path="$1" output="$2"
+  docker exec -e SONARR_API_KEY="${sonarr_api_key}" -e API_PATH="${path}" sonarr /bin/sh -c \
+    'curl -fsS -H "X-Api-Key: ${SONARR_API_KEY}" "http://127.0.0.1:8989/api/v3/${API_PATH}"' >"${output}"
+}
+
+sonarr_get rootfolder "${verify_dir}/rootfolders.json"
+sonarr_get downloadclient "${verify_dir}/downloadclients.json"
+sonarr_get indexer "${verify_dir}/sonarr-indexers.json"
+python3 - "${verify_dir}" <<'PY'
+import json, os, sys
+base = sys.argv[1]
+def load(name):
+    with open(os.path.join(base, name), encoding="utf-8") as handle:
+        return json.load(handle)
+if not any(item.get("path") == "/data/media/TV" and item.get("accessible") for item in load("rootfolders.json")):
+    raise SystemExit("Sonarr TV root is missing or inaccessible")
+if not any(item.get("name") == "qBittorrent" and item.get("enable") for item in load("downloadclients.json")):
+    raise SystemExit("Sonarr qBittorrent client is missing or disabled")
+if not any(item.get("name") == "Internet Archive (Prowlarr)" for item in load("sonarr-indexers.json")):
+    raise SystemExit("Prowlarr indexer is not synced to Sonarr")
+PY
 
 grep -Fq '<AuthenticationMethod>External</AuthenticationMethod>' /srv/appdata/prowlarr/config.xml \
   || die 'Prowlarr external authentication is not configured.'
@@ -41,6 +65,21 @@ prowlarr_api_key="$(sed -n 's#.*<ApiKey>\([^<]*\)</ApiKey>.*#\1#p' /srv/appdata/
 [[ -n ${prowlarr_api_key} ]] || die 'Prowlarr API key is missing.'
 docker exec -e PROWLARR_API_KEY="${prowlarr_api_key}" prowlarr /bin/sh -c \
   'curl -fsS -H "X-Api-Key: ${PROWLARR_API_KEY}" http://127.0.0.1:9696/api/v1/system/status >/dev/null'
+docker exec -e PROWLARR_API_KEY="${prowlarr_api_key}" prowlarr /bin/sh -c \
+  'curl -fsS -H "X-Api-Key: ${PROWLARR_API_KEY}" http://127.0.0.1:9696/api/v1/applications' >"${verify_dir}/applications.json"
+docker exec -e PROWLARR_API_KEY="${prowlarr_api_key}" prowlarr /bin/sh -c \
+  'curl -fsS -H "X-Api-Key: ${PROWLARR_API_KEY}" http://127.0.0.1:9696/api/v1/indexer' >"${verify_dir}/prowlarr-indexers.json"
+python3 - "${verify_dir}" <<'PY'
+import json, os, sys
+base = sys.argv[1]
+def load(name):
+    with open(os.path.join(base, name), encoding="utf-8") as handle:
+        return json.load(handle)
+if not any(item.get("name") == "Sonarr" and item.get("enable") and item.get("syncLevel") == "fullSync" for item in load("applications.json")):
+    raise SystemExit("Prowlarr Sonarr integration is missing")
+if not any(item.get("name") == "Internet Archive" and item.get("enable") for item in load("prowlarr-indexers.json")):
+    raise SystemExit("Internet Archive indexer is missing or disabled")
+PY
 
 wait_https_status() {
   local host="$1"

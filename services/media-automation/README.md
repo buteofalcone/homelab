@@ -16,7 +16,7 @@ This single mount preserves hardlinks and atomic moves. Jellyfin sees the same T
 make media-automation-bootstrap
 ```
 
-The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr/Prowlarr authentication behind Caddy, and verifies that the applications are healthy. qBittorrent refuses new data when free space drops below `MEDIA_MIN_FREE_GB` (80 GiB by default).
+The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr/Prowlarr authentication behind Caddy, connects the applications, adds Internet Archive, and verifies the complete pipeline. qBittorrent refuses new data when free space drops below `MEDIA_MIN_FREE_GB` (80 GiB by default).
 
 Connect the applications and add the lawful Internet Archive indexer:
 
