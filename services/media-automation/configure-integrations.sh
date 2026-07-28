@@ -145,12 +145,16 @@ if os.environ.get("RESOURCE_ID"):
 with open(sys.argv[2], "w", encoding="utf-8") as handle:
     json.dump(item, handle)
 PY
-if [[ -n ${indexer_id} ]]; then
-  arr_write prowlarr 9696 v1 "${prowlarr_api_key}" PUT "indexer/${indexer_id}" \
-    "${work_dir}/indexer-payload.json" "${work_dir}/indexer-response.json"
-else
-  arr_write prowlarr 9696 v1 "${prowlarr_api_key}" POST indexer \
-    "${work_dir}/indexer-payload.json" "${work_dir}/indexer-response.json"
-fi
+for attempt in {1..3}; do
+  if [[ -n ${indexer_id} ]]; then
+    arr_write prowlarr 9696 v1 "${prowlarr_api_key}" PUT "indexer/${indexer_id}" \
+      "${work_dir}/indexer-payload.json" "${work_dir}/indexer-response.json" && break
+  else
+    arr_write prowlarr 9696 v1 "${prowlarr_api_key}" POST indexer \
+      "${work_dir}/indexer-payload.json" "${work_dir}/indexer-response.json" && break
+  fi
+  (( attempt < 3 )) || die 'Internet Archive indexer validation failed after three attempts.'
+  sleep 5
+done
 
 echo MEDIA_AUTOMATION_INTEGRATIONS_OK
