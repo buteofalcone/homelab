@@ -86,7 +86,12 @@ for table_name in oc_appconfig oc_users oc_filecache; do
   [[ "$(query_scalar "${nextcloud_container}" nextcloud nextcloud "SELECT to_regclass('public.${table_name}') IS NOT NULL;")" == 't' ]] \
     || die "Nextcloud control table is missing after import: ${table_name}"
 done
+for table_name in oc_talk_rooms oc_talk_attendees; do
+  [[ "$(query_scalar "${nextcloud_container}" nextcloud nextcloud "SELECT to_regclass('public.${table_name}') IS NOT NULL;")" == 't' ]] \
+    || die "Nextcloud Talk table is missing after import: ${table_name}"
+done
 printf 'OK   Nextcloud dump imported (%s public tables)\n' "${nextcloud_table_count}"
+printf 'OK   Nextcloud Talk control tables restored\n'
 
 printf 'STEP_IMMICH_TEMP_DATABASE\n'
 docker run -d --rm \
