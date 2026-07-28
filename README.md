@@ -15,7 +15,7 @@ A maintainable single-server homelab for an HP EliteDesk running Ubuntu, Docker 
 
 **Optional application profiles**
 
-- Nextcloud
+- Nextcloud with private family Talk chat
 - Immich
 - Jellyfin
 - Beszel agent
@@ -69,6 +69,7 @@ make install
 
 ```bash
 make nextcloud
+make nextcloud-talk-bootstrap
 make immich
 make jellyfin
 make timemachine-bootstrap

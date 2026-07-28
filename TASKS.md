@@ -127,7 +127,7 @@ Further Time Machine verification is intentionally paused after the successful A
 ## Internal family chat — after initial DR bootstrap
 
 - [x] Confirm Nextcloud Talk is not currently installed
-- [ ] Add a tracked helper to install and enable the `spreed` app
+- [x] Add a tracked helper to install and enable the `spreed` app
 - [ ] Verify private and family group text chat
 - [ ] Verify Nextcloud Talk clients on iOS and Android
 - [ ] Confirm Nextcloud backup and restore coverage includes Talk state

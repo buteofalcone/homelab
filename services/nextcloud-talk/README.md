@@ -8,7 +8,7 @@ Nextcloud Talk provides the private family text chat inside the existing Nextclo
 make nextcloud-talk-bootstrap
 ```
 
-The helper is idempotent. It requires the running Nextcloud 33.x stack, installs or enables the official `spreed` app, and verifies the compatible Talk 23.x release, app signature, diagnostics, and private HTTPS route.
+The helper is idempotent. It requires the running Nextcloud 33.x stack, installs or enables the official `spreed` app, and verifies the compatible Talk 23.x release, app integrity, OCC commands, and private HTTPS route.
 
 Run the read-only checks again with:
 

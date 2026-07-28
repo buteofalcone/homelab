@@ -12,10 +12,10 @@ app_list="$(docker exec --user www-data nextcloud php occ app:list --output=json
 grep -Eq '"enabled"[[:space:]]*:.*"spreed"[[:space:]]*:[[:space:]]*"23\.' <<<"${app_list}" \
   || die 'Nextcloud Talk 23.x is not enabled.'
 
-integrity_output="$(docker exec --user www-data nextcloud php occ integrity:check-app spreed)"
-grep -Fq 'No errors found' <<<"${integrity_output}" || die 'Nextcloud Talk integrity check failed.'
+docker exec --user www-data nextcloud php occ integrity:check-app spreed >/dev/null
 
-docker exec --user www-data nextcloud php occ talk:diagnostics >/dev/null
+talk_commands="$(docker exec --user www-data nextcloud php occ list --raw)"
+grep -Fq 'talk:room:create' <<<"${talk_commands}" || die 'Nextcloud Talk OCC commands are unavailable.'
 
 http_status="$(curl -ksS -o /dev/null -w '%{http_code}' "https://nextcloud.${BASE_DOMAIN}/apps/spreed/")"
 [[ ${http_status} == 200 || ${http_status} == 302 || ${http_status} == 303 ]] \

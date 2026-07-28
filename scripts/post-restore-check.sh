@@ -27,6 +27,7 @@ check 'Immich database accepts connections' docker exec immich-database pg_isrea
 check 'Immich API health' curl -fsS "http://127.0.0.1:${IMMICH_PORT:-2283}/api/server/ping"
 check 'Caddy trusted Homepage HTTPS' curl -fsS --resolve "home.${BASE_DOMAIN}:443:127.0.0.1" "https://home.${BASE_DOMAIN}/"
 check 'Caddy trusted Nextcloud HTTPS' curl -fsS --resolve "nextcloud.${BASE_DOMAIN}:443:127.0.0.1" "https://nextcloud.${BASE_DOMAIN}/status.php"
+check 'Nextcloud Talk application' "${REPO_DIR}/services/nextcloud-talk/verify.sh"
 check 'Caddy trusted Immich HTTPS' curl -fsS --resolve "immich.${BASE_DOMAIN}:443:127.0.0.1" "https://immich.${BASE_DOMAIN}/api/server/ping"
 
 if container_running timemachine; then

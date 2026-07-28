@@ -39,6 +39,9 @@ check "Portainer HTTPS" curl -kfsS "https://127.0.0.1:${PORTAINER_PORT:-9443}"
 check "Caddy trusted HTTPS" curl -fsS --resolve "home.${BASE_DOMAIN}:443:127.0.0.1" "https://home.${BASE_DOMAIN}/"
 
 check_optional_http nextcloud "Nextcloud HTTP" "http://127.0.0.1:${NEXTCLOUD_PORT:-8080}/status.php"
+if container_running nextcloud; then
+  check "Nextcloud Talk" "${REPO_DIR}/services/nextcloud-talk/verify.sh"
+fi
 check_optional_http immich-server "Immich HTTP" "http://127.0.0.1:${IMMICH_PORT:-2283}/api/server/ping"
 check_optional_http jellyfin "Jellyfin HTTP" "http://127.0.0.1:${JELLYFIN_PORT:-8096}/health"
 check_optional_http open-webui "Open WebUI HTTP" "http://127.0.0.1:${OPEN_WEBUI_PORT:-3002}/health"

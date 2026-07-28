@@ -6,6 +6,7 @@ Family devices connect through Tailscale and use normal HTTPS URLs:
 | --- | --- |
 | Homepage | `https://home.butenko.online` |
 | Nextcloud | `https://nextcloud.butenko.online` |
+| Nextcloud Talk | `https://nextcloud.butenko.online/apps/spreed/` |
 | Immich | `https://immich.butenko.online` |
 | Jellyfin | `https://jellyfin.butenko.online` |
 | Butenko AI | `https://ai.butenko.online` |
@@ -14,6 +15,8 @@ Family devices connect through Tailscale and use normal HTTPS URLs:
 Cloudflare DNS-only records resolve these names to the HP Server Tailscale address. Caddy obtains publicly trusted certificates with the DNS challenge. This means client devices need Tailscale, but do not need hosts-file entries, custom DNS configuration, or the old Caddy root certificate.
 
 Each person should use an individual application account. Do not share the server administrator, Portainer, Cockpit, or SSH credentials with family users.
+
+For family chat, install the **Nextcloud Talk** app on iOS or Android and sign in with the same personal Nextcloud account and server URL. The browser version is available under **Talk** inside Nextcloud. Text chat works without separate TURN or High Performance Backend services; calls will be evaluated later.
 
 Administrative services remain available at:
 

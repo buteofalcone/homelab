@@ -34,7 +34,7 @@ Application state and databases are under `/srv/appdata`. User files are under `
 The following Compose services were running:
 
 - Management and routing: `homepage`, `homepage-docker-proxy`, `portainer`, `beszel`, `beszel-agent`, `uptime-kuma`, `caddy`.
-- Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`.
+- Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`, with Talk 23.0.9 enabled inside Nextcloud.
 - Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
 - Media: `jellyfin`.
 - Books: full Calibre 9.11 desktop application and its built-in Content server, both provided by the single `calibre` container.
@@ -98,7 +98,7 @@ The following are deliberately excluded from Git:
 - application databases and user accounts;
 - Nextcloud files, Immich photos, and Jellyfin media;
 - Uptime Kuma monitors, history, and Telegram settings;
-- Portainer, Beszel, Nextcloud, Immich, Jellyfin, Open WebUI, Calibre, and Caddy runtime state;
+- Portainer, Beszel, Nextcloud and Talk, Immich, Jellyfin, Open WebUI, Calibre, and Caddy runtime state;
 - Tailscale device identity and enrollment state.
 
 Git must define how these items are provisioned or restored. Backup and restore, rather than source control, preserve their values.
@@ -115,5 +115,6 @@ On 2026-07-28:
 - backup systemd drift was found and captured in Git without changing the running server.
 - Open WebUI reported healthy, contained one administrator account, reached `qwen/qwen3.5-9b` through the authenticated LM Studio API, and served a trusted HTTPS health response at `ai.butenko.online`.
 - Calibre 9.11 reported healthy, its administration route required authentication, its Content server returned HTTP 200 at `books.butenko.online`, and a generated source document was converted to EPUB and added to the library.
+- Nextcloud Talk 23.0.9 was enabled on Nextcloud 33.0.7; its app integrity, OCC commands, and private HTTPS route passed the tracked verification helper.
 
 No container, firewall rule, package, mount, database, application data, or secret was changed during this audit.
