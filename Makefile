@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify \
+.PHONY: help bootstrap host-bootstrap provision-codex-operator recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -12,6 +12,7 @@ help:
 	@printf '%s\n' \
 	  'make bootstrap      Create .env and generate passwords' \
 	  'make host-bootstrap Install clean Ubuntu host prerequisites (requires sudo)' \
+	  'make provision-codex-operator KEY_FILE=/tmp/key.pub  Create the optional passwordless operator' \
 	  'make recovery-preflight  Read-only clean-host prerequisite checks' \
 	  'make storage-inventory   Read-only disk and /srv/storage inventory' \
 	  'make validate       Validate Docker Compose configuration' \
@@ -57,6 +58,9 @@ bootstrap:
 
 host-bootstrap:
 	@sudo ./scripts/bootstrap-host.sh
+
+provision-codex-operator:
+	@sudo ./scripts/provision-codex-operator.sh "$${KEY_FILE:-}"
 
 recovery-preflight:
 	@./scripts/recovery-preflight.sh

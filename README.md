@@ -54,6 +54,8 @@ Mutable runtime data and secrets never live in Git:
 
 Git is the source of truth for infrastructure definitions and recovery logic. Application databases, user files, monitor history, credentials, and enrollment state are restored from backups or supplied interactively; they are not source-controlled.
 
+An optional key-only `codex-ops` account supports non-interactive maintenance. It is root-equivalent by design and restricted to Tailscale source addresses; see [docs/codex-operator.md](docs/codex-operator.md) before provisioning it.
+
 ## Deployment on a prepared host
 
 ```bash
