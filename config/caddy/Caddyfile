@@ -80,3 +80,11 @@ sonarr.{$BASE_DOMAIN} {
 	}
 	reverse_proxy sonarr:8989
 }
+
+prowlarr.{$BASE_DOMAIN} {
+	import common
+	basic_auth {
+		{$MEDIA_ADMIN_USER} {$MEDIA_ADMIN_HASH}
+	}
+	reverse_proxy prowlarr:9696
+}

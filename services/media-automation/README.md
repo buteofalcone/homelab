@@ -1,6 +1,6 @@
 # Media automation
 
-This module provides owner-only qBittorrent and Sonarr services. It intentionally does not configure indexers, series monitoring, or automatic downloads while the temporary 500 GB HDD is in use.
+This module provides owner-only qBittorrent, Sonarr, and Prowlarr services. Prowlarr centralizes indexers and syncs them to Sonarr. Indexer credentials and application API keys remain runtime secrets and are never committed to Git.
 
 Both containers mount `/srv/storage` as `/data`:
 
@@ -16,11 +16,12 @@ This single mount preserves hardlinks and atomic moves. Jellyfin sees the same T
 make media-automation-bootstrap
 ```
 
-The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr authentication behind Caddy, and verifies that both applications are empty and idle.
+The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr/Prowlarr authentication behind Caddy, and verifies that the applications are healthy. qBittorrent refuses new data when free space drops below `MEDIA_MIN_FREE_GB` (80 GiB by default).
 
 Owner URLs:
 
 - `https://torrent.butenko.online`
 - `https://sonarr.butenko.online`
+- `https://prowlarr.butenko.online`
 
-Do not forward TCP/UDP 6881 on the router until the download policy is deliberately reviewed. Automatic downloads remain deferred until the final 8–16 TB HDD is installed.
+Do not forward TCP/UDP 6881 on the router until the download policy is deliberately reviewed. On the temporary disk, use only a small lawful test series and keep high-volume monitoring disabled. After the 8–16 TB migration, adjust the free-space floor and policy without changing container paths.

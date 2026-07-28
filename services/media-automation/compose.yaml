@@ -58,3 +58,27 @@ services:
       start_period: 60s
     labels:
       com.centurylinklabs.watchtower.enable: "false"
+
+  prowlarr:
+    image: "${PROWLARR_IMAGE:-lscr.io/linuxserver/prowlarr@sha256:2f3d31307beba3ba2dd226d191f5f5c14ee3b4d8b49277c64683f5ed97083179}"
+    container_name: prowlarr
+    restart: unless-stopped
+    profiles:
+      - media-automation
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Europe/Madrid}"
+      UMASK: "002"
+    volumes:
+      - /srv/appdata/prowlarr:/config
+    networks:
+      - homelab
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:9696/ping >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"

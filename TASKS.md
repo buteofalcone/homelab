@@ -128,7 +128,7 @@ Further Time Machine verification is intentionally paused after the successful A
 
 - [x] Confirm Nextcloud Talk is not currently installed
 - [x] Add a tracked helper to install and enable the `spreed` app
-- [ ] Verify private and family group text chat
+- [x] Verify private and family group text chat
 - [ ] Verify Nextcloud Talk clients on iOS and Android
 - [x] Confirm Nextcloud backup and restore coverage includes Talk state
 - [ ] Test calls before deciding whether TURN or the High Performance Backend is needed
@@ -142,16 +142,17 @@ Further Time Machine verification is intentionally paused after the successful A
 
 ## Media automation — after initial DR bootstrap
 
-Installation and connection testing may proceed before September. Automatic or high-volume downloading stays disabled until the larger HDD is installed.
+Installation, indexer integration, and one small lawful automatic-download test may proceed before September. High-volume downloading stays disabled until the larger HDD is installed.
 
 - [ ] Deploy qBittorrent with `/srv/storage` mounted consistently as `/data`
 - [ ] Deploy Sonarr with the same `/data` path for hardlink imports
 - [ ] Configure `/data/downloads/torrents` and `/data/media/TV`
-- [ ] Add Prowlarr if centralized indexer management is required
+- [ ] Deploy Prowlarr for centralized indexer management
 - [ ] Connect Sonarr to qBittorrent with a dedicated category
 - [ ] Verify Jellyfin discovers imported episodes
 - [ ] Add monitoring, backup coverage, private HTTPS, and access controls
-- [ ] Enable automatic downloading only after the larger HDD is verified
+- [ ] Verify one small lawful automatic download with the temporary free-space floor
+- [ ] Remove the temporary low-volume policy only after the larger HDD is verified
 
 ## Jellyfin
 

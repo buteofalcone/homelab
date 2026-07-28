@@ -58,6 +58,6 @@ Current sequence:
 1. Disaster Recovery bootstrap, secret inventory, and application-aware restore.
 2. Git-native agentic workflows with Open WebUI on the HP Server and a Tailscale-only model API on SilverBrick; n8n is intentionally excluded.
 3. Full Calibre with EPUB conversion and iPad library access.
-4. Nextcloud Talk as the first internal family-chat solution.
-5. qBittorrent, Sonarr, and optional Prowlarr may be installed for controlled testing; automatic downloading waits for the larger disk.
+4. Nextcloud Talk as the verified internal family-chat solution.
+5. qBittorrent, Sonarr, and Prowlarr may run one small lawful automatic-download test with a free-space floor; high-volume automation waits for the larger disk.
 6. In September 2026: larger HDD, external backup, and AdGuard Home after router access becomes available.

@@ -11,12 +11,17 @@ load_env
 readonly password_file=/etc/homelab/qbittorrent-password
 readonly caddy_env=/etc/homelab/media-caddy.env
 readonly media_user="${MEDIA_ADMIN_USER:-butenko}"
+readonly min_free_gb="${MEDIA_MIN_FREE_GB:-80}"
+
+[[ ${min_free_gb} =~ ^[1-9][0-9]*$ ]] || die 'MEDIA_MIN_FREE_GB must be a positive integer.'
+readonly min_free_bytes="$((min_free_gb * 1024 * 1024 * 1024))"
 
 mountpoint -q /srv/storage || die '/srv/storage is not a mounted filesystem.'
 install -d -m 0700 /etc/homelab
 install -d -m 0750 -o "${PUID}" -g "${PGID}" \
   /srv/appdata/qbittorrent \
   /srv/appdata/sonarr \
+  /srv/appdata/prowlarr \
   /srv/storage/downloads/torrents \
   /srv/storage/downloads/incomplete \
   /srv/storage/media/TV
@@ -61,7 +66,7 @@ unset media_confirmation media_hash
 
 cd "${repo_dir}"
 compose --profile media-automation config --quiet
-compose --profile media-automation pull qbittorrent sonarr
+compose --profile media-automation pull qbittorrent sonarr prowlarr
 compose --profile media-automation up -d qbittorrent
 
 for attempt in {1..30}; do
@@ -91,9 +96,9 @@ if ! qb_login "${media_user}" "${media_password}"; then
   qb_login admin "${temporary_password}" || die 'Could not authenticate to fresh qBittorrent.'
 fi
 
-docker exec -e MEDIA_ADMIN_USER="${media_user}" -e BASE_DOMAIN="${BASE_DOMAIN}" qbittorrent /bin/sh -c '
+docker exec -e MEDIA_ADMIN_USER="${media_user}" -e BASE_DOMAIN="${BASE_DOMAIN}" -e MIN_FREE_BYTES="${min_free_bytes}" qbittorrent /bin/sh -c '
   password="$(cat /run/secrets/qbittorrent-password)"
-  json="$(printf '\''{"web_ui_username":"%s","web_ui_password":"%s","save_path":"/data/downloads/torrents","temp_path":"/data/downloads/incomplete","temp_path_enabled":true,"start_paused_enabled":true,"web_ui_host_header_validation_enabled":true,"web_ui_domain_list":"torrent.%s","web_ui_csrf_protection_enabled":true,"web_ui_clickjacking_protection_enabled":true,"upnp":false,"random_port":false,"listen_port":6881}'\'' "${MEDIA_ADMIN_USER}" "${password}" "${BASE_DOMAIN}")"
+  json="$(printf '\''{"web_ui_username":"%s","web_ui_password":"%s","save_path":"/data/downloads/torrents","temp_path":"/data/downloads/incomplete","temp_path_enabled":true,"start_paused_enabled":false,"disk_free_space_limit":%s,"web_ui_host_header_validation_enabled":true,"web_ui_domain_list":"torrent.%s","web_ui_csrf_protection_enabled":true,"web_ui_clickjacking_protection_enabled":true,"upnp":false,"random_port":false,"listen_port":6881}'\'' "${MEDIA_ADMIN_USER}" "${password}" "${MIN_FREE_BYTES}" "${BASE_DOMAIN}")"
   curl -fsS --cookie /tmp/qb-cookie --header "Referer: http://localhost:8080" \
     --data-urlencode "json=${json}" http://127.0.0.1:8080/api/v2/app/setPreferences
   rm -f /tmp/qb-cookie
@@ -102,28 +107,31 @@ unset media_password temporary_password
 
 # Recreating removes the log that contained the one-time password.
 compose --profile media-automation up -d --force-recreate qbittorrent
-compose --profile media-automation up -d sonarr
+compose --profile media-automation up -d sonarr prowlarr
 
 for attempt in {1..60}; do
-  [[ -s /srv/appdata/sonarr/config.xml ]] && break
+  [[ -s /srv/appdata/sonarr/config.xml && -s /srv/appdata/prowlarr/config.xml ]] && break
   sleep 2
 done
 [[ -s /srv/appdata/sonarr/config.xml ]] || die 'Sonarr did not create config.xml.'
-compose --profile media-automation stop sonarr
+[[ -s /srv/appdata/prowlarr/config.xml ]] || die 'Prowlarr did not create config.xml.'
+compose --profile media-automation stop sonarr prowlarr
 
 set_xml_value() {
-  local key="$1"
-  local value="$2"
-  local file=/srv/appdata/sonarr/config.xml
+  local file="$1"
+  local key="$2"
+  local value="$3"
   if grep -q "<${key}>" "${file}"; then
     sed -i -E "s#<${key}>[^<]*</${key}>#<${key}>${value}</${key}>#" "${file}"
   else
     sed -i "s#</Config>#  <${key}>${value}</${key}>\n</Config>#" "${file}"
   fi
 }
-set_xml_value AuthenticationMethod External
-set_xml_value AuthenticationType Enabled
-compose --profile media-automation up -d sonarr
+for config_file in /srv/appdata/sonarr/config.xml /srv/appdata/prowlarr/config.xml; do
+  set_xml_value "${config_file}" AuthenticationMethod External
+  set_xml_value "${config_file}" AuthenticationType Enabled
+done
+compose --profile media-automation up -d sonarr prowlarr
 
 install -m 0644 -o "${PUID}" -g "${PGID}" \
   "${repo_dir}/config/homepage/services.yaml" /srv/appdata/homepage/services.yaml

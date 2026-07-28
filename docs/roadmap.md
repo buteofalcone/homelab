@@ -78,11 +78,10 @@ Conversion must operate on copied input files and write new EPUB output; it must
 
 ### 4. Internal family chat
 
-Use **Nextcloud Talk** first because Nextcloud and its accounts already exist. The current server audit confirms that the Talk app (`spreed`) is not installed yet.
+**Nextcloud Talk** is installed because it reuses the existing Nextcloud accounts, HTTPS, database recovery, and mobile applications. Private text chat between two family accounts was verified on 2026-07-28.
 
-Planned work:
+Remaining work:
 
-- add a tracked, repeatable helper for installing and enabling the Talk app;
 - verify private conversations and a family group chat on the web, iOS, and Android clients;
 - verify that Talk state is covered by the existing Nextcloud database and application-data recovery path;
 - test text chat first, then voice and video calls;
@@ -90,7 +89,7 @@ Planned work:
 
 ### 5. qBittorrent and Sonarr media automation
 
-The services may be installed and tested after the initial Disaster Recovery bootstrap. Automatic or high-volume downloading remains disabled until the larger HDD is available, because the temporary disk has no hard application quota.
+The services may be installed and tested after the initial Disaster Recovery bootstrap. One small lawful automatic-download test is allowed on the temporary disk. qBittorrent keeps a configurable free-space floor; high-volume monitoring remains deferred until the larger HDD is available.
 
 Order and dependencies:
 
@@ -99,10 +98,11 @@ Order and dependencies:
 3. Mount `/srv/storage` into qBittorrent as `/data`; download to `/data/downloads/torrents`.
 4. Deploy Sonarr with config under `/srv/appdata/sonarr` and the same `/data` mount.
 5. Configure Sonarr's TV root as `/data/media/TV` so imports can use hardlinks on the same ext4 filesystem.
-6. Add **Prowlarr** if centralized indexer management is required; Sonarr still needs lawful indexer or feed configuration to discover releases.
+6. Deploy **Prowlarr** for centralized indexer management; only lawful indexers or feeds may be configured.
 7. Connect Sonarr to qBittorrent with a dedicated category and credentials stored outside Git.
 8. Verify Jellyfin sees imported episodes through its existing read-only `/srv/storage/media` mount.
 9. Add Caddy DNS-only admin routes, individual authentication, Uptime Kuma monitors, and backup coverage for service configuration.
+10. Run one small test and confirm that the download is imported with a hardlink and discovered by Jellyfin.
 
 If a commercial VPN is later required for qBittorrent, use a dedicated network container and route only qBittorrent through it. Do not change the default network route for the entire server.
 

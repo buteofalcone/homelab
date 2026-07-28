@@ -76,3 +76,10 @@
         description: Owner-only TV library automation
         server: local
         container: sonarr
+
+    - Prowlarr:
+        icon: prowlarr.svg
+        href: https://prowlarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Owner-only indexer management
+        server: local
+        container: prowlarr
