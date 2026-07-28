@@ -87,27 +87,50 @@ PY
 )"
 sonarr_write PUT "episode/${episode_id}" "${work_dir}/episode-payload.json" "${work_dir}/episode-response.json"
 
-echo STEP_PUBLIC_DOMAIN_RELEASE
-sonarr_get "release?episodeId=${episode_id}" "${work_dir}/releases.json"
-python3 - "${work_dir}/releases.json" "${work_dir}/release-payload.json" <<'PY'
+sonarr_get "queue?seriesIds=${series_id}&includeUnknownSeriesItems=true&page=1&pageSize=100" "${work_dir}/queue.json"
+already_present="$(python3 - "${work_dir}/episode-response.json" "${work_dir}/queue.json" <<'PY'
 import json, sys
 with open(sys.argv[1], encoding="utf-8") as handle:
-    items = json.load(handle)
-candidates = [
-    item for item in items
-    if "the rivals" in item.get("title", "").lower()
-    and "internet archive" in item.get("indexer", "").lower()
-    and 1_000_000 <= item.get("size", 0) <= 1_000_000_000
-]
-if len(candidates) != 1:
-    summary = [(item.get("title"), item.get("size"), item.get("rejections")) for item in candidates]
-    raise SystemExit(f"Expected one small Internet Archive release, found {len(candidates)}: {summary}")
-item = candidates[0]
-item["downloadAllowed"] = True
-with open(sys.argv[2], "w", encoding="utf-8") as handle:
-    json.dump(item, handle)
-print(f"Selected {item['title']} ({item['size']} bytes)")
+    episode = json.load(handle)
+with open(sys.argv[2], encoding="utf-8") as handle:
+    queue = json.load(handle)
+queued = any(item.get("episodeId") == episode["id"] for item in queue.get("records", []))
+print("yes" if episode.get("hasFile") or queued else "no")
 PY
-sonarr_write POST release "${work_dir}/release-payload.json" "${work_dir}/release-response.json"
+)"
+
+if [[ ${already_present} == yes ]]; then
+  echo STEP_PUBLIC_DOMAIN_RELEASE_ALREADY_PRESENT
+else
+  echo STEP_PUBLIC_DOMAIN_RELEASE_PUSH
+  sonarr_get indexer "${work_dir}/indexers.json"
+  sonarr_get downloadclient "${work_dir}/download-clients.json"
+  python3 - "${work_dir}/indexers.json" "${work_dir}/download-clients.json" "${work_dir}/release-payload.json" <<'PY'
+import json, sys
+
+with open(sys.argv[1], encoding="utf-8") as handle:
+    indexer = next(item for item in json.load(handle) if "internet archive" in item.get("name", "").lower())
+with open(sys.argv[2], encoding="utf-8") as handle:
+    client = next(item for item in json.load(handle) if item.get("implementation") == "QBittorrent")
+
+payload = {
+    "title": "The.Adventures.of.Ozzie.and.Harriet.S01E01.The.Rivals.480p.WEB-DL.x264",
+    "size": 286244644,
+    "downloadUrl": "https://archive.org/download/season-1-episode-1/season-1-episode-1_archive.torrent",
+    "infoUrl": "https://archive.org/details/season-1-episode-1",
+    "publishDate": "2019-01-01T00:00:00Z",
+    "protocol": "torrent",
+    "indexerId": indexer["id"],
+    "indexer": indexer["name"],
+    "downloadClientId": client["id"],
+}
+if not 1_000_000 <= payload["size"] <= 1_000_000_000:
+    raise SystemExit("Public-domain test release exceeds the 1 GB safety limit")
+with open(sys.argv[3], "w", encoding="utf-8") as handle:
+    json.dump(payload, handle)
+print(f"Selected exact Internet Archive episode ({payload['size']} bytes)")
+PY
+  sonarr_write POST release/push "${work_dir}/release-payload.json" "${work_dir}/release-response.json"
+fi
 
 echo MEDIA_PUBLIC_DOMAIN_TEST_STARTED
