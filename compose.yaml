@@ -13,6 +13,7 @@ include:
   - ./services/timemachine/compose.yaml
   - ./services/open-webui/compose.yaml
   - ./services/calibre/compose.yaml
+  - ./services/media-automation/compose.yaml
 
 networks:
   homelab:

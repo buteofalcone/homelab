@@ -15,6 +15,7 @@ services:
     volumes:
       - /opt/homelab/config/caddy:/etc/caddy:ro
       - /etc/homelab/caddy.env:/run/secrets/caddy.env:ro
+      - /etc/homelab/media-caddy.env:/run/secrets/media-caddy.env:ro
       - /srv/appdata/caddy/data:/data
       - /srv/appdata/caddy/config:/config
     networks:

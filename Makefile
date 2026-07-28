@@ -1,10 +1,10 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
-PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books
+PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile media-automation
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -32,6 +32,8 @@ help:
 	  'make calibre        Start the provisioned Calibre services' \
 	  'make calibre-import BOOK=/srv/storage/incoming/books/file  Convert and import one book' \
 	  'make calibre-verify Run disposable Calibre conversion and service checks' \
+	  'make media-automation-bootstrap  Provision idle qBittorrent and Sonarr' \
+	  'make media-automation-verify  Verify media paths, auth and idle state' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
 	  'make update         Update base services only' \
@@ -116,6 +118,12 @@ calibre-import:
 calibre-verify:
 	@./services/calibre/verify.sh
 
+media-automation-bootstrap:
+	@sudo ./services/media-automation/bootstrap.sh
+
+media-automation-verify:
+	@sudo ./services/media-automation/verify.sh
+
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps
 
@@ -133,7 +141,7 @@ update:
 	@./scripts/update.sh
 
 update-all:
-	@./scripts/update.sh nextcloud immich jellyfin beszel-agent agents books
+	@./scripts/update.sh nextcloud immich jellyfin beszel-agent agents books media-automation
 
 doctor:
 	@./scripts/doctor.sh
@@ -176,7 +184,7 @@ configure-cloudflare-dns:
 
 caddy-reload:
 	@$(COMPOSE) exec -w /etc/caddy caddy /bin/sh -c \
-	  'set -a; . /run/secrets/caddy.env; set +a; exec caddy reload --config Caddyfile'
+	  'set -a; . /run/secrets/caddy.env; [ ! -f /run/secrets/media-caddy.env ] || . /run/secrets/media-caddy.env; set +a; exec caddy reload --config Caddyfile'
 
 stop:
 	@$(COMPOSE) $(PROFILES_ALL) stop

@@ -62,3 +62,17 @@
         description: Convert and manage ebooks
         server: local
         container: calibre
+
+    - qBittorrent:
+        icon: qbittorrent.svg
+        href: https://torrent.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Owner-only download client
+        server: local
+        container: qbittorrent
+
+    - Sonarr:
+        icon: sonarr.svg
+        href: https://sonarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Owner-only TV library automation
+        server: local
+        container: sonarr

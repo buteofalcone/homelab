@@ -1,0 +1,60 @@
+services:
+  qbittorrent:
+    image: "${QBITTORRENT_IMAGE:-lscr.io/linuxserver/qbittorrent@sha256:b024436f8ca665d16d9a997d26fd27fdf867ee5566ba09f32764e7b2976d3e02}"
+    container_name: qbittorrent
+    restart: unless-stopped
+    profiles:
+      - media-automation
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Europe/Madrid}"
+      UMASK: "002"
+      WEBUI_PORT: "8080"
+      TORRENTING_PORT: "6881"
+    volumes:
+      - /srv/appdata/qbittorrent:/config
+      - /srv/storage:/data
+      - /etc/homelab/qbittorrent-password:/run/secrets/qbittorrent-password:ro
+    ports:
+      - "6881:6881/tcp"
+      - "6881:6881/udp"
+    networks:
+      - homelab
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          status="$$(curl --silent --output /dev/null --write-out '%{http_code}' http://127.0.0.1:8080/)" &&
+          { [ "$${status}" = 200 ] || [ "$${status}" = 403 ]; }
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+
+  sonarr:
+    image: "${SONARR_IMAGE:-lscr.io/linuxserver/sonarr@sha256:24acea2956a0ccb11f103877d9f4f8576600fb34bff34820ed749c2256dab89f}"
+    container_name: sonarr
+    restart: unless-stopped
+    profiles:
+      - media-automation
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Europe/Madrid}"
+      UMASK: "002"
+    volumes:
+      - /srv/appdata/sonarr:/config
+      - /srv/storage:/data
+    networks:
+      - homelab
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://127.0.0.1:8989/ping >/dev/null"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
