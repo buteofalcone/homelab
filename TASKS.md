@@ -83,7 +83,8 @@ Further Time Machine verification is intentionally paused after the successful A
 
 - [x] Add a read-only host prerequisite check
 - [x] Create an offline recovery-secret inventory template without secret values
-- [ ] Implement an idempotent clean-Ubuntu host bootstrap
+- [x] Implement an idempotent clean-Ubuntu host package bootstrap
+- [ ] Orchestrate Tailscale enrollment handoff, storage verification, secrets, restore, and service verification from one entry point
 - [ ] Add a safety-gated storage and `/etc/fstab` runbook without automatic formatting
 - [ ] Automate Nextcloud PostgreSQL import and integrity verification
 - [ ] Automate Immich PostgreSQL import and integrity verification

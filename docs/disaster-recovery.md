@@ -17,7 +17,24 @@ The repository recreates infrastructure. Verified backups restore mutable applic
 - Containers and restore jobs must not start until `/srv/storage` is confirmed as a separate mount.
 - Existing working services are not changed merely to make the repository structure look cleaner.
 
-## Phase 1: host preflight
+## Phase 1: host packages and preflight
+
+On a clean Ubuntu 26.04 x86_64 installation, create the intended administrator account, clone this repository at `/opt/homelab`, and run:
+
+```bash
+cd /opt/homelab
+sudo make host-bootstrap
+```
+
+The host bootstrap is idempotent. It installs the baseline host packages, Docker Engine and Compose from Docker's official Ubuntu repository, and Tailscale from Tailscale's official Ubuntu repository. It enables Docker, containerd, Tailscale, Cockpit, SSH, SMART monitoring, and Avahi.
+
+The command refuses unsupported operating systems, an unexpected repository path, or conflicting Docker packages. It does not enroll Tailscale, configure RDP credentials, create `.env`, start containers, select a disk, format storage, or edit `/etc/fstab`.
+
+After the command completes, enroll Tailscale explicitly:
+
+```bash
+sudo tailscale up
+```
 
 After Ubuntu packages and authenticated Tailscale enrollment are provisioned, run:
 
@@ -34,10 +51,10 @@ This command is read-only. It checks the operating system, architecture, require
 
 The following work is intentionally not automated yet:
 
-1. Install the clean-host package set from official repositories.
-2. Enroll the server in Tailscale through an authenticated owner-controlled action.
-3. Identify and mount the correct storage device using the future safety-gated storage runbook.
-4. Recreate `/etc/homelab` secrets from the offline inventory.
+1. Enroll the server in Tailscale through an authenticated owner-controlled action.
+2. Identify and mount the correct storage device using the future safety-gated storage runbook.
+3. Recreate `/etc/homelab` secrets from the offline inventory.
+4. Configure Cockpit and RDP after the server has its Tailscale address.
 5. Initialize or connect Restic and restore mutable data.
 6. Import Nextcloud and Immich PostgreSQL dumps with application-aware checks.
 7. Start services and run a single post-restore verification command.
