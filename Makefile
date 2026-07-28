@@ -127,6 +127,9 @@ media-automation-verify:
 media-automation-connect:
 	@sudo ./services/media-automation/configure-integrations.sh
 
+media-automation-test:
+	@sudo ./services/media-automation/test-public-domain-episode.sh
+
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps
 

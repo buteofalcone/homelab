@@ -26,6 +26,10 @@ make media-automation-connect
 
 This idempotently creates the `/data/media/TV` root, the `tv-sonarr` qBittorrent download client, a full-sync Prowlarr application, and the public Internet Archive indexer. The qBittorrent password and Arr API keys are read only from runtime secret/config files.
 
+## Small public-domain test
+
+`make media-automation-test` adds *The Adventures of Ozzie & Harriet* unmonitored, enables only S01E01 “The Rivals”, selects the single Internet Archive release below 1 GB, and starts that download. The helper refuses to run below the configured free-space floor and never selects the 221 GB complete-series pack. Festival Films lists “The Rivals” in its public-domain television catalog.
+
 Owner URLs:
 
 - `https://torrent.butenko.online`
