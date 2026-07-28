@@ -14,4 +14,16 @@ Retention:
 - 5 weekly snapshots
 - 12 monthly snapshots
 
+## Verification
+
+Run the read-only repository and dump audit:
+
+```bash
+make verify-backup
+```
+
+It lists recent snapshots, runs `restic check`, and validates the compressed Nextcloud and Immich PostgreSQL dumps without importing or modifying them.
+
+This audit completed successfully on 2026-07-28. The scheduled backup job also completed successfully that morning.
+
 HDD-resident Nextcloud files, Immich photos and Jellyfin media are not copied into the Restic repository on the same HDD. Such a copy would not protect against HDD loss. Back these directories up to an external disk, another machine or cloud object storage.

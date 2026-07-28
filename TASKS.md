@@ -51,10 +51,11 @@ This backlog reflects the server audit updated on 2026-07-27. A checked item mea
 - [x] Confirm `homelab-backup.timer` is installed and active
 - [x] Review the latest backup service result and logs without exposing secrets
 - [x] Confirm the latest scheduled Restic job exited successfully
-- [ ] Independently verify that the Restic repository is initialized and readable
-- [ ] Verify recent snapshots and PostgreSQL dumps without relying only on the timer exit status
-- [ ] Perform a test restore into `/srv/storage/restores`
-- [ ] Document the restore result and recovery time
+- [x] Independently verify that the Restic repository is initialized and readable
+- [x] Verify recent snapshots and PostgreSQL dumps without relying only on the timer exit status
+- [x] Perform a targeted test restore into `/srv/storage/restores`
+- [x] Document the targeted restore result
+- [ ] Measure and document a complete application recovery time
 - [ ] Store the Restic password securely off-server
 - [ ] Add an external or off-site backup target
 - [ ] Add backup failure and stale-snapshot alerts

@@ -5,7 +5,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 .DEFAULT_GOAL := help
 
 .PHONY: help bootstrap validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap \
-        ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore \
+        ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore \
         configure-cloudflare-dns caddy-reload stop down
 
 help:
@@ -30,6 +30,8 @@ help:
 	  'make install-monitoring-timer  Install the 15-minute health timer' \
 	  'make backup         Run Restic backup' \
 	  'make snapshots      List Restic snapshots' \
+	  'make verify-backup  Check Restic and PostgreSQL dumps' \
+	  'make verify-restore Restore and verify a small safe sample' \
 	  'make configure-cloudflare-dns  Create private service DNS records' \
 	  'make caddy-reload   Reload Caddyfile without downtime'
 
@@ -99,6 +101,12 @@ backup:
 
 snapshots:
 	@sudo ./scripts/restic.sh snapshots
+
+verify-backup:
+	@sudo ./scripts/verify-backup.sh
+
+verify-restore:
+	@sudo ./scripts/verify-restore.sh
 
 restore:
 	@sudo ./scripts/restore.sh "$${SNAPSHOT:-latest}" "$${TARGET:-/srv/storage/restores/latest}"

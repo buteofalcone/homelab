@@ -112,9 +112,13 @@ sudo ./scripts/restic-init.sh
 sudo ./scripts/install-backup-timer.sh
 make backup
 make snapshots
+make verify-backup
+make verify-restore
 ```
 
 The local Restic repository protects application state on the SSD. It does not protect HDD-resident files or photos from failure of the HDD itself. Add an external or off-site backup before treating Nextcloud or Immich as the only copy of important data.
+
+`make verify-restore` restores only the repository README and the two PostgreSQL dumps into a new timestamped directory under `/srv/storage/restores`. It never overwrites live paths and intentionally retains the result for review.
 
 See `docs/` for the observed state, target architecture, reproducibility audit, storage, backup, restore, remote management, and monitoring details.
 

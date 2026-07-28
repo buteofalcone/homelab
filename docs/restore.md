@@ -16,3 +16,21 @@ For application recovery:
 6. Run application-specific integrity checks.
 
 Never overwrite live data directly from Restic without inspecting the restored tree.
+
+## Safe verification restore
+
+```bash
+make verify-restore
+```
+
+This restores only `README.md` and the Nextcloud and Immich SQL dumps into a new timestamped directory under `/srv/storage/restores`. It verifies that all three files are non-empty and that both compressed dumps pass `gzip -t`. It does not stop services or write into live application paths.
+
+The first smoke restore completed successfully on 2026-07-28 at:
+
+```text
+/srv/storage/restores/restic-smoke-20260728-115000
+```
+
+The directory is intentionally retained for inspection. Removing it later is a separate cleanup action.
+
+This proves targeted Restic recovery and dump readability. It does not yet prove a complete application-aware restore with database import and application integrity checks.

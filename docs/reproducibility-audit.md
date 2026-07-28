@@ -32,7 +32,7 @@ A runtime-only setting is acceptable only when it is one of the following:
 - There is no single bootstrap command for an empty Ubuntu installation. Docker, Git, Tailscale, Cockpit, GNOME Remote Desktop dependencies, SMART tools, Restic, mounts, groups, and timers are not provisioned as one workflow.
 - Storage discovery and `/etc/fstab` creation are intentionally manual and are not yet covered by a safe recovery runbook.
 - `restore.sh` only extracts a Restic snapshot. It does not stop services, restore live paths, import Nextcloud and Immich SQL dumps, repair ownership, start profiles, or run application integrity checks.
-- Restic snapshot readability and an end-to-end test restore have not been independently verified.
+- Restic repository integrity and a targeted file/dump restore are verified. A complete application-aware restore with database import remains untested.
 - The Restic repository is on the same temporary HDD as user data. There is no external or off-site copy.
 - HDD-resident Nextcloud files, Immich photos, and Jellyfin media are not protected by the local Restic job.
 - The Restic password and other recovery secrets need a verified offline inventory. Their values must never be committed.

@@ -77,11 +77,13 @@ Time Machine SMB listens on TCP 445 for trusted-LAN and Tailscale clients. Conne
 
 ## Backup
 
-`homelab-backup.timer` is active and the most recent job completed successfully on 2026-07-27. The installed schedule is 03:30 with up to 10 minutes of randomized delay; this version has now been captured in Git.
+`homelab-backup.timer` is active and the most recent job completed successfully on 2026-07-28. The installed schedule is 03:30 with up to 10 minutes of randomized delay; this version is captured in Git.
 
 The job creates logical PostgreSQL dumps and stores a local Restic snapshot on the same HDD. This protects SSD application state from an SSD failure, but does not protect against failure, loss, or corruption of the HDD itself.
 
-Snapshot readability and a complete application restore have not yet been independently tested. Until that test succeeds and an external/off-site copy exists, disaster recovery is **not complete**.
+Repository integrity, recent snapshots, PostgreSQL dumps, and a targeted restore were independently verified on 2026-07-28. Restic successfully restored the repository README and both compressed database dumps into `/srv/storage/restores/restic-smoke-20260728-115000`; both dumps passed `gzip -t`.
+
+A complete application-aware restore and an external/off-site copy are still missing. Disaster recovery is therefore **not complete**.
 
 ## Runtime state that does not belong in Git
 
