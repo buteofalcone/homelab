@@ -42,10 +42,23 @@ prowlarr_api_key="$(sed -n 's#.*<ApiKey>\([^<]*\)</ApiKey>.*#\1#p' /srv/appdata/
 docker exec -e PROWLARR_API_KEY="${prowlarr_api_key}" prowlarr /bin/sh -c \
   'curl -fsS -H "X-Api-Key: ${PROWLARR_API_KEY}" http://127.0.0.1:9696/api/v1/system/status >/dev/null'
 
-curl -fsS --resolve "torrent.${BASE_DOMAIN}:443:127.0.0.1" "https://torrent.${BASE_DOMAIN}/" >/dev/null
-sonarr_status="$(curl -sS -o /dev/null -w '%{http_code}' --resolve "sonarr.${BASE_DOMAIN}:443:127.0.0.1" "https://sonarr.${BASE_DOMAIN}/")"
-[[ ${sonarr_status} == 401 ]] || die "Unexpected unauthenticated Sonarr status: ${sonarr_status}"
-prowlarr_status="$(curl -sS -o /dev/null -w '%{http_code}' --resolve "prowlarr.${BASE_DOMAIN}:443:127.0.0.1" "https://prowlarr.${BASE_DOMAIN}/")"
-[[ ${prowlarr_status} == 401 ]] || die "Unexpected unauthenticated Prowlarr status: ${prowlarr_status}"
+wait_https_status() {
+  local host="$1"
+  local expected="$2"
+  local status
+  for attempt in {1..60}; do
+    status="$(curl -sS -o /dev/null -w '%{http_code}' \
+      --resolve "${host}:443:127.0.0.1" "https://${host}/" 2>/dev/null || true)"
+    [[ ${status} == "${expected}" ]] && return 0
+    sleep 2
+  done
+  die "Unexpected HTTPS status for ${host}: ${status:-unavailable}; expected ${expected}."
+}
+
+# A newly added hostname may need several seconds for its first ACME DNS-01
+# certificate. Do not fail the bootstrap while Caddy is still obtaining it.
+wait_https_status "torrent.${BASE_DOMAIN}" 200
+wait_https_status "sonarr.${BASE_DOMAIN}" 401
+wait_https_status "prowlarr.${BASE_DOMAIN}" 401
 
 echo MEDIA_AUTOMATION_VERIFY_OK
