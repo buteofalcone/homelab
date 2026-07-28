@@ -4,13 +4,14 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap \
+.PHONY: help bootstrap recovery-preflight validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore \
         configure-cloudflare-dns caddy-reload stop down
 
 help:
 	@printf '%s\n' \
 	  'make bootstrap      Create .env and generate passwords' \
+	  'make recovery-preflight  Read-only clean-host prerequisite checks' \
 	  'make validate       Validate Docker Compose configuration' \
 	  'make install        Create host directories and start base services' \
 	  'make base           Start management services and Caddy' \
@@ -37,6 +38,9 @@ help:
 
 bootstrap:
 	@./scripts/bootstrap.sh
+
+recovery-preflight:
+	@./scripts/recovery-preflight.sh
 
 validate:
 	@./scripts/validate.sh

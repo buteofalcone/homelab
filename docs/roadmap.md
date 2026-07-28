@@ -49,23 +49,38 @@ The SilverBrick LLM runtime is not yet selected. Ollama or another OpenAI-compat
 
 Core n8n workflows must not make server administration depend on SilverBrick being online.
 
-### 3. EPUB library for iPad
+### 3. Full Calibre and EPUB library for iPad
 
-Start with **Calibre-Web**, not the full graphical Calibre application. Calibre-Web provides a browser library, EPUB downloads, and an OPDS catalog while remaining suitable for Docker and headless administration.
+Deploy the **full Calibre package**, not Calibre-Web. The primary requirement is server-side conversion to EPUB with Calibre's command-line tools. Calibre's Content server will provide browser access to the library without removing the conversion and metadata-maintenance capabilities.
 
 Planned components and dependencies:
 
-- `services/calibre-web/` with Docker Compose and a dedicated profile;
-- application state under `/srv/appdata/calibre-web`;
+- `services/calibre/` with Docker Compose and a dedicated profile;
+- full Calibre tooling, including `ebook-convert`, `calibredb`, metadata tools, and the Content server;
+- application state under `/srv/appdata/calibre`;
 - the book library under `/srv/storage/books`;
+- a controlled conversion inbox under `/srv/storage/incoming/books`;
 - Caddy route and Cloudflare DNS-only record for `books.butenko.online`;
+- a private administration route available only through the approved private network;
 - individual family accounts;
-- an iPad reading workflow using browser download into Apple Books or a compatible OPDS reader;
+- an iPad reading workflow using browser download into Apple Books or a compatible catalog client;
 - Uptime Kuma monitoring and Restic protection for application state and metadata.
 
-The full Calibre package is optional and should be added only if server-side format conversion, metadata editing, or library maintenance requires it.
+Conversion must operate on copied input files and write new EPUB output; it must never silently replace the only source copy.
 
-### 4. qBittorrent and Sonarr media automation
+### 4. Internal family chat
+
+Use **Nextcloud Talk** first because Nextcloud and its accounts already exist. The current server audit confirms that the Talk app (`spreed`) is not installed yet.
+
+Planned work:
+
+- add a tracked, repeatable helper for installing and enabling the Talk app;
+- verify private conversations and a family group chat on the web, iOS, and Android clients;
+- verify that Talk state is covered by the existing Nextcloud database and application-data recovery path;
+- test text chat first, then voice and video calls;
+- add TURN or the High Performance Backend only if call testing demonstrates a real need.
+
+### 5. qBittorrent and Sonarr media automation
 
 The services may be installed and tested after the initial Disaster Recovery bootstrap. Automatic or high-volume downloading remains disabled until the larger HDD is available, because the temporary disk has no hard application quota.
 
@@ -85,7 +100,7 @@ If a commercial VPN is later required for qBittorrent, use a dedicated network c
 
 ## Deferred until September 2026
 
-### 5. Replace the storage HDD
+### 6. Replace the storage HDD
 
 - install and SMART-test an 8-16 TB HDD;
 - migrate or clone the current `/srv/storage` data;
@@ -93,11 +108,11 @@ If a commercial VPN is later required for qBittorrent, use a dedicated network c
 - verify ownership, containers, Restic, and Time Machine;
 - increase Time Machine limits only after the new disk is verified.
 
-### 6. External or off-site backup
+### 7. External or off-site backup
 
 Select an external USB disk, another trusted machine, or object storage. Protect Nextcloud files, Immich photos, important media, Time Machine data where appropriate, and recovery secrets. The current local Restic repository remains on the same HDD and is not protection against loss of that disk.
 
-### 7. AdGuard Home
+### 8. AdGuard Home
 
 Deploy only after router access is available. It will provide local DNS through router DHCP and complement, not replace, Cloudflare DNS, `butenko.online`, Caddy, Let's Encrypt, or Tailscale.
 
@@ -109,3 +124,15 @@ Deploy only after router access is available. It will provide local DNS through 
 - define the final Watchtower/update policy;
 - verify Jellyfin Intel VA-API hardware transcoding;
 - merge the feature branch after the recovery workflow and new-service plan are stable.
+
+## Interesting application candidates
+
+These are recommendations, not approved installation tasks:
+
+- **Audiobookshelf** for audiobooks and podcasts, complementary to Calibre and Jellyfin;
+- **Mealie** for family recipes, meal planning, and shopping lists;
+- **FreshRSS** or **Readeck** for a private reading queue and RSS feeds;
+- **Actual Budget** for household budgeting, after a separate backup and security review;
+- **Vaultwarden** for family passwords, but only after external backups and a dedicated recovery drill because losing its database or master passwords is high impact;
+- **Home Assistant** if home automation hardware is added later;
+- **Stirling-PDF** for local PDF conversion and utility tasks.

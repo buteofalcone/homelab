@@ -57,6 +57,7 @@ Current sequence:
 
 1. Disaster Recovery bootstrap, secret inventory, and application-aware restore.
 2. n8n with a Tailscale-only LLM dependency on SilverBrick.
-3. Calibre-Web EPUB library for iPad access.
-4. qBittorrent, Sonarr, and optional Prowlarr may be installed for controlled testing; automatic downloading waits for the larger disk.
-5. In September 2026: larger HDD, external backup, and AdGuard Home after router access becomes available.
+3. Full Calibre with EPUB conversion and iPad library access.
+4. Nextcloud Talk as the first internal family-chat solution.
+5. qBittorrent, Sonarr, and optional Prowlarr may be installed for controlled testing; automatic downloading waits for the larger disk.
+6. In September 2026: larger HDD, external backup, and AdGuard Home after router access becomes available.

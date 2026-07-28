@@ -120,6 +120,16 @@ The local Restic repository protects application state on the SSD. It does not p
 
 `make verify-restore` restores only the repository README and the two PostgreSQL dumps into a new timestamped directory under `/srv/storage/restores`. It never overwrites live paths and intentionally retains the result for review.
 
+## Disaster recovery
+
+The clean-machine recovery workflow is being implemented incrementally. Start with the read-only host check:
+
+```bash
+make recovery-preflight
+```
+
+See [`docs/disaster-recovery.md`](docs/disaster-recovery.md) for the current safety boundaries, remaining manual steps, and offline secret inventory.
+
 See `docs/` for the observed state, target architecture, current roadmap, reproducibility audit, storage, backup, restore, remote management, and monitoring details.
 
 Remote access through Tailscale, Cockpit, and GNOME Remote Login is documented in `docs/remote-management.md`.

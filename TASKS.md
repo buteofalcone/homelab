@@ -81,9 +81,10 @@ Further Time Machine verification is intentionally paused after the successful A
 
 ## Disaster Recovery — active
 
+- [x] Add a read-only host prerequisite check
+- [x] Create an offline recovery-secret inventory template without secret values
 - [ ] Implement an idempotent clean-Ubuntu host bootstrap
 - [ ] Add a safety-gated storage and `/etc/fstab` runbook without automatic formatting
-- [ ] Create an offline recovery-secret inventory template without secret values
 - [ ] Automate Nextcloud PostgreSQL import and integrity verification
 - [ ] Automate Immich PostgreSQL import and integrity verification
 - [ ] Restore and verify management-service state
@@ -100,14 +101,25 @@ Further Time Machine verification is intentionally paused after the successful A
 - [ ] Restrict the SilverBrick LLM API to the HP Server through Tailscale
 - [ ] Handle SilverBrick offline and timeout behavior in workflows
 
-## EPUB library — after initial DR bootstrap
+## Full Calibre and EPUB library — after initial DR bootstrap
 
-- [ ] Create `services/calibre-web/`
-- [ ] Store application state under `/srv/appdata/calibre-web`
+- [ ] Create `services/calibre/` with the full Calibre package
+- [ ] Include `ebook-convert`, `calibredb`, metadata tools, and the Content server
+- [ ] Store application state under `/srv/appdata/calibre`
 - [ ] Store books under `/srv/storage/books`
-- [ ] Add `books.butenko.online`, Caddy, Cloudflare DNS-only, and Uptime Kuma
-- [ ] Verify browser-to-Apple Books or OPDS-reader workflow on iPad
-- [ ] Add full Calibre only if conversion or metadata maintenance requires it
+- [ ] Add a controlled `/srv/storage/incoming/books` conversion workflow
+- [ ] Add Calibre administration and `books.butenko.online` routes, DNS, and monitoring
+- [ ] Verify conversion of a sample source book to EPUB
+- [ ] Verify browser-to-Apple Books or catalog-client workflow on iPad
+
+## Internal family chat — after initial DR bootstrap
+
+- [x] Confirm Nextcloud Talk is not currently installed
+- [ ] Add a tracked helper to install and enable the `spreed` app
+- [ ] Verify private and family group text chat
+- [ ] Verify Nextcloud Talk clients on iOS and Android
+- [ ] Confirm Nextcloud backup and restore coverage includes Talk state
+- [ ] Test calls before deciding whether TURN or the High Performance Backend is needed
 
 ## September 2026 storage work
 
