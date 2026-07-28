@@ -8,6 +8,8 @@ The local Restic job backs up:
 - `/opt/homelab`, excluding `.git` and `.env`
 - `/etc/homelab`
 
+This includes Calibre GUI and built-in Content Server configuration under `/srv/appdata/calibre` and the root-only GUI password under `/etc/homelab`.
+
 Retention:
 
 - 7 daily snapshots
@@ -26,4 +28,4 @@ It lists recent snapshots, runs `restic check`, validates the compressed Nextclo
 
 This audit completed successfully on 2026-07-28. The scheduled backup job also completed successfully that morning.
 
-HDD-resident Nextcloud files, Immich photos and Jellyfin media are not copied into the Restic repository on the same HDD. Such a copy would not protect against HDD loss. Back these directories up to an external disk, another machine or cloud object storage.
+HDD-resident Nextcloud files, Immich photos, Jellyfin media and the Calibre library under `/srv/storage/books` are not copied into the Restic repository on the same HDD. Such a copy would not protect against HDD loss. Back these directories up to an external disk, another machine or cloud object storage.

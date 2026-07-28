@@ -48,3 +48,17 @@
         description: Private family AI chat
         server: local
         container: open-webui
+
+    - Books:
+        icon: calibre.svg
+        href: https://books.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Family EPUB library
+        server: local
+        container: calibre
+
+    - Calibre Admin:
+        icon: calibre.svg
+        href: https://calibre.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Convert and manage ebooks
+        server: local
+        container: calibre

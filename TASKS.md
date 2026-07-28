@@ -115,13 +115,13 @@ Further Time Machine verification is intentionally paused after the successful A
 
 ## Full Calibre and EPUB library — after initial DR bootstrap
 
-- [ ] Create `services/calibre/` with the full Calibre package
-- [ ] Include `ebook-convert`, `calibredb`, metadata tools, and the Content server
-- [ ] Store application state under `/srv/appdata/calibre`
-- [ ] Store books under `/srv/storage/books`
-- [ ] Add a controlled `/srv/storage/incoming/books` conversion workflow
-- [ ] Add Calibre administration and `books.butenko.online` routes, DNS, and monitoring
-- [ ] Verify conversion of a sample source book to EPUB
+- [x] Create `services/calibre/` with the full Calibre package
+- [x] Include `ebook-convert`, `calibredb`, metadata tools, and the Content server
+- [x] Store application state under `/srv/appdata/calibre`
+- [x] Store books under `/srv/storage/books`
+- [x] Add a controlled `/srv/storage/incoming/books` conversion workflow
+- [x] Add Calibre administration and `books.butenko.online` routes, DNS, and monitoring
+- [x] Verify conversion of a sample source book to EPUB
 - [ ] Verify browser-to-Apple Books or catalog-client workflow on iPad
 
 ## Internal family chat — after initial DR bootstrap

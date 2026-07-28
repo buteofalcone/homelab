@@ -18,7 +18,7 @@ check() {
 }
 
 check 'Recovery host prerequisites' "${REPO_DIR}/scripts/recovery-preflight.sh"
-check 'Compose configuration' compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents config --quiet
+check 'Compose configuration' compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books config --quiet
 check 'Backup timer is active' systemctl is-active --quiet homelab-backup.timer
 check 'Health timer is active' systemctl is-active --quiet homelab-health.timer
 check 'Nextcloud database accepts connections' docker exec nextcloud-db pg_isready -U nextcloud -d nextcloud
@@ -39,6 +39,18 @@ if container_running open-webui; then
   check 'Open WebUI health' curl -fsS "http://127.0.0.1:${OPEN_WEBUI_PORT:-3002}/health"
 else
   printf 'SKIP Open WebUI container is not running\n'
+fi
+
+if container_running calibre; then
+  check 'Calibre GUI health' test "$(docker inspect -f '{{.State.Health.Status}}' calibre)" = healthy
+else
+  printf 'SKIP Calibre GUI container is not running\n'
+fi
+
+if container_running calibre; then
+  check 'Calibre Content Server HTTPS' curl -fsS --resolve "books.${BASE_DOMAIN}:443:127.0.0.1" "https://books.${BASE_DOMAIN}/"
+else
+  printf 'SKIP Calibre Content Server because Calibre is not running\n'
 fi
 
 if (( failed == 0 )); then

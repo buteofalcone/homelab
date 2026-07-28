@@ -1,10 +1,10 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
-PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents
+PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -26,6 +26,10 @@ help:
 	  'make timemachine    Start the provisioned Time Machine service' \
 	  'make open-webui-bootstrap  Provision secrets and start private AI chat' \
 	  'make open-webui     Start the provisioned private AI chat' \
+	  'make calibre-bootstrap  Provision and start full Calibre' \
+	  'make calibre        Start the provisioned Calibre services' \
+	  'make calibre-import BOOK=/srv/storage/incoming/books/file  Convert and import one book' \
+	  'make calibre-verify Run disposable Calibre conversion and service checks' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
 	  'make update         Update base services only' \
@@ -92,6 +96,18 @@ open-webui-bootstrap:
 open-webui:
 	@$(COMPOSE) --profile agents up -d open-webui
 
+calibre-bootstrap:
+	@sudo ./services/calibre/bootstrap.sh
+
+calibre:
+	@$(COMPOSE) --profile books up -d calibre
+
+calibre-import:
+	@./services/calibre/import-book.sh "$${BOOK:-}"
+
+calibre-verify:
+	@./services/calibre/verify.sh
+
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps
 
@@ -109,7 +125,7 @@ update:
 	@./scripts/update.sh
 
 update-all:
-	@./scripts/update.sh nextcloud immich jellyfin beszel-agent agents
+	@./scripts/update.sh nextcloud immich jellyfin beszel-agent agents books
 
 doctor:
 	@./scripts/doctor.sh
@@ -151,7 +167,8 @@ configure-cloudflare-dns:
 	@sudo ./scripts/configure-cloudflare-dns.sh
 
 caddy-reload:
-	@$(COMPOSE) exec -w /etc/caddy caddy caddy reload
+	@$(COMPOSE) exec -w /etc/caddy caddy /bin/sh -c \
+	  'set -a; . /run/secrets/caddy.env; set +a; exec caddy reload --config Caddyfile'
 
 stop:
 	@$(COMPOSE) $(PROFILES_ALL) stop

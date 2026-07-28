@@ -27,8 +27,7 @@ Application state and databases are under `/srv/appdata`. User files are under `
 | Path | `/opt/homelab` |
 | Remote | `git@github.com:buteofalcone/homelab.git` |
 | Branch | `feature/base-management-stack` |
-| Audit baseline | `dea5af8` (`Add trusted HTTPS for private family services`) |
-| Worktree | Clean and synchronized with `origin/feature/base-management-stack` |
+| Repository state | Calibre deployment implemented and validated; Git history is authoritative |
 
 ## Running services
 
@@ -38,6 +37,7 @@ The following Compose services were running:
 - Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`.
 - Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
 - Media: `jellyfin`.
+- Books: full Calibre 9.11 desktop application and its built-in Content server, both provided by the single `calibre` container.
 - Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
 - Private AI: `open-webui`, connected through Tailscale to authenticated LM Studio on SilverBrick.
 
@@ -60,11 +60,13 @@ nextcloud.butenko.online
 immich.butenko.online
 jellyfin.butenko.online
 ai.butenko.online
+calibre.butenko.online
+books.butenko.online
 ```
 
 Cockpit listens only on `100.65.83.35:9090`. RDP listens on TCP 3389, with the repository-managed nftables rule allowing it only through `tailscale0`. SSH over Tailscale is working. No router port forwarding is required or intended.
 
-Most direct application ports currently listen on all host interfaces for trusted-LAN setup and recovery. Open WebUI is the first application restricted to loopback (`127.0.0.1:3002`) and is reached only through Caddy. The remaining direct-port exposure is documented but still requires a deliberate security review.
+Most direct application ports currently listen on all host interfaces for trusted-LAN setup and recovery. Open WebUI is restricted to loopback (`127.0.0.1:3002`). Calibre publishes no host ports. Both are reached through Caddy. The remaining direct-port exposure is documented but still requires a deliberate security review.
 
 Time Machine SMB listens on TCP 445 for trusted-LAN and Tailscale clients. Connectivity through the server's Tailscale address was verified from SilverBrick. Avahi publishes `hp-server Time Machine` through Bonjour for local-LAN discovery.
 
@@ -73,6 +75,7 @@ Time Machine SMB listens on TCP 445 for trusted-LAN and Tailscale clients. Conne
 - Beszel Hub and Agent are running.
 - Uptime Kuma has application, internet, storage, SMART, and backup monitoring configured.
 - Telegram notifications are configured in Uptime Kuma runtime state.
+- Calibre's internal Content server is monitored as `Books`; its Telegram notification is attached.
 - `homelab-health.timer` runs every 15 minutes; its most recent run completed successfully on 2026-07-27.
 - Both disks passed the recorded SMART baseline. The temporary 500 GB HDD has high power-on hours and must not become the only copy of important data.
 - Docker-based Samba Time Machine is running with separate accounts, directories, and 100 GB test limits for A1502 and A1466. MacBook A1466 completed its first small test backup on 2026-07-27, using approximately 4.6 GB. A1502 remains untested.
@@ -95,7 +98,7 @@ The following are deliberately excluded from Git:
 - application databases and user accounts;
 - Nextcloud files, Immich photos, and Jellyfin media;
 - Uptime Kuma monitors, history, and Telegram settings;
-- Portainer, Beszel, Nextcloud, Immich, Jellyfin, Open WebUI, and Caddy runtime state;
+- Portainer, Beszel, Nextcloud, Immich, Jellyfin, Open WebUI, Calibre, and Caddy runtime state;
 - Tailscale device identity and enrollment state.
 
 Git must define how these items are provisioned or restored. Backup and restore, rather than source control, preserve their values.
@@ -111,5 +114,6 @@ On 2026-07-28:
 - health, RDP, Cockpit, and GNOME Remote Desktop systemd configuration matched Git;
 - backup systemd drift was found and captured in Git without changing the running server.
 - Open WebUI reported healthy, contained one administrator account, reached `qwen/qwen3.5-9b` through the authenticated LM Studio API, and served a trusted HTTPS health response at `ai.butenko.online`.
+- Calibre 9.11 reported healthy, its administration route required authentication, its Content server returned HTTP 200 at `books.butenko.online`, and a generated source document was converted to EPUB and added to the library.
 
 No container, firewall rule, package, mount, database, application data, or secret was changed during this audit.

@@ -53,3 +53,17 @@ ai.{$BASE_DOMAIN} {
 	import common
 	reverse_proxy open-webui:8080
 }
+
+calibre.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy https://calibre:8181 {
+		transport http {
+			tls_insecure_skip_verify
+		}
+	}
+}
+
+books.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy calibre:8081
+}

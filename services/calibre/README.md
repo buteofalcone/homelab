@@ -1,0 +1,56 @@
+# Full Calibre
+
+This service runs the complete Calibre 9.11 desktop application and CLI tools. It is intentionally not Calibre-Web.
+
+## Storage
+
+- `/srv/appdata/calibre` — GUI preferences and application state on the SSD.
+- `/srv/storage/books` — the Calibre library, including books and `metadata.db`, on the HDD.
+- `/srv/storage/incoming/books` — read-only input area for controlled imports.
+- `/etc/homelab/calibre-gui-password` — root-only web-desktop password.
+
+The library remains at the same host path when the temporary HDD is cloned to the final 8–16 TB disk.
+
+## Provisioning
+
+```bash
+make calibre-bootstrap
+```
+
+The bootstrap creates directories and the root-only GUI password, initializes a small generated EPUB on a fresh library, selects the library path, enables Calibre's built-in Content Server, and waits for the combined health check.
+
+Administrative GUI: `https://calibre.butenko.online`
+
+Family library: `https://books.butenko.online`
+
+OPDS catalog: `https://books.butenko.online/opds`
+
+The GUI is sensitive because a full desktop application can access its mounted paths. It is protected by a dedicated password, terminal and sudo features are disabled, and the service is reachable only through the private Tailscale address. Do not share its password with family readers.
+
+The Content Server runs inside the same Calibre process. This is required because two independent Calibre processes must not open the same mutable library. Family access is routed only to port 8081 and does not expose the administration desktop. It has no additional application password because its DNS address is private to the tailnet; review Tailscale sharing policy before inviting family members.
+
+## Import and conversion
+
+Copy one source book into `/srv/storage/incoming/books`, then run:
+
+```bash
+make calibre-import BOOK=/srv/storage/incoming/books/example.pdf
+```
+
+Supported controlled inputs are AZW3, DOCX, EPUB, FB2, HTML, LIT, MOBI, ODT, PDF, RTF and TXT. Non-EPUB input is converted with `ebook-convert`, validated with `ebook-meta`, then added with `calibredb`. The source is deliberately retained until the imported result is checked.
+
+PDF conversion is best-effort because PDFs encode page layout rather than ebook structure.
+
+Run a disposable conversion and library smoke test with:
+
+```bash
+make calibre-verify
+```
+
+## iPad
+
+Open the family library URL in Safari, select a book, download its EPUB and choose **Open in Books**. OPDS-capable readers can use the `/opds` URL. Apple Books does not synchronize a private OPDS catalog automatically, so downloads are an explicit per-book action.
+
+## Backup boundary
+
+Restic protects the SSD configuration under `/srv/appdata`, but it does not copy the HDD-resident library back onto the same HDD. `/srv/storage/books` requires an external or off-site backup before it becomes the only copy of a book collection.

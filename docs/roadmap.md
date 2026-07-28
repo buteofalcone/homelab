@@ -68,6 +68,7 @@ Planned components and dependencies:
 - the book library under `/srv/storage/books`;
 - a controlled conversion inbox under `/srv/storage/incoming/books`;
 - Caddy route and Cloudflare DNS-only record for `books.butenko.online`;
+- a separate password-protected administration route at `calibre.butenko.online`;
 - a private administration route available only through the approved private network;
 - individual family accounts;
 - an iPad reading workflow using browser download into Apple Books or a compatible catalog client;

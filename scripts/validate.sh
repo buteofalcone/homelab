@@ -13,6 +13,6 @@ if [[ -d "${REPO_DIR}/services" ]]; then
   done < <(find "${REPO_DIR}/services" -type f -name '*.sh' -print0)
 fi
 
-compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents config --quiet
+compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books config --quiet
 
 echo "Shell and Docker Compose validation passed."

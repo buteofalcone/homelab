@@ -12,6 +12,7 @@ include:
   - ./compose/jellyfin.yaml
   - ./services/timemachine/compose.yaml
   - ./services/open-webui/compose.yaml
+  - ./services/calibre/compose.yaml
 
 networks:
   homelab:

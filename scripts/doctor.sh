@@ -31,7 +31,7 @@ check "Docker daemon" docker info
 check "Docker Compose" docker compose version
 check "Storage mount exists" mountpoint /srv/storage
 check "Repository environment file" test -f "${ENV_FILE}"
-check "Compose configuration" compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile agents config --quiet
+check "Compose configuration" compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile agents --profile books config --quiet
 check "Homepage HTTP" curl -fsS "http://127.0.0.1:${HOMEPAGE_PORT:-3000}"
 check "Beszel HTTP" curl -fsS "http://127.0.0.1:${BESZEL_PORT:-8090}"
 check "Uptime Kuma HTTP" curl -fsS "http://127.0.0.1:${UPTIME_KUMA_PORT:-3001}"
@@ -43,7 +43,19 @@ check_optional_http immich-server "Immich HTTP" "http://127.0.0.1:${IMMICH_PORT:
 check_optional_http jellyfin "Jellyfin HTTP" "http://127.0.0.1:${JELLYFIN_PORT:-8096}/health"
 check_optional_http open-webui "Open WebUI HTTP" "http://127.0.0.1:${OPEN_WEBUI_PORT:-3002}/health"
 
+if container_running calibre; then
+  check "Calibre GUI health" test "$(docker inspect -f '{{.State.Health.Status}}' calibre)" = healthy
+else
+  printf 'SKIP Calibre GUI (container is not running)\n'
+fi
+
+if container_running calibre; then
+  check "Calibre Content Server HTTPS" curl -fsS --resolve "books.${BASE_DOMAIN}:443:127.0.0.1" "https://books.${BASE_DOMAIN}/"
+else
+  printf 'SKIP Calibre Content Server (Calibre container is not running)\n'
+fi
+
 printf '\nContainers:\n'
-compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile agents ps
+compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile agents --profile books ps
 
 exit "${failed}"
