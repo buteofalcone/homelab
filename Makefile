@@ -124,6 +124,9 @@ media-automation-bootstrap:
 media-automation-verify:
 	@sudo ./services/media-automation/verify.sh
 
+media-automation-connect:
+	@sudo ./services/media-automation/configure-integrations.sh
+
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps
 

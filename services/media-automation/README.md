@@ -18,6 +18,14 @@ make media-automation-bootstrap
 
 The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr/Prowlarr authentication behind Caddy, and verifies that the applications are healthy. qBittorrent refuses new data when free space drops below `MEDIA_MIN_FREE_GB` (80 GiB by default).
 
+Connect the applications and add the lawful Internet Archive indexer:
+
+```bash
+make media-automation-connect
+```
+
+This idempotently creates the `/data/media/TV` root, the `tv-sonarr` qBittorrent download client, a full-sync Prowlarr application, and the public Internet Archive indexer. The qBittorrent password and Arr API keys are read only from runtime secret/config files.
+
 Owner URLs:
 
 - `https://torrent.butenko.online`
