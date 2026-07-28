@@ -16,11 +16,13 @@ container_running prowlarr || die 'Prowlarr is not running.'
 media_password="$(</etc/homelab/qbittorrent-password)"
 docker exec -e QB_USER="${MEDIA_ADMIN_USER:-butenko}" -e QB_PASSWORD="${media_password}" qbittorrent /bin/sh -c '
   rm -f /tmp/qb-verify-cookie
-  result="$(curl -sS --cookie-jar /tmp/qb-verify-cookie \
+  status="$(curl -sS --output /tmp/qb-verify-body --write-out "%{http_code}" --cookie-jar /tmp/qb-verify-cookie \
     --header "Referer: http://localhost:8080" \
     --data-urlencode "username=${QB_USER}" --data-urlencode "password=${QB_PASSWORD}" \
     http://127.0.0.1:8080/api/v2/auth/login)"
-  [ "${result}" = "Ok." ]
+  body="$(cat /tmp/qb-verify-body)"
+  rm -f /tmp/qb-verify-body
+  [ "${status}" = 204 ] || { [ "${status}" = 200 ] && [ "${body}" = "Ok." ]; }
   [ "$(curl -fsS --cookie /tmp/qb-verify-cookie --header "Referer: http://localhost:8080" http://127.0.0.1:8080/api/v2/torrents/info)" = "[]" ]
   rm -f /tmp/qb-verify-cookie
 '
