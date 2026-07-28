@@ -33,3 +33,7 @@ Owner URLs:
 - `https://prowlarr.butenko.online`
 
 Do not forward TCP/UDP 6881 on the router until the download policy is deliberately reviewed. On the temporary disk, use only a small lawful test series and keep high-volume monitoring disabled. After the 8–16 TB migration, adjust the free-space floor and policy without changing container paths.
+
+## Backup boundary
+
+The normal Restic job protects qBittorrent, Sonarr, and Prowlarr configuration under `/srv/appdata`, plus the root-only media password and Caddy hash under `/etc/homelab`. `make verify-backup` checks these files in the latest snapshot. Downloaded media under `/srv/storage` is intentionally outside this same-disk Restic repository and requires the planned external backup.

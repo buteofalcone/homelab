@@ -42,5 +42,19 @@ print("OK   Open WebUI SQLite dump passed integrity_check")
 PY
 fi
 
+if container_running qbittorrent && container_running sonarr && container_running prowlarr; then
+  echo
+  echo 'Checking media automation recovery files in the latest snapshot:'
+  for path in \
+    /srv/appdata/qbittorrent/qBittorrent/config/qBittorrent.conf \
+    /srv/appdata/sonarr/config.xml \
+    /srv/appdata/prowlarr/config.xml \
+    /etc/homelab/qbittorrent-password \
+    /etc/homelab/media-caddy.env; do
+    restic dump latest "${path}" >/dev/null
+    printf 'OK   %s\n' "${path}"
+  done
+fi
+
 echo
 echo 'RESTIC_AUDIT_OK'
