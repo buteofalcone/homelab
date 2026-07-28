@@ -88,6 +88,8 @@ The job creates logical PostgreSQL dumps and stores a local Restic snapshot on t
 
 Repository integrity, recent snapshots, PostgreSQL dumps, and a targeted restore were independently verified on 2026-07-28. Restic successfully restored the repository README and both compressed database dumps into `/srv/storage/restores/restic-smoke-20260728-115000`; both dumps passed `gzip -t`.
 
+After installing Nextcloud Talk, a fresh snapshot was created and verified. The Nextcloud dump imported into a temporary PostgreSQL instance with the Talk control tables present, and `/srv/appdata/nextcloud` restored into an isolated management audit tree. This confirms recovery coverage for Talk application code, configuration, and conversation database state. Files shared through Talk remain part of Nextcloud user data on the HDD and still require the planned external copy.
+
 A complete application-aware restore and an external/off-site copy are still missing. Disaster recovery is therefore **not complete**.
 
 ## Runtime state that does not belong in Git

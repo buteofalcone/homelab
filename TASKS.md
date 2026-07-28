@@ -130,7 +130,7 @@ Further Time Machine verification is intentionally paused after the successful A
 - [x] Add a tracked helper to install and enable the `spreed` app
 - [ ] Verify private and family group text chat
 - [ ] Verify Nextcloud Talk clients on iOS and Android
-- [ ] Confirm Nextcloud backup and restore coverage includes Talk state
+- [x] Confirm Nextcloud backup and restore coverage includes Talk state
 - [ ] Test calls before deciding whether TURN or the High Performance Backend is needed
 
 ## September 2026 storage work
