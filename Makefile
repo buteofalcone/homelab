@@ -5,7 +5,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 .DEFAULT_GOAL := help
 
 .PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap \
-        ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore \
+        ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore post-restore-check \
         configure-cloudflare-dns caddy-reload stop down
 
 help:
@@ -35,6 +35,8 @@ help:
 	  'make snapshots      List Restic snapshots' \
 	  'make verify-backup  Check Restic and PostgreSQL dumps' \
 	  'make verify-restore Restore and verify a small safe sample' \
+	  'make verify-database-restore  Import restored dumps into disposable databases' \
+	  'make post-restore-check  Verify the recovered host and applications' \
 	  'make configure-cloudflare-dns  Create private service DNS records' \
 	  'make caddy-reload   Reload Caddyfile without downtime'
 
@@ -119,6 +121,12 @@ verify-backup:
 
 verify-restore:
 	@sudo ./scripts/verify-restore.sh
+
+verify-database-restore:
+	@sudo ./scripts/verify-database-restore.sh
+
+post-restore-check:
+	@./scripts/post-restore-check.sh
 
 restore:
 	@sudo ./scripts/restore.sh "$${SNAPSHOT:-latest}" "$${TARGET:-/srv/storage/restores/latest}"

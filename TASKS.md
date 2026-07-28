@@ -86,10 +86,10 @@ Further Time Machine verification is intentionally paused after the successful A
 - [x] Implement an idempotent clean-Ubuntu host package bootstrap
 - [ ] Orchestrate Tailscale enrollment handoff, storage verification, secrets, restore, and service verification from one entry point
 - [x] Add a safety-gated storage and `/etc/fstab` runbook without automatic formatting
-- [ ] Automate Nextcloud PostgreSQL import and integrity verification
-- [ ] Automate Immich PostgreSQL import and integrity verification
+- [x] Verify disposable Nextcloud PostgreSQL import and control tables
+- [x] Verify disposable Immich PostgreSQL import and control tables
 - [ ] Restore and verify management-service state
-- [ ] Add a single post-restore verification command
+- [x] Add a single post-restore verification command
 - [ ] Complete a measured clean-machine recovery drill
 
 ## Git-native agentic workflows — after initial DR bootstrap
