@@ -24,7 +24,7 @@ LM Studio must bind to the SilverBrick Tailscale address, not `0.0.0.0`. Require
 
 Do not create a Cloudflare DNS record or Caddy route for the model API. It is a machine-to-machine dependency, not a family-facing service.
 
-A Windows Firewall rule should later restrict TCP 1234 to source `100.65.83.35` (HP Server) on the Tailscale interface. Changing that firewall rule requires a separate explicit approval and verification that local LM Studio access remains available.
+Windows Firewall restricts TCP 1234 on `100.91.171.26` to source `100.65.83.35` (HP Server). Reapply the versioned `scripts/windows/restrict-lm-studio-firewall.ps1` on SilverBrick if either Tailscale address changes. The script disables broader inbound LM Studio or TCP 1234 allow rules before creating the scoped rule.
 
 ## SilverBrick setup
 

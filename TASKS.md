@@ -99,8 +99,8 @@ Further Time Machine verification is intentionally paused after the successful A
 - [x] Enable LM Studio authentication and bind the API to the SilverBrick Tailscale address
 - [x] Store the dedicated API token in `/etc/homelab/agents.env`
 - [x] Verify `LM_STUDIO_API_OK` from the HP Server
-- [ ] Restrict LM Studio TCP 1234 in Windows Firewall to the HP Server Tailscale address
-- [ ] Restrict the SilverBrick model API to the HP Server through Tailscale
+- [x] Restrict LM Studio TCP 1234 in Windows Firewall to the HP Server Tailscale address
+- [x] Restrict the SilverBrick model API to the HP Server through Tailscale
 - [ ] Create `services/open-webui/` as the private family AI and approval interface
 - [ ] Create a minimal Python agent runtime with prompts, tools, policies, and tests in Git
 - [ ] Implement read-only homelab health tools first
