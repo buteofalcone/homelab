@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -18,6 +18,8 @@ help:
 	  'make install        Create host directories and start base services' \
 	  'make base           Start management services and Caddy' \
 	  'make nextcloud      Start Nextcloud stack' \
+	  'make nextcloud-talk-bootstrap  Install and enable compatible Nextcloud Talk' \
+	  'make nextcloud-talk-verify  Verify Nextcloud Talk application state' \
 	  'make immich         Start Immich stack' \
 	  'make jellyfin       Start Jellyfin' \
 	  'make apps           Start all optional applications' \
@@ -71,6 +73,12 @@ base:
 
 nextcloud:
 	@$(COMPOSE) --profile nextcloud up -d
+
+nextcloud-talk-bootstrap:
+	@./services/nextcloud-talk/bootstrap.sh
+
+nextcloud-talk-verify:
+	@./services/nextcloud-talk/verify.sh
 
 immich:
 	@$(COMPOSE) --profile immich up -d
