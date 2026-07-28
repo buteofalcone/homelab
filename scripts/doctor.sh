@@ -31,7 +31,7 @@ check "Docker daemon" docker info
 check "Docker Compose" docker compose version
 check "Storage mount exists" mountpoint /srv/storage
 check "Repository environment file" test -f "${ENV_FILE}"
-check "Compose configuration" compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent config --quiet
+check "Compose configuration" compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile agents config --quiet
 check "Homepage HTTP" curl -fsS "http://127.0.0.1:${HOMEPAGE_PORT:-3000}"
 check "Beszel HTTP" curl -fsS "http://127.0.0.1:${BESZEL_PORT:-8090}"
 check "Uptime Kuma HTTP" curl -fsS "http://127.0.0.1:${UPTIME_KUMA_PORT:-3001}"
@@ -41,8 +41,9 @@ check "Caddy trusted HTTPS" curl -fsS --resolve "home.${BASE_DOMAIN}:443:127.0.0
 check_optional_http nextcloud "Nextcloud HTTP" "http://127.0.0.1:${NEXTCLOUD_PORT:-8080}/status.php"
 check_optional_http immich-server "Immich HTTP" "http://127.0.0.1:${IMMICH_PORT:-2283}/api/server/ping"
 check_optional_http jellyfin "Jellyfin HTTP" "http://127.0.0.1:${JELLYFIN_PORT:-8096}/health"
+check_optional_http open-webui "Open WebUI HTTP" "http://127.0.0.1:${OPEN_WEBUI_PORT:-3002}/health"
 
 printf '\nContainers:\n'
-compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent ps
+compose --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile agents ps
 
 exit "${failed}"

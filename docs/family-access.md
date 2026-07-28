@@ -8,6 +8,7 @@ Family devices connect through Tailscale and use normal HTTPS URLs:
 | Nextcloud | `https://nextcloud.butenko.online` |
 | Immich | `https://immich.butenko.online` |
 | Jellyfin | `https://jellyfin.butenko.online` |
+| Butenko AI | `https://ai.butenko.online` |
 
 Cloudflare DNS-only records resolve these names to the HP Server Tailscale address. Caddy obtains publicly trusted certificates with the DNS challenge. This means client devices need Tailscale, but do not need hosts-file entries, custom DNS configuration, or the old Caddy root certificate.
 

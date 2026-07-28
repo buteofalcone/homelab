@@ -77,7 +77,7 @@ An unauthenticated request from the HP Server returned HTTP 401 as expected. The
 ## Implementation order
 
 1. Verify the authenticated Tailscale-only LM Studio API.
-2. Add Open WebUI on the HP Server as the private family AI interface.
+2. Add Open WebUI on the HP Server as the private family AI interface. Its first deployment uses the `agents` profile, root-only secrets, a loopback-only direct port, Caddy at `ai.butenko.online`, and disabled Tools/Functions.
 3. Add a minimal Python agent runtime with one read-only `homelab_status` tool.
 4. Add structured tests for tool selection, timeouts, and malformed model output.
 5. Add approval persistence before any state-changing tool.

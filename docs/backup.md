@@ -1,6 +1,6 @@
 # Backup policy
 
-Before each Restic snapshot, the backup job creates logical PostgreSQL dumps for running Nextcloud and Immich database containers.
+Before each Restic snapshot, the backup job creates logical PostgreSQL dumps for running Nextcloud and Immich database containers and a consistent SQLite copy for Open WebUI when it is running.
 
 The local Restic job backs up:
 
@@ -22,7 +22,7 @@ Run the read-only repository and dump audit:
 make verify-backup
 ```
 
-It lists recent snapshots, runs `restic check`, and validates the compressed Nextcloud and Immich PostgreSQL dumps without importing or modifying them.
+It lists recent snapshots, runs `restic check`, validates the compressed Nextcloud and Immich PostgreSQL dumps, and runs SQLite `integrity_check` against the Open WebUI copy when that service is running.
 
 This audit completed successfully on 2026-07-28. The scheduled backup job also completed successfully that morning.
 

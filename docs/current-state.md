@@ -1,6 +1,6 @@
 # Current State
 
-Last verified: **2026-07-27** through SSH from SilverBrick.
+Last verified: **2026-07-28** through SSH from SilverBrick.
 
 This document records observed runtime state. Target architecture and future work are documented separately in `docs/architecture.md` and `TASKS.md`.
 
@@ -39,6 +39,7 @@ The following Compose services were running:
 - Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
 - Media: `jellyfin`.
 - Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
+- Private AI: `open-webui`, connected through Tailscale to authenticated LM Studio on SilverBrick.
 
 `watchtower` is declared but intentionally not running. Stateful application updates remain manual.
 
@@ -58,11 +59,12 @@ uptime.butenko.online
 nextcloud.butenko.online
 immich.butenko.online
 jellyfin.butenko.online
+ai.butenko.online
 ```
 
 Cockpit listens only on `100.65.83.35:9090`. RDP listens on TCP 3389, with the repository-managed nftables rule allowing it only through `tailscale0`. SSH over Tailscale is working. No router port forwarding is required or intended.
 
-Direct application ports currently listen on all host interfaces for trusted-LAN setup and recovery. This exposure is documented but still requires a deliberate security review.
+Most direct application ports currently listen on all host interfaces for trusted-LAN setup and recovery. Open WebUI is the first application restricted to loopback (`127.0.0.1:3002`) and is reached only through Caddy. The remaining direct-port exposure is documented but still requires a deliberate security review.
 
 Time Machine SMB listens on TCP 445 for trusted-LAN and Tailscale clients. Connectivity through the server's Tailscale address was verified from SilverBrick. Avahi publishes `hp-server Time Machine` through Bonjour for local-LAN discovery.
 
@@ -93,14 +95,14 @@ The following are deliberately excluded from Git:
 - application databases and user accounts;
 - Nextcloud files, Immich photos, and Jellyfin media;
 - Uptime Kuma monitors, history, and Telegram settings;
-- Portainer, Beszel, Nextcloud, Immich, Jellyfin, and Caddy runtime state;
+- Portainer, Beszel, Nextcloud, Immich, Jellyfin, Open WebUI, and Caddy runtime state;
 - Tailscale device identity and enrollment state.
 
 Git must define how these items are provisioned or restored. Backup and restore, rather than source control, preserve their values.
 
 ## Validation results
 
-On 2026-07-27:
+On 2026-07-28:
 
 - `make validate` passed.
 - `make doctor` passed before this audit.
@@ -108,5 +110,6 @@ On 2026-07-27:
 - Homepage runtime configuration matched the repository byte-for-byte;
 - health, RDP, Cockpit, and GNOME Remote Desktop systemd configuration matched Git;
 - backup systemd drift was found and captured in Git without changing the running server.
+- Open WebUI reported healthy, contained one administrator account, reached `qwen/qwen3.5-9b` through the authenticated LM Studio API, and served a trusted HTTPS health response at `ai.butenko.online`.
 
 No container, firewall rule, package, mount, database, application data, or secret was changed during this audit.

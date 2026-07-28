@@ -26,5 +26,21 @@ for dump in nextcloud.sql.gz immich.sql.gz; do
   stat -c 'OK   %n (%s bytes, modified %y)' "${path}"
 done
 
+if container_running open-webui; then
+  open_webui_dump=/srv/appdata/_backup-dumps/open-webui.db
+  [[ -s ${open_webui_dump} ]] || die "Missing or empty database dump: ${open_webui_dump}"
+  python3 - "${open_webui_dump}" <<'PY'
+import sqlite3
+import sys
+
+connection = sqlite3.connect(f"file:{sys.argv[1]}?mode=ro", uri=True)
+result = connection.execute("PRAGMA integrity_check").fetchone()[0]
+connection.close()
+if result != "ok":
+    raise SystemExit(f"Open WebUI SQLite integrity check failed: {result}")
+print("OK   Open WebUI SQLite dump passed integrity_check")
+PY
+fi
+
 echo
 echo 'RESTIC_AUDIT_OK'

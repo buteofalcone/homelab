@@ -11,6 +11,7 @@ include:
   - ./compose/immich.yaml
   - ./compose/jellyfin.yaml
   - ./services/timemachine/compose.yaml
+  - ./services/open-webui/compose.yaml
 
 networks:
   homelab:

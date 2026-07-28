@@ -12,7 +12,7 @@ command -v restic >/dev/null 2>&1 || die 'Restic is not installed.'
 mountpoint -q /srv/storage || die '/srv/storage is not a mounted filesystem.'
 
 readonly target="/srv/storage/restores/management-verify-$(date +%Y%m%d-%H%M%S)"
-readonly services=(homepage portainer beszel beszel-agent uptime-kuma caddy jellyfin)
+readonly services=(homepage portainer beszel beszel-agent uptime-kuma caddy jellyfin open-webui)
 
 install -d -m 0750 "${target}"
 restic restore latest \
@@ -23,7 +23,8 @@ restic restore latest \
   --include /srv/appdata/beszel-agent \
   --include /srv/appdata/uptime-kuma \
   --include /srv/appdata/caddy \
-  --include /srv/appdata/jellyfin
+  --include /srv/appdata/jellyfin \
+  --include /srv/appdata/open-webui
 
 for service in "${services[@]}"; do
   restored_path="${target}/srv/appdata/${service}"

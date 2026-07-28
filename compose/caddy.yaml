@@ -13,7 +13,7 @@ services:
     environment:
       BASE_DOMAIN: "${BASE_DOMAIN:-butenko.online}"
     volumes:
-      - /opt/homelab/config/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - /opt/homelab/config/caddy:/etc/caddy:ro
       - /etc/homelab/caddy.env:/run/secrets/caddy.env:ro
       - /srv/appdata/caddy/data:/data
       - /srv/appdata/caddy/config:/config

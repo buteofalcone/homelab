@@ -23,3 +23,16 @@ if container_running immich-database; then
   chmod 0600 "${dump_dir}/immich.sql.gz"
   echo "Created Immich database dump."
 fi
+
+if container_running open-webui; then
+  tmp="${dump_dir}/open-webui.db.tmp"
+  rm -f -- "${tmp}"
+  docker exec open-webui rm -f /tmp/open-webui.db
+  docker exec open-webui python -c \
+    "import sqlite3; source=sqlite3.connect('/app/backend/data/webui.db'); target=sqlite3.connect('/tmp/open-webui.db'); source.backup(target); target.close(); source.close()"
+  docker cp open-webui:/tmp/open-webui.db "${tmp}"
+  docker exec open-webui rm -f /tmp/open-webui.db
+  mv "${tmp}" "${dump_dir}/open-webui.db"
+  chmod 0600 "${dump_dir}/open-webui.db"
+  echo "Created Open WebUI database dump."
+fi

@@ -15,3 +15,5 @@ Reload after editing `config/caddy/Caddyfile`:
 ```bash
 make caddy-reload
 ```
+
+The whole tracked Caddy configuration directory is bind-mounted read-only. This keeps atomic Git file replacements visible inside the running container; mounting the individual file can leave a container pinned to an older inode.

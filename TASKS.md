@@ -101,13 +101,15 @@ Further Time Machine verification is intentionally paused after the successful A
 - [x] Verify `LM_STUDIO_API_OK` from the HP Server
 - [x] Restrict LM Studio TCP 1234 in Windows Firewall to the HP Server Tailscale address
 - [x] Restrict the SilverBrick model API to the HP Server through Tailscale
-- [ ] Create `services/open-webui/` as the private family AI and approval interface
+- [x] Create `services/open-webui/` as the private family AI interface
 - [ ] Create a minimal Python agent runtime with prompts, tools, policies, and tests in Git
 - [ ] Implement read-only homelab health tools first
 - [ ] Add explicit approval gates before every external or state-changing action
 - [ ] Persist workflow state under `/srv/appdata/agents` and add backup/restore coverage
 - [ ] Add bounded retries and clear offline behavior for SilverBrick
-- [ ] Add Caddy, DNS-only, monitoring, and privacy-safe audit logging
+- [x] Add Caddy and Cloudflare DNS-only access for `ai.butenko.online`
+- [x] Remove one-time Open WebUI administrator bootstrap credentials from the runtime environment and current container log
+- [ ] Add an Uptime Kuma health monitor for Open WebUI
 - [ ] Build the Calibre librarian workflow
 - [ ] Build the approved family media-request workflow
 

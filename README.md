@@ -20,6 +20,7 @@ A maintainable single-server homelab for an HP EliteDesk running Ubuntu, Docker 
 - Jellyfin
 - Beszel agent
 - Time Machine for the two family Macs
+- Open WebUI private family AI chat
 
 **Host services**
 
@@ -70,6 +71,7 @@ make nextcloud
 make immich
 make jellyfin
 make timemachine-bootstrap
+make open-webui-bootstrap
 ```
 
 The current workflow assumes Ubuntu, Docker, Git, the `/srv/storage` mount, and required host packages already exist. A complete empty-machine `clone -> bootstrap -> restore` workflow is the Milestone 2C target and is not yet complete. See `docs/reproducibility-audit.md` for the audited gaps.
@@ -86,6 +88,7 @@ uptime.butenko.online
 nextcloud.butenko.online
 immich.butenko.online
 jellyfin.butenko.online
+ai.butenko.online
 ```
 
 Caddy uses the Cloudflare DNS challenge to obtain Let's Encrypt certificates without exposing ports 80 or 443 on the router. The scoped API token lives only in `/etc/homelab/caddy.env` with root-only permissions.

@@ -1,10 +1,10 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
-PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine
+PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -24,6 +24,8 @@ help:
 	  'make beszel-agent   Start the local Beszel agent' \
 	  'make timemachine-bootstrap  Provision Time Machine secrets, storage and Avahi' \
 	  'make timemachine    Start the provisioned Time Machine service' \
+	  'make open-webui-bootstrap  Provision secrets and start private AI chat' \
+	  'make open-webui     Start the provisioned private AI chat' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
 	  'make update         Update base services only' \
@@ -84,6 +86,12 @@ timemachine-bootstrap:
 timemachine:
 	@$(COMPOSE) --profile timemachine up -d --build timemachine
 
+open-webui-bootstrap:
+	@sudo ./services/open-webui/bootstrap.sh
+
+open-webui:
+	@$(COMPOSE) --profile agents up -d open-webui
+
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps
 
@@ -101,7 +109,7 @@ update:
 	@./scripts/update.sh
 
 update-all:
-	@./scripts/update.sh nextcloud immich jellyfin beszel-agent
+	@./scripts/update.sh nextcloud immich jellyfin beszel-agent agents
 
 doctor:
 	@./scripts/doctor.sh

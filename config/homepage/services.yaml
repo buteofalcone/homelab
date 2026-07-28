@@ -41,3 +41,10 @@
         description: Media server
         server: local
         container: jellyfin
+
+    - Butenko AI:
+        icon: open-webui.svg
+        href: https://ai.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Private family AI chat
+        server: local
+        container: open-webui

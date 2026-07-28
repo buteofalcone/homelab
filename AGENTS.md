@@ -77,11 +77,12 @@ Prefer reversible operations and verify exact target paths before any destructiv
 ## Docker Compose
 
 - Base services start without a profile.
-- Optional profiles are `nextcloud`, `immich`, `jellyfin`, and `beszel-agent`.
+- Optional profiles are `nextcloud`, `immich`, `jellyfin`, `beszel-agent`, `timemachine`, and `agents`.
 - Use the Makefile targets where available.
 - Keep Homepage behind the read-only Docker socket proxy; do not restore a direct Docker socket mount.
 - Keep Jellyfin media mounts read-only unless the user explicitly changes the storage policy.
 - Review release notes before changing Immich or database image versions.
+- Review release notes before changing the Open WebUI image version; keep Tools/Functions disabled until narrow agent services and approval gates exist in Git.
 - Do not start a currently stopped service merely because its Compose file exists.
 
 ## Storage and databases

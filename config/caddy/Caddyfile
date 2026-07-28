@@ -48,3 +48,8 @@ jellyfin.{$BASE_DOMAIN} {
 	import common
 	reverse_proxy jellyfin:8096
 }
+
+ai.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy open-webui:8080
+}
