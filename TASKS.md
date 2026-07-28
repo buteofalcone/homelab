@@ -109,7 +109,7 @@ Further Time Machine verification is intentionally paused after the successful A
 - [ ] Add bounded retries and clear offline behavior for SilverBrick
 - [x] Add Caddy and Cloudflare DNS-only access for `ai.butenko.online`
 - [x] Remove one-time Open WebUI administrator bootstrap credentials from the runtime environment and current container log
-- [ ] Add an Uptime Kuma health monitor for Open WebUI
+- [x] Add an Uptime Kuma health monitor for Open WebUI
 - [ ] Build the Calibre librarian workflow
 - [ ] Build the approved family media-request workflow
 
