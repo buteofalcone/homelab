@@ -6,7 +6,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud immich jellyfin beszel-agent timemachine timemachine-bootstrap \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
-        configure-cloudflare-dns caddy-reload stop down
+        check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
 help:
 	@printf '%s\n' \
@@ -38,6 +38,7 @@ help:
 	  'make verify-database-restore  Import restored dumps into disposable databases' \
 	  'make verify-management-restore  Restore management state into an audit directory' \
 	  'make post-restore-check  Verify the recovered host and applications' \
+	  'make check-lm-studio  Verify authenticated SilverBrick model API' \
 	  'make configure-cloudflare-dns  Create private service DNS records' \
 	  'make caddy-reload   Reload Caddyfile without downtime'
 
@@ -131,6 +132,9 @@ verify-management-restore:
 
 post-restore-check:
 	@./scripts/post-restore-check.sh
+
+check-lm-studio:
+	@sudo ./scripts/check-lm-studio.sh
 
 restore:
 	@sudo ./scripts/restore.sh "$${SNAPSHOT:-latest}" "$${TARGET:-/srv/storage/restores/latest}"

@@ -134,3 +134,4 @@ See `docs/` for the observed state, target architecture, current roadmap, reprod
 
 Remote access through Tailscale, Cockpit, and GNOME Remote Login is documented in `docs/remote-management.md`.
 Family application access is documented in `docs/family-access.md`.
+The SilverBrick model runtime and agent safety contract are documented in `docs/agentic-workflows.md`.

@@ -95,7 +95,10 @@ Further Time Machine verification is intentionally paused after the successful A
 ## Git-native agentic workflows — after initial DR bootstrap
 
 - [x] Exclude n8n by owner decision
-- [ ] Select the OpenAI-compatible SilverBrick model runtime
+- [x] Select LM Studio with `qwen/qwen3.5-9b` as the initial SilverBrick runtime and model
+- [ ] Enable LM Studio authentication and bind the API to the SilverBrick Tailscale address
+- [ ] Store the dedicated API token in `/etc/homelab/agents.env`
+- [ ] Verify `LM_STUDIO_API_OK` from the HP Server
 - [ ] Restrict the SilverBrick model API to the HP Server through Tailscale
 - [ ] Create `services/open-webui/` as the private family AI and approval interface
 - [ ] Create a minimal Python agent runtime with prompts, tools, policies, and tests in Git
