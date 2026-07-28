@@ -57,6 +57,18 @@ Immich: 66 public tables
 
 Both temporary databases were removed automatically. The restored compressed dumps remain for audit.
 
+## Management-service state verification
+
+```bash
+make verify-management-restore
+```
+
+This selectively restores Homepage, Portainer, Beszel Hub and Agent, Uptime Kuma, Caddy, and Jellyfin state into a new `/srv/storage/restores/management-verify-*` audit directory. It requires at least one non-empty restored file for each service and reports only aggregate counts and sizes.
+
+The command does not stop containers or copy anything into live application paths. A successful run ends with `MANAGEMENT_RESTORE_VERIFY_OK`.
+
+The first isolated management-state restore completed successfully on 2026-07-28. State for all seven declared targets was restored into a timestamped audit directory, and the live services remained running.
+
 ## Post-restore verification
 
 After an application-aware recovery, run:

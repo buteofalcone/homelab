@@ -88,7 +88,7 @@ Further Time Machine verification is intentionally paused after the successful A
 - [x] Add a safety-gated storage and `/etc/fstab` runbook without automatic formatting
 - [x] Verify disposable Nextcloud PostgreSQL import and control tables
 - [x] Verify disposable Immich PostgreSQL import and control tables
-- [ ] Restore and verify management-service state
+- [x] Restore and verify management-service state into an isolated audit directory
 - [x] Add a single post-restore verification command
 - [ ] Complete a measured clean-machine recovery drill
 
