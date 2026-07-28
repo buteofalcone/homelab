@@ -52,7 +52,7 @@ This command is read-only. It checks the operating system, architecture, require
 The following work is intentionally not automated yet:
 
 1. Enroll the server in Tailscale through an authenticated owner-controlled action.
-2. Identify and mount the correct storage device using the future safety-gated storage runbook.
+2. Identify and mount the correct storage device using the safety-gated storage runbook.
 3. Recreate `/etc/homelab` secrets from the offline inventory.
 4. Configure Cockpit and RDP after the server has its Tailscale address.
 5. Initialize or connect Restic and restore mutable data.
@@ -61,6 +61,8 @@ The following work is intentionally not automated yet:
 8. Measure a complete clean-machine recovery drill.
 
 Until these phases are implemented and tested, `make install` remains a deployment command for a prepared host, not a complete disaster-recovery bootstrap.
+
+The tracked [`storage-recovery.md`](storage-recovery.md) runbook and `make storage-inventory` command cover the safety-gated storage handoff. Actual partitioning, formatting, and `/etc/fstab` changes remain manual and require explicit approval for the verified device.
 
 ## Offline recovery-secret inventory
 
