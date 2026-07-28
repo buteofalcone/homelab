@@ -100,7 +100,7 @@ fi
 
 docker exec -e MEDIA_ADMIN_USER="${media_user}" -e BASE_DOMAIN="${BASE_DOMAIN}" -e MIN_FREE_BYTES="${min_free_bytes}" qbittorrent /bin/sh -c '
   password="$(cat /run/secrets/qbittorrent-password)"
-  json="$(printf '\''{"web_ui_username":"%s","web_ui_password":"%s","save_path":"/data/downloads/torrents","temp_path":"/data/downloads/incomplete","temp_path_enabled":true,"start_paused_enabled":false,"disk_free_space_limit":%s,"web_ui_host_header_validation_enabled":true,"web_ui_domain_list":"localhost;torrent.%s","web_ui_csrf_protection_enabled":true,"web_ui_clickjacking_protection_enabled":true,"upnp":false,"random_port":false,"listen_port":6881}'\'' "${MEDIA_ADMIN_USER}" "${password}" "${MIN_FREE_BYTES}" "${BASE_DOMAIN}")"
+  json="$(printf '\''{"web_ui_username":"%s","web_ui_password":"%s","save_path":"/data/downloads/torrents","temp_path":"/data/downloads/incomplete","temp_path_enabled":true,"start_paused_enabled":false,"disk_free_space_limit":%s,"web_ui_host_header_validation_enabled":true,"web_ui_domain_list":"localhost;qbittorrent;torrent.%s","web_ui_csrf_protection_enabled":true,"web_ui_clickjacking_protection_enabled":true,"upnp":false,"random_port":false,"listen_port":6881}'\'' "${MEDIA_ADMIN_USER}" "${password}" "${MIN_FREE_BYTES}" "${BASE_DOMAIN}")"
   curl -fsS --cookie /tmp/qb-cookie --header "Referer: http://localhost:8080" \
     --data-urlencode "json=${json}" http://localhost:8080/api/v2/app/setPreferences
   rm -f /tmp/qb-cookie
