@@ -1,85 +1,91 @@
-- Management:
-    - Portainer:
-        icon: portainer.svg
-        href: https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Docker management
-        server: local
-        container: portainer
+- Сімейний сервер:
+    - Як користуватися:
+        icon: mdi-book-open-page-variant
+        href: https://github.com/buteofalcone/homelab/blob/feature/base-management-stack/docs/family-guide-uk.md
+        description: Коротка інструкція для всієї сім’ї
 
-    - Beszel:
-        icon: beszel.svg
-        href: https://beszel.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Server metrics
-        server: local
-        container: beszel
-
-    - Uptime Kuma:
-        icon: uptime-kuma.svg
-        href: https://uptime.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Service monitoring
-        server: local
-        container: uptime-kuma
-
-- Applications:
     - Nextcloud:
         icon: nextcloud.svg
         href: https://nextcloud.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Files and sync
+        description: Документи, файли та сімейний чат
         server: local
         container: nextcloud
 
     - Immich:
         icon: immich.svg
         href: https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Photo library
+        description: Приватна фотогалерея і синхронізація
         server: local
         container: immich-server
 
     - Jellyfin:
         icon: jellyfin.svg
         href: https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Media server
+        description: Фільми та серіали без реклами
         server: local
         container: jellyfin
-
-    - Butenko AI:
-        icon: open-webui.svg
-        href: https://ai.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Private family AI chat
-        server: local
-        container: open-webui
 
     - Books:
         icon: calibre.svg
         href: https://books.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Family EPUB library
+        description: Книги EPUB для Apple Books
         server: local
         container: calibre
 
+    - Butenko AI:
+        icon: open-webui.svg
+        href: https://ai.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Приватний сімейний AI-чат
+        server: local
+        container: open-webui
+
+- Керування сервером:
+    - Portainer:
+        icon: portainer.svg
+        href: https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Керування Docker
+        server: local
+        container: portainer
+
+    - Beszel:
+        icon: beszel.svg
+        href: https://beszel.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Навантаження і ресурси сервера
+        server: local
+        container: beszel
+
+    - Uptime Kuma:
+        icon: uptime-kuma.svg
+        href: https://uptime.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Стан і доступність сервісів
+        server: local
+        container: uptime-kuma
+
+- Медіатека — власник:
     - Calibre Admin:
         icon: calibre.svg
         href: https://calibre.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Convert and manage ebooks
+        description: Додавання та конвертація книг
         server: local
         container: calibre
 
     - qBittorrent:
         icon: qbittorrent.svg
         href: https://torrent.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Owner-only download client
+        description: Завантаження .torrent і magnet-посилань
         server: local
         container: qbittorrent
 
     - Sonarr:
         icon: sonarr.svg
         href: https://sonarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Owner-only TV library automation
+        description: Пошук та автоматизація серіалів
         server: local
         container: sonarr
 
     - Prowlarr:
         icon: prowlarr.svg
         href: https://prowlarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
-        description: Owner-only indexer management
+        description: Налаштування джерел пошуку
         server: local
         container: prowlarr

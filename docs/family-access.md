@@ -2,6 +2,8 @@
 
 Family devices connect through Tailscale and use normal HTTPS URLs:
 
+A short Ukrainian user guide is available at [`docs/family-guide-uk.md`](family-guide-uk.md) and from the first card on Homepage.
+
 | Service | URL |
 | --- | --- |
 | Homepage | `https://home.butenko.online` |
