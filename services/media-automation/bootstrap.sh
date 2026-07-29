@@ -139,6 +139,21 @@ for config_file in /srv/appdata/sonarr/config.xml /srv/appdata/prowlarr/config.x
 done
 compose --profile media-automation up -d sonarr prowlarr radarr seerr
 
+for attempt in {1..60}; do
+  if docker exec sonarr curl -fsS http://127.0.0.1:8989/ping >/dev/null 2>&1 \
+    && docker exec prowlarr curl -fsS http://127.0.0.1:9696/ping >/dev/null 2>&1 \
+    && docker exec radarr curl -fsS http://127.0.0.1:7878/ping >/dev/null 2>&1 \
+    && docker exec seerr wget --quiet --tries=1 --spider http://127.0.0.1:5055/api/v1/settings/public >/dev/null 2>&1; then
+    break
+  fi
+  sleep 2
+done
+docker exec sonarr curl -fsS http://127.0.0.1:8989/ping >/dev/null || die 'Sonarr did not become ready.'
+docker exec prowlarr curl -fsS http://127.0.0.1:9696/ping >/dev/null || die 'Prowlarr did not become ready.'
+docker exec radarr curl -fsS http://127.0.0.1:7878/ping >/dev/null || die 'Radarr did not become ready.'
+docker exec seerr wget --quiet --tries=1 --spider http://127.0.0.1:5055/api/v1/settings/public \
+  || die 'Seerr did not become ready.'
+
 "${service_dir}/configure-integrations.sh"
 
 install -m 0644 -o "${PUID}" -g "${PGID}" \
