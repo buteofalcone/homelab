@@ -124,6 +124,6 @@ On 2026-07-28:
 - Calibre 9.11 reported healthy, its administration route required authentication, its Content server returned HTTP 200 at `books.butenko.online`, and a generated source document was converted to EPUB and added to the library.
 - Nextcloud Talk 23.0.9 was enabled on Nextcloud 33.0.7; its app integrity, OCC commands, and private HTTPS route passed the tracked verification helper.
 
-On 2026-07-29, the bounded media test downloaded one public-domain episode of *The Adventures of Ozzie & Harriet*. Sonarr imported S01E01 automatically, the qBittorrent and library paths shared one inode with link count 2, and Jellyfin could read the imported file through `/media/TV`. A Jellyfin `Серіали` library was created for `/media/TV`; it discovered the show and S1:E1. `make media-automation-test-verify` reported `MEDIA_PUBLIC_DOMAIN_TEST_VERIFY_OK`.
+On 2026-07-29, the bounded media test downloaded one public-domain episode of *The Adventures of Ozzie & Harriet*. Sonarr imported S01E01 automatically, the qBittorrent and library paths shared one inode with link count 2, and Jellyfin could read the imported file through `/media/TV`. A Jellyfin `Серіали` library was created for `/media/TV`; it discovered the show and S1:E1. `make media-automation-test-verify` reported `MEDIA_PUBLIC_DOMAIN_TEST_VERIFY_OK`. Uptime Kuma monitors qBittorrent, Sonarr, and Prowlarr internally with the existing Telegram alert channel; all three reported `up`.
 
 No container, firewall rule, package, mount, database, application data, or secret was changed during this audit.

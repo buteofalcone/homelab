@@ -12,6 +12,9 @@ Uptime Kuma runs at `https://uptime.butenko.online`. The recommended HTTP monito
 | Nextcloud | `http://nextcloud/status.php` |
 | Immich | `http://immich-server:2283/api/server/ping` |
 | Jellyfin | `http://jellyfin:8096/health` |
+| qBittorrent | TCP connection to `qbittorrent:8080` |
+| Sonarr | `http://sonarr:8989/ping` |
+| Prowlarr | `http://prowlarr:9696/ping` |
 | Cockpit | `https://100.65.83.35:9090` (ignore TLS errors) |
 | Internet connectivity | `https://1.1.1.1/cdn-cgi/trace` |
 
