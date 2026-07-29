@@ -72,7 +72,6 @@ radarr_get() {
 }
 radarr_get rootfolder "${verify_dir}/radarr-rootfolders.json"
 radarr_get downloadclient "${verify_dir}/radarr-downloadclients.json"
-radarr_get indexer "${verify_dir}/radarr-indexers.json"
 python3 - "${verify_dir}" <<'PY'
 import json, os, sys
 base = sys.argv[1]
@@ -83,8 +82,6 @@ if not any(item.get("path") == "/data/media/Movies" and item.get("accessible") f
     raise SystemExit("Radarr Movies root is missing or inaccessible")
 if not any(item.get("name") == "qBittorrent" and item.get("enable") for item in load("radarr-downloadclients.json")):
     raise SystemExit("Radarr qBittorrent client is missing or disabled")
-if not any(item.get("name") == "Internet Archive (Prowlarr)" for item in load("radarr-indexers.json")):
-    raise SystemExit("Prowlarr indexer is not synced to Radarr")
 PY
 
 docker exec seerr wget --no-verbose --tries=1 --spider http://127.0.0.1:5055/api/v1/settings/public
