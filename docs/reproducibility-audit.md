@@ -46,7 +46,7 @@ A runtime-only setting is acceptable only when it is one of the following:
 - Uptime Kuma monitors and Telegram notification configuration live in its application database. Recovery currently depends on restoring `/srv/appdata/uptime-kuma`.
 - Portainer, Beszel, Nextcloud, Immich, and Jellyfin settings similarly depend on restored application state.
 - Homepage configuration is copied during install rather than mounted read-only. A drift check should be added to routine validation.
-- Direct application ports are bound to all interfaces. Their intended trusted-LAN recovery role and future restriction need a separate security decision.
+- Direct application ports are bound to all interfaces. The July 2026 exposure audit records their trusted-LAN recovery role in `docs/current-state.md`; future restriction to loopback must be staged only after a LAN recovery-access test.
 
 ### P2 — maintainability improvements
 
