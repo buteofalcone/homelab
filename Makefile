@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -122,6 +122,12 @@ calibre-migration-preflight:
 
 calibre-migration-apply:
 	@sudo ./services/calibre/migrate-library.sh
+
+calibre-merge-preflight:
+	@sudo ./services/calibre/migration-preflight.sh /srv/storage/incoming/calibre-merge
+
+calibre-merge-apply:
+	@sudo ./services/calibre/merge-library.sh
 
 calibre:
 	@$(COMPOSE) --profile books up -d calibre

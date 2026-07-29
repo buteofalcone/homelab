@@ -29,6 +29,7 @@ install -d -m 0770 -o "${PUID}" -g "${PGID}" \
   /srv/storage/incoming \
   /srv/storage/incoming/books \
   /srv/storage/incoming/calibre-migration \
+  /srv/storage/incoming/calibre-merge \
   /srv/storage/incoming/torrents \
   /srv/storage/incoming/media \
   /srv/storage/incoming/transfer

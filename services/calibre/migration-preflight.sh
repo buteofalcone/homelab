@@ -9,7 +9,12 @@ require_root
 load_env
 
 readonly calibre_image="${CALIBRE_IMAGE:-lscr.io/linuxserver/calibre@sha256:1e9d545e20af654af9aca439a54cdd3988cf067f64efcd409cc2bc053aeb6d15}"
-readonly staging_dir=/srv/storage/incoming/calibre-migration
+readonly staging_dir="${1:-/srv/storage/incoming/calibre-migration}"
+
+case "${staging_dir}" in
+  /srv/storage/incoming/calibre-migration|/srv/storage/incoming/calibre-merge) ;;
+  *) die "Unsupported Calibre staging directory: ${staging_dir}" ;;
+esac
 
 mountpoint -q /srv/storage || die '/srv/storage is not a mounted filesystem.'
 [[ -d ${staging_dir} ]] || die "Missing migration directory: ${staging_dir}"
@@ -32,6 +37,7 @@ chown -R "${PUID}:${PGID}" "${verification_library}"
 
 docker run --rm \
   --user "${PUID}:${PGID}" \
+  --env CALIBRE_CONFIG_DIRECTORY=/tmp/calibre-config \
   --entrypoint calibredb \
   --volume "${verification_library}:/verification:rw" \
   "${calibre_image}" \

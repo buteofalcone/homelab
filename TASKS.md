@@ -145,8 +145,9 @@ Further Time Machine verification is intentionally paused after the successful A
 - [x] Define a private SMB `Inbox` staging boundary without exposing application data
 - [x] Add a dedicated root-only SMB credential and separate it from Time Machine accounts
 - [x] Add Calibre migration preflight, preserved fallback, and automatic rollback
-- [ ] Copy the closed Mac Calibre library into `Inbox/calibre-migration`
-- [ ] Validate and activate the migrated Calibre library
+- [x] Copy the closed Mac Calibre library into `Inbox/calibre-migration`
+- [x] Validate and activate the migrated 215-book Calibre library
+- [ ] Merge each additional closed library through `Inbox/calibre-merge`
 - [ ] Configure Nextcloud Desktop with a separate `~/Nextcloud` directory
 - [ ] Copy and verify documents before retiring the Google Drive sync
 - [ ] Select a non-Cloudflare, HTTPS-only public ingress for expiring Nextcloud file links

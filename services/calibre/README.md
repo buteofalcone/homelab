@@ -8,6 +8,7 @@ This service runs the complete Calibre 9.11 desktop application and CLI tools. I
 - `/srv/storage/books` — the Calibre library, including books and `metadata.db`, on the HDD.
 - `/srv/storage/incoming/books` — read-only input area for controlled imports.
 - `/srv/storage/incoming/calibre-migration` — staging for one complete library copied from a closed desktop Calibre.
+- `/srv/storage/incoming/calibre-merge` — staging for one additional complete library at a time.
 - `/etc/homelab/calibre-gui-password` — root-only web-desktop password.
 
 The library remains at the same host path when the temporary HDD is cloned to the final 8–16 TB disk.
@@ -59,6 +60,17 @@ make calibre-migration-apply
 ```
 
 The apply step stops only Calibre, preserves the existing server library as `/srv/storage/books.before-calibre-migration-TIMESTAMP`, moves the validated staging directory into `/srv/storage/books`, recreates an empty staging directory, and starts Calibre. If the new library does not become healthy, the script restores the previous library and preserves the failed import separately. Do not delete either Mac or server fallback copy until the Content server, metadata, covers, and several EPUB downloads have been checked.
+
+## Merging additional libraries
+
+Copy one closed additional Calibre library at a time into `Inbox/calibre-merge`; its `metadata.db` must be directly inside that directory. Then run:
+
+```bash
+make calibre-merge-preflight
+make calibre-merge-apply
+```
+
+The apply command requires the explicit phrase `MERGE_CALIBRE`. It exports the source through Calibre so OPF metadata, covers, formats, and extra files are retained, creates a timestamped rollback copy of the live library, and imports with `--automerge ignore`. A matching title/author gains missing formats without overwriting an existing same-format file. The staged source is retained as `calibre-merge.completed-TIMESTAMP` until the resulting library and backup are verified.
 
 Run a disposable conversion and library smoke test with:
 

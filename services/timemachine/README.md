@@ -42,6 +42,7 @@ Do not reuse Ubuntu, Tailscale, RDP, Restic, or application passwords.
 Inbox/
 ├── books/                individual sources for controlled Calibre import
 ├── calibre-migration/    one complete, closed Calibre library for migration
+├── calibre-merge/        one additional closed Calibre library for merge
 ├── torrents/             staging only; Seerr and the qBittorrent UI remain preferred
 ├── media/                manual media staging
 └── transfer/             temporary general file transfer
