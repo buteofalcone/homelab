@@ -120,7 +120,7 @@ for attempt in {1..5}; do
 import json, sys
 for path in sys.argv[1:]:
     with open(path, encoding="utf-8") as handle:
-        if not any(item.get("name") == "Toloka.to (Prowlarr)" and item.get("enable") for item in json.load(handle)):
+        if not any(item.get("name") == "Toloka.to (Prowlarr)" and item.get("enableAutomaticSearch") and item.get("enableInteractiveSearch") for item in json.load(handle)):
             raise SystemExit(1)
 PY
   then
@@ -188,7 +188,7 @@ python3 - "${work_dir}/sonarr-indexers.json" "${work_dir}/radarr-indexers.json" 
 import json, sys
 for app, path in zip(("Sonarr", "Radarr"), sys.argv[1:]):
     with open(path, encoding="utf-8") as handle:
-        if not any(item.get("name") == "Toloka.to (Prowlarr)" and item.get("enable") for item in json.load(handle)):
+        if not any(item.get("name") == "Toloka.to (Prowlarr)" and item.get("enableAutomaticSearch") and item.get("enableInteractiveSearch") for item in json.load(handle)):
             raise SystemExit(f"Toloka.to did not sync to {app}")
 PY
 
