@@ -128,6 +128,6 @@ On 2026-07-29, the bounded media test downloaded one public-domain episode of *T
 
 Jellyfin VA-API is enabled on the Intel Ivy Bridge iGPU. The container receives only `/dev/dri/renderD128` and the host `render` GID 990. A real low-bitrate playback used `-hwaccel vaapi`, `h264_vaapi`, and `scale_vaapi`; FFmpeg exited successfully. The preceding normal-quality playback used direct play.
 
-The ignored `.env.before-restructure` file is a 514-byte legacy environment file dated 2026-07-24 with mode `664`. Its variable names are a subset of the current `.env`, so it contains no unique configuration. It may contain stale credentials and must not be copied, exposed, or deleted until the owner explicitly confirms the secrets-retention decision.
+The 514-byte `.env.before-restructure` legacy environment file dated 2026-07-24 had mode `664` and variable names that were a subset of the current `.env`. After owner confirmation, it was removed on 2026-07-29. The current `.env` was not changed.
 
 No container, firewall rule, package, mount, database, application data, or secret was changed during this audit.
