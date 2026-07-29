@@ -170,6 +170,25 @@ Installation, indexer integration, and one small lawful automatic-download test 
 - [x] Add Radarr and Seerr monitoring and verify fresh backup coverage
 - [ ] Remove the temporary low-volume policy only after the larger HDD is verified
 
+## Google Photos Takeout and Immich remote ML
+
+- [ ] Inventory Takeout archive size, file types, sidecar coverage, and available `/srv/storage` capacity
+- [ ] Preserve an immutable independent copy of every Takeout archive outside Immich
+- [ ] Record the current Immich version, asset/album counts, ML settings, and complete database plus `/srv/storage/photos` backup baseline
+- [ ] Pin an `immich-go` release and checksum; store its scoped Immich API key only in a root-owned runtime secret
+- [ ] Build a representative small Takeout sample containing JSON sidecars, albums, dates/time zones, images, videos, edited items, and a deliberate duplicate
+- [ ] Run `immich-go upload from-google-photos --dry-run` against the sample and retain a sanitized import report
+- [ ] Import the sample into the final Immich instance and verify capture dates, descriptions, locations, albums, duplicate handling, and asset counts
+- [ ] Verify an idempotent sample rerun before authorizing the full Takeout import
+- [ ] Confirm independent backup and free-space gates before importing the complete Takeout
+- [ ] Add reproducible full-import, verification, retry, and recovery scripts without committing archives, logs with personal data, or API keys
+- [ ] On SilverBrick, verify WSL2/Docker, NVIDIA driver 545+, RTX 4060 container access, and a CUDA smoke test
+- [ ] Deploy the exact HP Server Immich-version CUDA ML image on SilverBrick with a persistent model cache
+- [ ] Expose ML TCP 3003 only on the Tailscale path and restrict Windows Firewall to the HP Server Tailscale IP
+- [ ] Add SilverBrick as the first Immich ML URL while retaining local ML as fallback during validation
+- [ ] Verify Smart Search and Face Detection on a small sample and confirm `CUDAExecutionProvider` plus RTX 4060 utilization
+- [ ] Document synchronized Immich/remote-ML upgrades and offline/fallback behavior before processing the full Takeout
+
 ## Jellyfin
 
 - [x] Confirm `/dev/dri/renderD128` exists

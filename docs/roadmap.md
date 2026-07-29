@@ -106,9 +106,31 @@ Order and dependencies:
 
 If a commercial VPN is later required for qBittorrent, use a dedicated network container and route only qBittorrent through it. Do not change the default network route for the entire server.
 
+### 6. Google Photos Takeout migration and SilverBrick Immich ML
+
+This milestone targets the existing final Immich instance on the HP Server. It has two independently reversible tracks: importing Google Photos data with `immich-go`, and moving normal machine-learning work to the SilverBrick RTX 4060 through Immich remote ML.
+
+Takeout import order and gates:
+
+1. Inventory the archives and preserve an immutable copy outside Immich. Never make `/srv/storage/photos` the only copy.
+2. Capture the current Immich version and asset, album, job, database, and storage baselines; verify the database dump and photo-file backup before upload.
+3. Pin the `immich-go` binary and checksum. Keep the scoped API key in a root-only runtime secret, never Git or an import log.
+4. Create a small representative sample with images, video, Google JSON sidecars, albums, time zones, an edited item, and a known duplicate.
+5. Run a dry-run, then import only the sample. Verify capture dates, descriptions, GPS data, album membership, duplicate behavior, counts, and an idempotent rerun.
+6. Commit reproducible import and verification scripts before the full run. The full import requires enough free space plus an independent photo backup and retains a sanitized report for retry and reconciliation.
+
+Remote ML order and gates:
+
+1. Verify WSL2 or Docker on SilverBrick, NVIDIA driver 545 or newer, Docker GPU access, and an isolated CUDA smoke test.
+2. Deploy the CUDA `immich-machine-learning` image at exactly the same Immich version as the HP Server and persist its model cache.
+3. Bind TCP 3003 only to the private Tailscale path and restrict Windows Firewall to `100.65.83.35`; the ML service has no application authentication and must never be public.
+4. Add `http://100.91.171.26:3003` as the first ML URL while retaining `http://immich-machine-learning:3003` as fallback during validation.
+5. Process only the sample, confirm Smart Search and Face Detection, inspect logs for `CUDAExecutionProvider`, and observe RTX 4060 use.
+6. Keep synchronized HP Server and SilverBrick image upgrades in Git. Choose remote-only mode only after explicit acceptance of failed ML jobs whenever SilverBrick is offline; remote-first with local fallback is the safer default.
+
 ## Deferred until September 2026
 
-### 6. Replace the storage HDD
+### 7. Replace the storage HDD
 
 - install and SMART-test an 8-16 TB HDD;
 - migrate or clone the current `/srv/storage` data;
@@ -116,11 +138,11 @@ If a commercial VPN is later required for qBittorrent, use a dedicated network c
 - verify ownership, containers, Restic, and Time Machine;
 - increase Time Machine limits only after the new disk is verified.
 
-### 7. External or off-site backup
+### 8. External or off-site backup
 
 Select an external USB disk, another trusted machine, or object storage. Protect Nextcloud files, Immich photos, important media, Time Machine data where appropriate, and recovery secrets. The current local Restic repository remains on the same HDD and is not protection against loss of that disk.
 
-### 8. AdGuard Home
+### 9. AdGuard Home
 
 Deploy only after router access is available. It will provide local DNS through router DHCP and complement, not replace, Cloudflare DNS, `butenko.online`, Caddy, Let's Encrypt, or Tailscale.
 

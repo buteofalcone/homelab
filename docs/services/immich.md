@@ -29,3 +29,9 @@ The homelab backup script creates an Immich PostgreSQL dump before Restic runs. 
 ## Resources and updates
 
 Immich is resource-intensive and evolves quickly. On this server, the initial machine-learning indexing may cause sustained CPU load. Read release notes before upgrades and keep automatic Watchtower updates disabled for the Immich stack.
+
+## Planned Google Photos migration and remote ML
+
+Google Photos Takeout will be imported with a pinned `immich-go` release because it can pair media with Google JSON sidecars and reconstruct albums and capture metadata. The first run must use a small representative sample and a dry-run; the complete archives remain immutable until asset counts, dates, albums, duplicates, and backup coverage are verified.
+
+SilverBrick is the planned remote machine-learning host for its RTX 4060. The CUDA ML container must match the HP Server Immich version exactly, remain reachable only from the HP Server over Tailscale, and keep its model cache persistent. Start with the SilverBrick URL first and the local ML container second as fallback. The remote service has no authentication, so TCP 3003 must never be exposed publicly.
