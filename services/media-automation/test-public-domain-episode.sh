@@ -73,6 +73,19 @@ PY
   series_id="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8"))["id"])' "${work_dir}/series-response.json")"
 fi
 
+sonarr_get "series/${series_id}" "${work_dir}/series-current.json"
+python3 - "${work_dir}/series-current.json" "${work_dir}/series-monitor-payload.json" <<'PY'
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as handle:
+    item = json.load(handle)
+if item.get("cleanTitle") != "theadventuresozzieharriet":
+    raise SystemExit(f"Unexpected series clean title: {item.get('cleanTitle')}")
+item["monitored"] = True
+with open(sys.argv[2], "w", encoding="utf-8") as handle:
+    json.dump(item, handle)
+PY
+sonarr_write PUT "series/${series_id}" "${work_dir}/series-monitor-payload.json" "${work_dir}/series-monitor-response.json"
+
 echo STEP_PUBLIC_DOMAIN_EPISODE
 sonarr_get "episode?seriesId=${series_id}" "${work_dir}/episodes.json"
 episode_id="$(python3 - "${work_dir}/episodes.json" "${work_dir}/episode-payload.json" <<'PY'
@@ -103,34 +116,43 @@ if [[ ${already_present} == yes ]]; then
   echo STEP_PUBLIC_DOMAIN_RELEASE_ALREADY_PRESENT
 else
   echo STEP_PUBLIC_DOMAIN_RELEASE_PUSH
-  sonarr_get indexer "${work_dir}/indexers.json"
   sonarr_get downloadclient "${work_dir}/download-clients.json"
-  python3 - "${work_dir}/indexers.json" "${work_dir}/download-clients.json" "${work_dir}/release-payload.json" <<'PY'
+  python3 - "${work_dir}/download-clients.json" "${work_dir}/release-payload.json" <<'PY'
 import json, sys
 
 with open(sys.argv[1], encoding="utf-8") as handle:
-    indexer = next(item for item in json.load(handle) if "internet archive" in item.get("name", "").lower())
-with open(sys.argv[2], encoding="utf-8") as handle:
     client = next(item for item in json.load(handle) if item.get("implementation") == "QBittorrent")
 
 payload = {
-    "title": "The.Adventures.of.Ozzie.and.Harriet.S01E01.The.Rivals.480p.WEB-DL.x264",
+    "title": "The.Adventures.Ozzie.Harriet.S01E01.The.Rivals.480p.WEB-DL.x264",
     "size": 286244644,
     "downloadUrl": "https://archive.org/download/season-1-episode-1/season-1-episode-1_archive.torrent",
     "infoUrl": "https://archive.org/details/season-1-episode-1",
     "publishDate": "2019-01-01T00:00:00Z",
     "protocol": "torrent",
-    "indexerId": indexer["id"],
-    "indexer": indexer["name"],
     "downloadClientId": client["id"],
 }
 if not 1_000_000 <= payload["size"] <= 1_000_000_000:
     raise SystemExit("Public-domain test release exceeds the 1 GB safety limit")
-with open(sys.argv[3], "w", encoding="utf-8") as handle:
+with open(sys.argv[2], "w", encoding="utf-8") as handle:
     json.dump(payload, handle)
 print(f"Selected exact Internet Archive episode ({payload['size']} bytes)")
 PY
-  sonarr_write POST release/push "${work_dir}/release-payload.json" "${work_dir}/release-response.json"
+  if ! sonarr_write POST release/push "${work_dir}/release-payload.json" "${work_dir}/release-response.json"; then
+    cat "${work_dir}/release-response.json" >&2
+    die 'Sonarr release push failed.'
+  fi
+  python3 - "${work_dir}/release-response.json" <<'PY'
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as handle:
+    items = json.load(handle)
+if len(items) != 1:
+    raise SystemExit(f"Unexpected Sonarr release response: {items}")
+item = items[0]
+if item.get("rejected"):
+    raise SystemExit(f"Sonarr rejected the release: {item.get('rejections')}")
+print("Sonarr accepted the exact public-domain release")
+PY
 fi
 
 echo MEDIA_PUBLIC_DOMAIN_TEST_STARTED
