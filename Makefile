@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify media-automation-test media-automation-test-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify media-automation-test media-automation-test-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -16,6 +16,7 @@ help:
 	  'make storage-inventory   Read-only disk and /srv/storage inventory' \
 	  'make validate       Validate Docker Compose configuration' \
 	  'make install        Create host directories and start base services' \
+	  'make homepage-deploy  Publish tracked Homepage configuration (requires sudo)' \
 	  'make base           Start management services and Caddy' \
 	  'make nextcloud      Start Nextcloud stack' \
 	  'make nextcloud-talk-bootstrap  Install and enable compatible Nextcloud Talk' \
@@ -70,6 +71,9 @@ validate:
 
 install:
 	@sudo ./scripts/install.sh
+
+homepage-deploy:
+	@sudo ./scripts/deploy-homepage.sh
 
 base:
 	@$(COMPOSE) up -d

@@ -5,6 +5,7 @@ Homepage is the landing page for the server. Its configuration is versioned unde
 After changing its static configuration, rerun:
 
 ```bash
-sudo ./scripts/install.sh
-docker compose restart homepage
+make homepage-deploy
 ```
+
+The command copies only the tracked Homepage configuration, preserves its generated environment file, validates the Compose model, and restarts only Homepage.
