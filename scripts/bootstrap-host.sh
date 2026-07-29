@@ -39,13 +39,15 @@ apt-get install -y \
   curl \
   git \
   gnome-remote-desktop \
+  i965-va-driver \
   gnupg \
   make \
   nftables \
   openssh-server \
   openssl \
   restic \
-  smartmontools
+  smartmontools \
+  vainfo
 
 install_docker() {
   local conflicting_packages=(docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc)

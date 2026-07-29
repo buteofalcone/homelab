@@ -157,12 +157,12 @@ Installation, indexer integration, and one small lawful automatic-download test 
 ## Jellyfin
 
 - [x] Confirm `/dev/dri/renderD128` exists
-- [ ] Install `vainfo`
-- [ ] Verify Intel VA-API support on the host
-- [ ] Determine the required `video` and `render` group IDs
-- [ ] Add the minimal `/dev/dri` device mapping to Compose
-- [ ] Verify hardware transcoding from Jellyfin logs and dashboard
-- [ ] Confirm direct play still works
+- [x] Install `vainfo`
+- [x] Verify Intel VA-API support on the host
+- [x] Determine the required `video` and `render` group IDs
+- [x] Add the minimal `/dev/dri` device mapping to Compose
+- [x] Verify hardware transcoding from Jellyfin logs and dashboard
+- [x] Confirm direct play still works
 
 ## Security and housekeeping
 
