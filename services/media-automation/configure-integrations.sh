@@ -34,7 +34,7 @@ arr_write() {
   local container="$1" port="$2" version="$3" key="$4" method="$5" path="$6" input="$7" output="$8"
   docker exec -i -e ARR_KEY="${key}" -e ARR_METHOD="${method}" \
     -e ARR_URL="http://127.0.0.1:${port}/api/${version}/${path}" \
-    "${container}" /bin/sh -c 'curl -fsS --request "${ARR_METHOD}" -H "X-Api-Key: ${ARR_KEY}" -H "Content-Type: application/json" --data-binary @- "${ARR_URL}"' \
+    "${container}" /bin/sh -c 'curl --fail-with-body --silent --show-error --request "${ARR_METHOD}" -H "X-Api-Key: ${ARR_KEY}" -H "Content-Type: application/json" --data-binary @- "${ARR_URL}"' \
     <"${input}" >"${output}"
 }
 

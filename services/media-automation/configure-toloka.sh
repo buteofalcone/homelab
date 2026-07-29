@@ -46,7 +46,7 @@ prowlarr_get() {
 prowlarr_write() {
   local method="$1" path="$2" input="$3" output="$4"
   docker exec -i -e PROWLARR_API_KEY="${prowlarr_api_key}" -e API_METHOD="${method}" -e API_PATH="${path}" \
-    prowlarr /bin/sh -c 'curl -fsS --request "${API_METHOD}" -H "X-Api-Key: ${PROWLARR_API_KEY}" -H "Content-Type: application/json" --data-binary @- "http://127.0.0.1:9696/api/v1/${API_PATH}"' \
+    prowlarr /bin/sh -c 'curl --fail-with-body --silent --show-error --request "${API_METHOD}" -H "X-Api-Key: ${PROWLARR_API_KEY}" -H "Content-Type: application/json" --data-binary @- "http://127.0.0.1:9696/api/v1/${API_PATH}"' \
     <"${input}" >"${output}"
 }
 
