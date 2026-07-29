@@ -41,7 +41,7 @@ The following Compose services were running:
 - Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
 - Private AI: `open-webui`, connected through Tailscale to authenticated LM Studio on SilverBrick.
 
-`watchtower` is declared but intentionally not running. Stateful application updates remain manual.
+`watchtower` is declared but intentionally not running. Its logs show that rolling restart validation rejects the `homepage` dependency on `homepage-docker-proxy`; stateful application updates remain manual.
 
 Host services are also active: Docker, Tailscale, OpenSSH, Cockpit, GNOME Remote Desktop, the RDP nftables filter, the backup timer, and the health timer.
 
@@ -127,5 +127,7 @@ On 2026-07-28:
 On 2026-07-29, the bounded media test downloaded one public-domain episode of *The Adventures of Ozzie & Harriet*. Sonarr imported S01E01 automatically, the qBittorrent and library paths shared one inode with link count 2, and Jellyfin could read the imported file through `/media/TV`. A Jellyfin `Серіали` library was created for `/media/TV`; it discovered the show and S1:E1. `make media-automation-test-verify` reported `MEDIA_PUBLIC_DOMAIN_TEST_VERIFY_OK`. Uptime Kuma monitors qBittorrent, Sonarr, and Prowlarr internally with the existing Telegram alert channel; all three reported `up`.
 
 Jellyfin VA-API is enabled on the Intel Ivy Bridge iGPU. The container receives only `/dev/dri/renderD128` and the host `render` GID 990. A real low-bitrate playback used `-hwaccel vaapi`, `h264_vaapi`, and `scale_vaapi`; FFmpeg exited successfully. The preceding normal-quality playback used direct play.
+
+The ignored `.env.before-restructure` file is a 514-byte legacy environment file dated 2026-07-24 with mode `664`. Its variable names are a subset of the current `.env`, so it contains no unique configuration. It may contain stale credentials and must not be copied, exposed, or deleted until the owner explicitly confirms the secrets-retention decision.
 
 No container, firewall rule, package, mount, database, application data, or secret was changed during this audit.

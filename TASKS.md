@@ -166,9 +166,9 @@ Installation, indexer integration, and one small lawful automatic-download test 
 
 ## Security and housekeeping
 
-- [ ] Review the purpose and age of ignored `.env.before-restructure` without exposing its contents
+- [x] Review the purpose and age of ignored `.env.before-restructure` without exposing its contents
 - [ ] After a verified secrets backup, decide whether `.env.before-restructure` should be securely removed
-- [ ] Investigate why Watchtower is defined but not running; do not start it automatically
+- [x] Investigate why Watchtower is defined but not running; do not start it automatically
 - [ ] Review services bound to `0.0.0.0` and document the intended LAN/Tailscale exposure
 - [ ] Confirm no public router forwarding exists for SSH, RDP, Cockpit, or application ports
 - [ ] Review automatic-update policy for each stateful service
