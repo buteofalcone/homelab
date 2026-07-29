@@ -171,7 +171,7 @@ Installation, indexer integration, and one small lawful automatic-download test 
 - [x] Investigate why Watchtower is defined but not running; do not start it automatically
 - [x] Review services bound to `0.0.0.0` and document the intended LAN/Tailscale exposure
 - [ ] Confirm no public router forwarding exists for SSH, RDP, Cockpit, or application ports
-- [ ] Review automatic-update policy for each stateful service
+- [x] Review automatic-update policy for each stateful service
 
 ## Documentation
 
