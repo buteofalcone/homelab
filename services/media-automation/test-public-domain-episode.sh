@@ -101,20 +101,20 @@ PY
 sonarr_write PUT "episode/${episode_id}" "${work_dir}/episode-payload.json" "${work_dir}/episode-response.json"
 
 sonarr_get "queue?seriesIds=${series_id}&includeUnknownSeriesItems=true&page=1&pageSize=100" "${work_dir}/queue.json"
-already_present="$(python3 - "${work_dir}/episode-response.json" "${work_dir}/queue.json" <<'PY'
+presence="$(python3 - "${work_dir}/episode-response.json" "${work_dir}/queue.json" <<'PY'
 import json, sys
 with open(sys.argv[1], encoding="utf-8") as handle:
     episode = json.load(handle)
 with open(sys.argv[2], encoding="utf-8") as handle:
     queue = json.load(handle)
 queued = any(item.get("episodeId") == episode["id"] for item in queue.get("records", []))
-print("yes" if episode.get("hasFile") or queued else "no")
+print("file" if episode.get("hasFile") else "queued" if queued else "missing")
 PY
 )"
 
-if [[ ${already_present} == yes ]]; then
+if [[ ${presence} == file ]]; then
   echo STEP_PUBLIC_DOMAIN_RELEASE_ALREADY_PRESENT
-else
+elif [[ ${presence} == missing ]]; then
   echo STEP_PUBLIC_DOMAIN_RELEASE_PUSH
   sonarr_get downloadclient "${work_dir}/download-clients.json"
   python3 - "${work_dir}/download-clients.json" "${work_dir}/release-payload.json" <<'PY'
@@ -153,6 +153,10 @@ if item.get("rejected"):
     raise SystemExit(f"Sonarr rejected the release: {item.get('rejections')}")
 print("Sonarr accepted the exact public-domain release")
 PY
+fi
+
+if [[ ${presence} != file ]]; then
+  "${service_dir}/configure-public-domain-torrent.sh"
 fi
 
 echo MEDIA_PUBLIC_DOMAIN_TEST_STARTED

@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify media-automation-test media-automation-test-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -34,6 +34,7 @@ help:
 	  'make calibre-verify Run disposable Calibre conversion and service checks' \
 	  'make media-automation-bootstrap  Provision idle qBittorrent and Sonarr' \
 	  'make media-automation-verify  Verify media paths, auth and idle state' \
+	  'make media-automation-test-verify  Verify the public-domain import and hardlink' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
 	  'make update         Update base services only' \
@@ -129,6 +130,9 @@ media-automation-connect:
 
 media-automation-test:
 	@sudo ./services/media-automation/test-public-domain-episode.sh
+
+media-automation-test-verify:
+	@./services/media-automation/verify-public-domain-test.sh
 
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps

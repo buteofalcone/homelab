@@ -30,6 +30,12 @@ This idempotently creates the `/data/media/TV` root, the `tv-sonarr` qBittorrent
 
 `make media-automation-test` adds *The Adventures of Ozzie & Harriet*, leaves every episode unmonitored except S01E01 “The Rivals”, and pushes the exact 286 MB Internet Archive torrent through Sonarr. The direct push avoids ambiguous indexer parsing while preserving Sonarr tracking and automatic import. The helper refuses to run below the configured free-space floor and never selects the 221 GB complete-series pack. Festival Films lists “The Rivals” in its public-domain television catalog.
 
+The helper validates the torrent's five exact files, keeps only one 136 MB MP4, gives it a parseable `S01E01` name, and adds a direct HTTPS Archive webseed. After the import completes, verify qBittorrent completion, Sonarr state, the shared hardlink inode, and Jellyfin visibility:
+
+```bash
+make media-automation-test-verify
+```
+
 Owner URLs:
 
 - `https://torrent.butenko.online`
