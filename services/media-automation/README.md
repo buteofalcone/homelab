@@ -2,6 +2,8 @@
 
 This module provides qBittorrent, Sonarr, Prowlarr, Radarr, and Seerr. Prowlarr centralizes indexers and syncs them to Sonarr and Radarr. Seerr provides the family-facing search/request interface backed by Jellyfin accounts. Indexer credentials and application API keys remain runtime secrets and are never committed to Git.
 
+The Toloka indexer preserves Cyrillic release titles. Removing Cyrillic text can leave only quality and year fragments, preventing Radarr and Sonarr from matching a release to the requested media.
+
 Both containers mount `/srv/storage` as `/data`:
 
 - downloads: `/data/downloads/torrents`

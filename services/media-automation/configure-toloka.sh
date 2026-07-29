@@ -74,7 +74,7 @@ values = {
     "username": os.environ["TOLOKA_USERNAME"],
     "password": os.environ["TOLOKA_PASSWORD"],
     "freeleechOnly": False,
-    "stripCyrillicLetters": True,
+    "stripCyrillicLetters": False,
     "torrentBaseSettings.preferMagnetUrl": False,
 }
 for field in item["fields"]:
