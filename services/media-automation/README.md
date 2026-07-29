@@ -46,7 +46,9 @@ Open `https://requests.butenko.online` after bootstrap and complete the one-time
 1. Select Jellyfin and connect to internal URL `http://jellyfin:8096`; set the external URL to `https://jellyfin.butenko.online`.
 2. Sign in with the Jellyfin administrator once, then import the allowed Jellyfin users.
 3. Add Sonarr at `http://sonarr:8989` with root `/data/media/TV` and Radarr at `http://radarr:7878` with root `/data/media/Movies`.
-4. Choose whether family requests require owner approval. Automatic approval should be enabled only per trusted user and with disk limits understood.
+4. Keep the default family permission limited to submitting non-4K requests. Owner approval is required; automatic approval remains disabled while the temporary 500 GB disk is in use.
+
+The current server uses the `HD-720p` profile for both applications, enables automatic searching only after approval, and enables Jellyfin scans. Jellyfin libraries are `Серіали` at `/media/TV` and `Фільми` at `/media/Movies`.
 
 Seerr data is persisted under `/srv/appdata/seerr` and included in the normal Restic snapshot.
 

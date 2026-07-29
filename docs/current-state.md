@@ -36,7 +36,7 @@ The following Compose services were running:
 - Management and routing: `homepage`, `homepage-docker-proxy`, `portainer`, `beszel`, `beszel-agent`, `uptime-kuma`, `caddy`.
 - Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`, with Talk 23.0.9 enabled inside Nextcloud.
 - Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
-- Media: `jellyfin`, `qbittorrent`, `sonarr`, `prowlarr`, `radarr`, and `seerr` (Radarr/Seerr deployment pending runtime bootstrap at this commit).
+- Media: `jellyfin`, `qbittorrent`, `sonarr`, `prowlarr`, `radarr`, and `seerr`.
 - Books: full Calibre 9.11 desktop application and its built-in Content server, both provided by the single `calibre` container.
 - Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
 - Private AI: `open-webui`, connected through Tailscale to authenticated LM Studio on SilverBrick.
@@ -139,6 +139,10 @@ On 2026-07-28:
 - Nextcloud Talk 23.0.9 was enabled on Nextcloud 33.0.7; its app integrity, OCC commands, and private HTTPS route passed the tracked verification helper.
 
 On 2026-07-29, the bounded media test downloaded one public-domain episode of *The Adventures of Ozzie & Harriet*. Sonarr imported S01E01 automatically, the qBittorrent and library paths shared one inode with link count 2, and Jellyfin could read the imported file through `/media/TV`. A Jellyfin `Серіали` library was created for `/media/TV`; it discovered the show and S1:E1. `make media-automation-test-verify` reported `MEDIA_PUBLIC_DOMAIN_TEST_VERIFY_OK`. Uptime Kuma monitors qBittorrent, Sonarr, and Prowlarr internally with the existing Telegram alert channel; all three reported `up`.
+
+Radarr, Seerr, and the built-in Toloka.to Prowlarr indexer were deployed and verified on 2026-07-29. Toloka credentials remain only in root-readable runtime state. Prowlarr supplies Toloka searches to both Sonarr and Radarr, and both applications send approved downloads to qBittorrent with separate categories. Seerr uses Jellyfin accounts, internal Docker service addresses, the `HD-720p` default profile, and roots `/data/media/TV` and `/data/media/Movies`. New family accounts may submit requests but cannot approve them automatically; 4K requests are disabled. Jellyfin now has `Серіали` and `Фільми` libraries mapped to `/media/TV` and `/media/Movies`.
+
+Uptime Kuma monitors Radarr and Seerr through their internal Docker endpoints with the existing Telegram notification channel; both reported `up`. A fresh Restic snapshot and the full backup verification completed successfully after the Seerr onboarding, covering the Radarr configuration, Seerr database, and root-only Toloka recovery file.
 
 Jellyfin VA-API is enabled on the Intel Ivy Bridge iGPU. The container receives only `/dev/dri/renderD128` and the host `render` GID 990. A real low-bitrate playback used `-hwaccel vaapi`, `h264_vaapi`, and `scale_vaapi`; FFmpeg exited successfully. The preceding normal-quality playback used direct play.
 

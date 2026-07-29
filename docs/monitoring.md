@@ -15,6 +15,8 @@ Uptime Kuma runs at `https://uptime.butenko.online`. The recommended HTTP monito
 | qBittorrent | TCP connection to `qbittorrent:8080` |
 | Sonarr | `http://sonarr:8989/ping` |
 | Prowlarr | `http://prowlarr:9696/ping` |
+| Radarr | `http://radarr:7878/ping` |
+| Seerr | `http://seerr:5055/api/v1/status` |
 | Cockpit | `https://100.65.83.35:9090` (ignore TLS errors) |
 | Internet connectivity | `https://1.1.1.1/cdn-cgi/trace` |
 
