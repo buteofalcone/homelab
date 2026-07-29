@@ -6,6 +6,8 @@ services:
     profiles:
       - jellyfin
     user: "${PUID:-1000}:${PGID:-1000}"
+    group_add:
+      - "${JELLYFIN_RENDER_GID:-990}"
     ports:
       - "${JELLYFIN_PORT:-8096}:8096/tcp"
       - "7359:7359/udp"
@@ -16,6 +18,8 @@ services:
       - /srv/appdata/jellyfin/config:/config
       - /srv/appdata/jellyfin/cache:/cache
       - /srv/storage/media:/media:ro
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
     networks:
       - homelab
     labels:
