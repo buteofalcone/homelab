@@ -25,6 +25,13 @@
         server: local
         container: jellyfin
 
+    - Замовити фільм або серіал:
+        icon: seerr.svg
+        href: https://requests.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Зручний пошук у сімейній медіатеці
+        server: local
+        container: seerr
+
     - Books:
         icon: calibre.svg
         href: https://books.{{HOMEPAGE_VAR_BASE_DOMAIN}}
@@ -82,6 +89,13 @@
         description: Пошук та автоматизація серіалів
         server: local
         container: sonarr
+
+    - Radarr:
+        icon: radarr.svg
+        href: https://radarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Пошук та автоматизація фільмів
+        server: local
+        container: radarr
 
     - Prowlarr:
         icon: prowlarr.svg

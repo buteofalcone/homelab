@@ -45,12 +45,19 @@ fi
 if container_running qbittorrent && container_running sonarr && container_running prowlarr; then
   echo
   echo 'Checking media automation recovery files in the latest snapshot:'
-  for path in \
-    /srv/appdata/qbittorrent/qBittorrent/qBittorrent.conf \
-    /srv/appdata/sonarr/config.xml \
-    /srv/appdata/prowlarr/config.xml \
-    /etc/homelab/qbittorrent-password \
-    /etc/homelab/media-caddy.env; do
+  media_recovery_paths=(
+    /srv/appdata/qbittorrent/qBittorrent/qBittorrent.conf
+    /srv/appdata/sonarr/config.xml
+    /srv/appdata/prowlarr/config.xml
+    /etc/homelab/qbittorrent-password
+    /etc/homelab/media-caddy.env
+  )
+  container_running radarr && media_recovery_paths+=(/srv/appdata/radarr/config.xml)
+  if container_running seerr; then
+    media_recovery_paths+=(/srv/appdata/seerr/db/db.sqlite3)
+  fi
+  [[ -s /etc/homelab/toloka.env ]] && media_recovery_paths+=(/etc/homelab/toloka.env)
+  for path in "${media_recovery_paths[@]}"; do
     restic dump latest "${path}" >/dev/null
     printf 'OK   %s\n' "${path}"
   done

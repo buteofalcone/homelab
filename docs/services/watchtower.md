@@ -10,7 +10,7 @@ If the compatibility issue is deliberately resolved, Watchtower must run in labe
 com.centurylinklabs.watchtower.enable: "true"
 ```
 
-The current opt-in labels are limited to Homepage and Beszel hub/agent. All stateful or family-facing services remain manual: Caddy, Uptime Kuma, Jellyfin, Nextcloud, Immich, Portainer, Open WebUI, Calibre, Time Machine, qBittorrent, Sonarr, and Prowlarr.
+The current opt-in labels are limited to Homepage and Beszel hub/agent. All stateful or family-facing services remain manual: Caddy, Uptime Kuma, Jellyfin, Nextcloud, Immich, Portainer, Open WebUI, Calibre, Time Machine, qBittorrent, Sonarr, Prowlarr, Radarr, and Seerr.
 
 ## Manual update policy
 

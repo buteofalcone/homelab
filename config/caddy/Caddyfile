@@ -88,3 +88,16 @@ prowlarr.{$BASE_DOMAIN} {
 	}
 	reverse_proxy prowlarr:9696
 }
+
+radarr.{$BASE_DOMAIN} {
+	import common
+	basic_auth {
+		{$MEDIA_ADMIN_USER} {$MEDIA_ADMIN_HASH}
+	}
+	reverse_proxy radarr:7878
+}
+
+requests.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy seerr:5055
+}

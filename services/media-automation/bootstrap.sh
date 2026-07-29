@@ -22,9 +22,12 @@ install -d -m 0750 -o "${PUID}" -g "${PGID}" \
   /srv/appdata/qbittorrent \
   /srv/appdata/sonarr \
   /srv/appdata/prowlarr \
+  /srv/appdata/radarr \
+  /srv/appdata/seerr \
   /srv/storage/downloads/torrents \
   /srv/storage/downloads/incomplete \
-  /srv/storage/media/TV
+  /srv/storage/media/TV \
+  /srv/storage/media/Movies
 
 if [[ ! -s ${password_file} ]]; then
   while true; do
@@ -66,7 +69,7 @@ unset media_confirmation media_hash
 
 cd "${repo_dir}"
 compose --profile media-automation config --quiet
-compose --profile media-automation pull qbittorrent sonarr prowlarr
+compose --profile media-automation pull qbittorrent sonarr prowlarr radarr seerr
 compose --profile media-automation up -d qbittorrent
 
 for attempt in {1..30}; do
@@ -109,15 +112,16 @@ unset media_password temporary_password
 
 # Recreating removes the log that contained the one-time password.
 compose --profile media-automation up -d --force-recreate qbittorrent
-compose --profile media-automation up -d sonarr prowlarr
+compose --profile media-automation up -d sonarr prowlarr radarr seerr
 
 for attempt in {1..60}; do
-  [[ -s /srv/appdata/sonarr/config.xml && -s /srv/appdata/prowlarr/config.xml ]] && break
+  [[ -s /srv/appdata/sonarr/config.xml && -s /srv/appdata/prowlarr/config.xml && -s /srv/appdata/radarr/config.xml ]] && break
   sleep 2
 done
 [[ -s /srv/appdata/sonarr/config.xml ]] || die 'Sonarr did not create config.xml.'
 [[ -s /srv/appdata/prowlarr/config.xml ]] || die 'Prowlarr did not create config.xml.'
-compose --profile media-automation stop sonarr prowlarr
+[[ -s /srv/appdata/radarr/config.xml ]] || die 'Radarr did not create config.xml.'
+compose --profile media-automation stop sonarr prowlarr radarr
 
 set_xml_value() {
   local file="$1"
@@ -129,11 +133,11 @@ set_xml_value() {
     sed -i "s#</Config>#  <${key}>${value}</${key}>\n</Config>#" "${file}"
   fi
 }
-for config_file in /srv/appdata/sonarr/config.xml /srv/appdata/prowlarr/config.xml; do
+for config_file in /srv/appdata/sonarr/config.xml /srv/appdata/prowlarr/config.xml /srv/appdata/radarr/config.xml; do
   set_xml_value "${config_file}" AuthenticationMethod External
   set_xml_value "${config_file}" AuthenticationType Enabled
 done
-compose --profile media-automation up -d sonarr prowlarr
+compose --profile media-automation up -d sonarr prowlarr radarr seerr
 
 "${service_dir}/configure-integrations.sh"
 

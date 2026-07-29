@@ -22,6 +22,8 @@ install -d -m 0755 \
   /srv/appdata/immich/model-cache \
   /srv/appdata/jellyfin/config \
   /srv/appdata/jellyfin/cache \
+  /srv/appdata/radarr \
+  /srv/appdata/seerr \
   /srv/appdata/_backup-dumps \
   /srv/storage/files/nextcloud \
   /srv/storage/photos \

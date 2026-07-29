@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify media-automation-test media-automation-test-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -33,8 +33,9 @@ help:
 	  'make calibre        Start the provisioned Calibre services' \
 	  'make calibre-import BOOK=/srv/storage/incoming/books/file  Convert and import one book' \
 	  'make calibre-verify Run disposable Calibre conversion and service checks' \
-	  'make media-automation-bootstrap  Provision idle qBittorrent and Sonarr' \
+	  'make media-automation-bootstrap  Provision qBittorrent, Sonarr, Prowlarr, Radarr, and Seerr' \
 	  'make media-automation-verify  Verify media paths, auth and idle state' \
+	  'make media-automation-toloka  Securely configure the private Toloka.to indexer' \
 	  'make media-automation-test-verify  Verify the public-domain import and hardlink' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
@@ -131,6 +132,9 @@ media-automation-verify:
 
 media-automation-connect:
 	@sudo ./services/media-automation/configure-integrations.sh
+
+media-automation-toloka:
+	@sudo ./services/media-automation/configure-toloka.sh
 
 media-automation-test:
 	@sudo ./services/media-automation/test-public-domain-episode.sh

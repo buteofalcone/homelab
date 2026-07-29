@@ -36,7 +36,7 @@ The following Compose services were running:
 - Management and routing: `homepage`, `homepage-docker-proxy`, `portainer`, `beszel`, `beszel-agent`, `uptime-kuma`, `caddy`.
 - Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`, with Talk 23.0.9 enabled inside Nextcloud.
 - Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
-- Media: `jellyfin`, `qbittorrent`, `sonarr`, and `prowlarr`.
+- Media: `jellyfin`, `qbittorrent`, `sonarr`, `prowlarr`, `radarr`, and `seerr` (Radarr/Seerr deployment pending runtime bootstrap at this commit).
 - Books: full Calibre 9.11 desktop application and its built-in Content server, both provided by the single `calibre` container.
 - Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
 - Private AI: `open-webui`, connected through Tailscale to authenticated LM Studio on SilverBrick.

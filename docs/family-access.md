@@ -11,6 +11,7 @@ A short Ukrainian user guide is available at [`docs/family-guide-uk.md`](family-
 | Nextcloud Talk | `https://nextcloud.butenko.online/apps/spreed/` |
 | Immich | `https://immich.butenko.online` |
 | Jellyfin | `https://jellyfin.butenko.online` |
+| Movie and series requests | `https://requests.butenko.online` |
 | Butenko AI | `https://ai.butenko.online` |
 | Books | `https://books.butenko.online` |
 

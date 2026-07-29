@@ -82,7 +82,7 @@ PY
 )"
 echo "STEP_CLOUDFLARE_ZONE_FOUND"
 
-for label in home portainer beszel uptime nextcloud immich jellyfin ai calibre books torrent sonarr prowlarr; do
+for label in home portainer beszel uptime nextcloud immich jellyfin ai calibre books torrent sonarr prowlarr radarr requests; do
   fqdn="${label}.${domain}"
   cloudflare_api GET "/zones/${zone_id}/dns_records?type=A&name=${fqdn}" "${tmp_dir}/record.json"
   record_id="$(python3 - "${tmp_dir}/record.json" <<'PY'

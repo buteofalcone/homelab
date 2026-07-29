@@ -1,12 +1,13 @@
 # Media automation
 
-This module provides owner-only qBittorrent, Sonarr, and Prowlarr services. Prowlarr centralizes indexers and syncs them to Sonarr. Indexer credentials and application API keys remain runtime secrets and are never committed to Git.
+This module provides qBittorrent, Sonarr, Prowlarr, Radarr, and Seerr. Prowlarr centralizes indexers and syncs them to Sonarr and Radarr. Seerr provides the family-facing search/request interface backed by Jellyfin accounts. Indexer credentials and application API keys remain runtime secrets and are never committed to Git.
 
 Both containers mount `/srv/storage` as `/data`:
 
 - downloads: `/data/downloads/torrents`
 - incomplete downloads: `/data/downloads/incomplete`
 - TV library: `/data/media/TV`
+- movie library: `/data/media/Movies`
 
 This single mount preserves hardlinks and atomic moves. Jellyfin sees the same TV directory as `/media/TV`.
 
@@ -16,7 +17,7 @@ This single mount preserves hardlinks and atomic moves. Jellyfin sees the same T
 make media-automation-bootstrap
 ```
 
-The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr/Prowlarr authentication behind Caddy, connects the applications, adds Internet Archive, and verifies the complete pipeline. qBittorrent refuses new data when free space drops below `MEDIA_MIN_FREE_GB` (80 GiB by default).
+The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr/Prowlarr/Radarr authentication behind Caddy, connects the applications, adds Internet Archive, starts Seerr, and verifies the complete pipeline. qBittorrent refuses new data when free space drops below `MEDIA_MIN_FREE_GB` (80 GiB by default).
 
 Connect the applications and add the lawful Internet Archive indexer:
 
@@ -24,7 +25,30 @@ Connect the applications and add the lawful Internet Archive indexer:
 make media-automation-connect
 ```
 
-This idempotently creates the `/data/media/TV` root, the `tv-sonarr` qBittorrent download client, a full-sync Prowlarr application, and the public Internet Archive indexer. The qBittorrent password and Arr API keys are read only from runtime secret/config files.
+This idempotently creates the `/data/media/TV` and `/data/media/Movies` roots, the `tv-sonarr` and `movies-radarr` qBittorrent download clients, full-sync Prowlarr applications, and the public Internet Archive indexer. The qBittorrent password and Arr API keys are read only from runtime secret/config files.
+
+## Toloka.to
+
+Run:
+
+```bash
+make media-automation-toloka
+```
+
+The command securely prompts for Toloka credentials, stores them base64-encoded in root-only `/etc/homelab/toloka.env`, validates the built-in Toloka.to Prowlarr definition, and syncs the indexer to Radarr and Sonarr. Base64 is only a safe serialization format, not encryption; protection comes from root-only permissions and the encrypted/controlled backup repository. Never commit the credentials file.
+
+Use Toloka and every other indexer only for material you are legally allowed to download and retain. Respect the tracker's ratio and seeding rules.
+
+## Seerr onboarding
+
+Open `https://requests.butenko.online` after bootstrap and complete the one-time setup:
+
+1. Select Jellyfin and connect to internal URL `http://jellyfin:8096`; set the external URL to `https://jellyfin.butenko.online`.
+2. Sign in with the Jellyfin administrator once, then import the allowed Jellyfin users.
+3. Add Sonarr at `http://sonarr:8989` with root `/data/media/TV` and Radarr at `http://radarr:7878` with root `/data/media/Movies`.
+4. Choose whether family requests require owner approval. Automatic approval should be enabled only per trusted user and with disk limits understood.
+
+Seerr data is persisted under `/srv/appdata/seerr` and included in the normal Restic snapshot.
 
 ## Small public-domain test
 
@@ -41,6 +65,8 @@ Owner URLs:
 - `https://torrent.butenko.online`
 - `https://sonarr.butenko.online`
 - `https://prowlarr.butenko.online`
+- `https://radarr.butenko.online`
+- `https://requests.butenko.online`
 
 Do not forward TCP/UDP 6881 on the router until the download policy is deliberately reviewed. On the temporary disk, use only a small lawful test series and keep high-volume monitoring disabled. After the 8–16 TB migration, adjust the free-space floor and policy without changing container paths.
 

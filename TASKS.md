@@ -152,6 +152,10 @@ Installation, indexer integration, and one small lawful automatic-download test 
 - [x] Verify Jellyfin discovers imported episodes
 - [x] Add monitoring, backup coverage, private HTTPS, and access controls
 - [x] Verify one small lawful automatic download with the temporary free-space floor
+- [ ] Deploy Radarr with `/data/media/Movies` and hardlink-capable qBittorrent integration
+- [ ] Deploy Seerr with Jellyfin, Sonarr, and Radarr integration
+- [ ] Configure and validate the built-in Toloka.to Prowlarr indexer without committing credentials
+- [ ] Add Radarr and Seerr monitoring and verify fresh backup coverage
 - [ ] Remove the temporary low-volume policy only after the larger HDD is verified
 
 ## Jellyfin
