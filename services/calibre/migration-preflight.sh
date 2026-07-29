@@ -20,14 +20,22 @@ if find "${staging_dir}" -type l -print -quit | grep -q .; then
 fi
 
 readonly listing_file="$(mktemp)"
-trap 'rm -f -- "${listing_file}"' EXIT
+readonly verification_library="$(mktemp -d)"
+trap 'rm -f -- "${listing_file}"; rm -rf -- "${verification_library}"' EXIT
+
+# Calibre probes the library root with a temporary file even for a list
+# operation. Keep the staged library immutable and run that probe against a
+# disposable writable copy of the database instead.
+cp --reflink=auto --preserve=timestamps \
+  "${staging_dir}/metadata.db" "${verification_library}/metadata.db"
+chown -R "${PUID}:${PGID}" "${verification_library}"
 
 docker run --rm \
   --user "${PUID}:${PGID}" \
   --entrypoint calibredb \
-  --volume "${staging_dir}:/migration:ro" \
+  --volume "${verification_library}:/verification:rw" \
   "${calibre_image}" \
-  list --with-library /migration --for-machine > "${listing_file}"
+  list --with-library /verification --for-machine > "${listing_file}"
 
 grep -q '^\[' "${listing_file}" || die 'Calibre could not read the staged metadata database.'
 
