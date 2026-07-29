@@ -19,7 +19,7 @@ A maintainable single-server homelab for an HP EliteDesk running Ubuntu, Docker 
 - Immich
 - Jellyfin
 - Beszel agent
-- Time Machine for the two family Macs
+- Time Machine for the two family Macs and a private SMB Inbox
 - Open WebUI private family AI chat
 - Full Calibre administration and read-only family EPUB library
 

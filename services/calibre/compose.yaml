@@ -21,6 +21,7 @@ services:
       - /srv/appdata/calibre:/config
       - /srv/storage/books:/config/Calibre Library
       - /srv/storage/incoming/books:/incoming:ro
+      - /srv/storage/incoming/calibre-migration:/migration:ro
       - /etc/homelab/calibre-gui-password:/run/secrets/calibre-gui-password:ro
     shm_size: 1gb
     networks:

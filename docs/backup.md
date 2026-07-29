@@ -10,6 +10,8 @@ The local Restic job backs up:
 
 This includes Calibre GUI and built-in Content Server configuration under `/srv/appdata/calibre` and the root-only GUI password under `/etc/homelab`.
 
+After the private SMB Inbox is provisioned, the dedicated root-only Samba password under `/etc/homelab/fileshare` is included as well. `make verify-backup` checks for it when the Samba container is running. Staged files under `/srv/storage/incoming` are HDD-resident user data and require an external copy if they must survive disk loss.
+
 Retention:
 
 - 7 daily snapshots

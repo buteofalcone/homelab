@@ -1,4 +1,4 @@
-# Time Machine
+# Time Machine and private SMB Inbox
 
 Docker-based Samba Time Machine target for the two family Macs. Samba runs in a container; the host Avahi daemon publishes the two shares through Bonjour.
 
@@ -9,7 +9,7 @@ Docker-based Samba Time Machine target for the two family Macs. Samba runs in a 
 - The temporary 500 GB HDD defaults to 100 GB per Mac. These are conservative test limits, not the final backup policy.
 - Watchtower updates are disabled for this service.
 - The bootstrap refuses to continue unless `/srv/storage` is a real mount.
-- Passwords live under `/etc/homelab/timemachine` with root-only permissions and never enter Git.
+- Passwords live under `/etc/homelab/timemachine` and `/etc/homelab/fileshare` with root-only permissions and never enter Git.
 
 Samba's `fruit:time machine max size` controls the disk size reported to each Mac. It is an approximate safeguard based on Time Machine sparsebundle contents, not a filesystem-enforced quota. Do not store unrelated files inside these shares.
 
@@ -30,8 +30,26 @@ Accounts and shares:
 | --- | --- | --- |
 | MacBook A1502 | `tm-a1502` | `TimeMachine-A1502` |
 | MacBook A1466 | `tm-a1466` | `TimeMachine-A1466` |
+| Private file staging | `homelab` | `Inbox` |
 
 Do not reuse Ubuntu, Tailscale, RDP, Restic, or application passwords.
+
+## Inbox share
+
+`Inbox` exposes only `/srv/storage/incoming` over private SMB. It is available through the trusted LAN and Tailscale; port 445 must never be forwarded from the router.
+
+```text
+Inbox/
+├── books/                individual sources for controlled Calibre import
+├── calibre-migration/    one complete, closed Calibre library for migration
+├── torrents/             staging only; Seerr and the qBittorrent UI remain preferred
+├── media/                manual media staging
+└── transfer/             temporary general file transfer
+```
+
+On the Mac, use Finder **Go -> Connect to Server** and enter `smb://100.65.83.35/Inbox`. Use the dedicated `homelab` account. The Time Machine accounts cannot access this share.
+
+Do not place files directly inside live Calibre, Nextcloud, Jellyfin, Sonarr, or Radarr data directories. `Inbox` is deliberately a staging boundary.
 
 ## Mac test procedure
 

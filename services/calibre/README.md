@@ -7,6 +7,7 @@ This service runs the complete Calibre 9.11 desktop application and CLI tools. I
 - `/srv/appdata/calibre` — GUI preferences and application state on the SSD.
 - `/srv/storage/books` — the Calibre library, including books and `metadata.db`, on the HDD.
 - `/srv/storage/incoming/books` — read-only input area for controlled imports.
+- `/srv/storage/incoming/calibre-migration` — staging for one complete library copied from a closed desktop Calibre.
 - `/etc/homelab/calibre-gui-password` — root-only web-desktop password.
 
 The library remains at the same host path when the temporary HDD is cloned to the final 8–16 TB disk.
@@ -40,6 +41,24 @@ make calibre-import BOOK=/srv/storage/incoming/books/example.pdf
 Supported controlled inputs are AZW3, DOCX, EPUB, FB2, HTML, LIT, MOBI, ODT, PDF, RTF and TXT. Non-EPUB input is converted with `ebook-convert`, validated with `ebook-meta`, then added with `calibredb`. The source is deliberately retained until the imported result is checked.
 
 PDF conversion is best-effort because PDFs encode page layout rather than ebook structure.
+
+## Migrating an existing Mac library
+
+1. Quit Calibre completely on the Mac.
+2. Mount `smb://100.65.83.35/Inbox` and copy the contents of the Mac's Calibre library into `calibre-migration`. The top level must contain `metadata.db` and the author directories.
+3. Keep the original Mac library unchanged, then run:
+
+```bash
+make calibre-migration-preflight
+```
+
+4. Review the reported book, file, and byte counts. The apply command requires an explicit `MIGRATE_CALIBRE` confirmation:
+
+```bash
+make calibre-migration-apply
+```
+
+The apply step stops only Calibre, preserves the existing server library as `/srv/storage/books.before-calibre-migration-TIMESTAMP`, moves the validated staging directory into `/srv/storage/books`, recreates an empty staging directory, and starts Calibre. If the new library does not become healthy, the script restores the previous library and preserves the failed import separately. Do not delete either Mac or server fallback copy until the Content server, metadata, covers, and several EPUB downloads have been checked.
 
 Run a disposable conversion and library smoke test with:
 

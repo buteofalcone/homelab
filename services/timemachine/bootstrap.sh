@@ -15,13 +15,23 @@ docker compose version >/dev/null 2>&1 || die 'Docker Compose plugin is not inst
 readonly secret_dir=/etc/homelab/timemachine
 readonly a1502_password_file="${secret_dir}/a1502-password"
 readonly a1466_password_file="${secret_dir}/a1466-password"
+readonly fileshare_secret_dir=/etc/homelab/fileshare
+readonly fileshare_password_file="${fileshare_secret_dir}/password"
 readonly avahi_target=/etc/avahi/services/homelab-timemachine.service
 
 install -d -m 0700 "${secret_dir}"
+install -d -m 0700 "${fileshare_secret_dir}"
 install -d -m 0700 -o "${PUID}" -g "${PGID}" \
   /srv/storage/timemachine \
   /srv/storage/timemachine/a1502 \
   /srv/storage/timemachine/a1466
+install -d -m 0770 -o "${PUID}" -g "${PGID}" \
+  /srv/storage/incoming \
+  /srv/storage/incoming/books \
+  /srv/storage/incoming/calibre-migration \
+  /srv/storage/incoming/torrents \
+  /srv/storage/incoming/media \
+  /srv/storage/incoming/transfer
 
 create_password_file() {
   local label="$1"
@@ -35,7 +45,7 @@ create_password_file() {
   fi
 
   while true; do
-    read -r -s -p "Create a dedicated ${label} Time Machine password (12+ characters): " password
+    read -r -s -p "Create a dedicated ${label} password (12+ characters): " password
     printf '\n'
     read -r -s -p 'Repeat the password: ' confirmation
     printf '\n'
@@ -53,8 +63,9 @@ create_password_file() {
   unset password confirmation
 }
 
-create_password_file A1502 "${a1502_password_file}"
-create_password_file A1466 "${a1466_password_file}"
+create_password_file 'A1502 Time Machine' "${a1502_password_file}"
+create_password_file 'A1466 Time Machine' "${a1466_password_file}"
+create_password_file 'homelab SMB Inbox' "${fileshare_password_file}"
 
 if ! command -v avahi-daemon >/dev/null 2>&1; then
   apt-get update
@@ -72,4 +83,5 @@ docker compose --profile timemachine ps timemachine
 
 echo
 echo 'Time Machine service provisioned with conservative 100 GB defaults per Mac.'
+echo 'Private SMB Inbox provisioned for Calibre migration and controlled file staging.'
 echo 'Do not start real backups on the temporary HDD until the storage plan is approved.'

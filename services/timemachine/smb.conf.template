@@ -1,5 +1,5 @@
 [global]
-    server string = HP Server Time Machine
+    server string = HP Server
     server role = standalone server
     workgroup = WORKGROUP
     security = user
@@ -41,3 +41,16 @@
     directory mask = 0700
     fruit:time machine = yes
     fruit:time machine max size = @A1466_MAX_SIZE@
+
+[Inbox]
+    path = /shares/inbox
+    valid users = @FILESHARE_USER@
+    force user = timemachine
+    force group = timemachine
+    read only = no
+    browseable = yes
+    create mask = 0660
+    force create mode = 0660
+    directory mask = 0770
+    force directory mode = 0770
+    fruit:time machine = no

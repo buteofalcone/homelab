@@ -15,14 +15,17 @@ services:
       PGID: "${PGID:-1000}"
       TIMEMACHINE_A1502_USER: tm-a1502
       TIMEMACHINE_A1466_USER: tm-a1466
+      FILESHARE_USER: "${FILESHARE_USER:-homelab}"
       TIMEMACHINE_A1502_MAX_SIZE: "${TIMEMACHINE_A1502_MAX_SIZE:-100G}"
       TIMEMACHINE_A1466_MAX_SIZE: "${TIMEMACHINE_A1466_MAX_SIZE:-100G}"
     volumes:
       - ./smb.conf.template:/etc/samba/smb.conf.template:ro
       - /etc/homelab/timemachine/a1502-password:/run/secrets/a1502-password:ro
       - /etc/homelab/timemachine/a1466-password:/run/secrets/a1466-password:ro
+      - /etc/homelab/fileshare/password:/run/secrets/fileshare-password:ro
       - /srv/storage/timemachine/a1502:/shares/a1502
       - /srv/storage/timemachine/a1466:/shares/a1466
+      - /srv/storage/incoming:/shares/inbox
     healthcheck:
       test: ["CMD-SHELL", "smbcontrol smbd ping >/dev/null 2>&1"]
       interval: 30s

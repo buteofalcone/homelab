@@ -63,5 +63,12 @@ if container_running qbittorrent && container_running sonarr && container_runnin
   done
 fi
 
+if container_running timemachine && [[ -s /etc/homelab/fileshare/password ]]; then
+  echo
+  echo 'Checking private SMB Inbox recovery secret in the latest snapshot:'
+  restic dump latest /etc/homelab/fileshare/password >/dev/null
+  echo 'OK   /etc/homelab/fileshare/password'
+fi
+
 echo
 echo 'RESTIC_AUDIT_OK'

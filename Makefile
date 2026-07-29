@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -27,6 +27,8 @@ help:
 	  'make beszel-agent   Start the local Beszel agent' \
 	  'make timemachine-bootstrap  Provision Time Machine secrets, storage and Avahi' \
 	  'make timemachine    Start the provisioned Time Machine service' \
+	  'make calibre-migration-preflight  Validate a staged Mac Calibre library' \
+	  'make calibre-migration-apply      Replace the test library with validated staging' \
 	  'make open-webui-bootstrap  Provision secrets and start private AI chat' \
 	  'make open-webui     Start the provisioned private AI chat' \
 	  'make calibre-bootstrap  Provision and start full Calibre' \
@@ -114,6 +116,12 @@ open-webui:
 
 calibre-bootstrap:
 	@sudo ./services/calibre/bootstrap.sh
+
+calibre-migration-preflight:
+	@sudo ./services/calibre/migration-preflight.sh
+
+calibre-migration-apply:
+	@sudo ./services/calibre/migrate-library.sh
 
 calibre:
 	@$(COMPOSE) --profile books up -d calibre
