@@ -104,4 +104,35 @@ if len(matches) != 1:
 print("TOLOKA_INDEXER_OK")
 PY
 
+readonly sonarr_api_key="$(sed -n 's#.*<ApiKey>\([^<]*\)</ApiKey>.*#\1#p' /srv/appdata/sonarr/config.xml)"
+readonly radarr_api_key="$(sed -n 's#.*<ApiKey>\([^<]*\)</ApiKey>.*#\1#p' /srv/appdata/radarr/config.xml)"
+[[ -n ${sonarr_api_key} && -n ${radarr_api_key} ]] || die 'Sonarr or Radarr API key is missing.'
+
+echo STEP_TOLOKA_APP_SYNC
+for attempt in {1..30}; do
+  docker exec -e ARR_KEY="${sonarr_api_key}" sonarr /bin/sh -c \
+    'curl -fsS -H "X-Api-Key: ${ARR_KEY}" http://127.0.0.1:8989/api/v3/indexer' >"${work_dir}/sonarr-indexers.json"
+  docker exec -e ARR_KEY="${radarr_api_key}" radarr /bin/sh -c \
+    'curl -fsS -H "X-Api-Key: ${ARR_KEY}" http://127.0.0.1:7878/api/v3/indexer' >"${work_dir}/radarr-indexers.json"
+  if python3 - "${work_dir}/sonarr-indexers.json" "${work_dir}/radarr-indexers.json" <<'PY'
+import json, sys
+for path in sys.argv[1:]:
+    with open(path, encoding="utf-8") as handle:
+        if not any(item.get("name") == "Toloka.to (Prowlarr)" and item.get("enable") for item in json.load(handle)):
+            raise SystemExit(1)
+PY
+  then
+    printf 'TOLOKA_APP_SYNC_OK\n'
+    break
+  fi
+  sleep 2
+done
+python3 - "${work_dir}/sonarr-indexers.json" "${work_dir}/radarr-indexers.json" <<'PY'
+import json, sys
+for app, path in zip(("Sonarr", "Radarr"), sys.argv[1:]):
+    with open(path, encoding="utf-8") as handle:
+        if not any(item.get("name") == "Toloka.to (Prowlarr)" and item.get("enable") for item in json.load(handle)):
+            raise SystemExit(f"Toloka.to did not sync to {app}")
+PY
+
 printf 'TOLOKA_CONFIG_OK\n'
