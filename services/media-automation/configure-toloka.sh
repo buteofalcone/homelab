@@ -95,21 +95,23 @@ else
 fi
 
 prowlarr_get indexer "${work_dir}/indexers-after.json"
-python3 - "${work_dir}/indexers-after.json" <<'PY'
+toloka_id="$(python3 - "${work_dir}/indexers-after.json" <<'PY'
 import json, sys
 with open(sys.argv[1], encoding="utf-8") as handle:
     matches = [item for item in json.load(handle) if item.get("name") == "Toloka.to" and item.get("enable")]
 if len(matches) != 1:
     raise SystemExit("Toloka.to was not enabled uniquely")
-print("TOLOKA_INDEXER_OK")
+print(matches[0]["id"])
 PY
+)"
+printf 'TOLOKA_INDEXER_OK\n'
 
 readonly sonarr_api_key="$(sed -n 's#.*<ApiKey>\([^<]*\)</ApiKey>.*#\1#p' /srv/appdata/sonarr/config.xml)"
 readonly radarr_api_key="$(sed -n 's#.*<ApiKey>\([^<]*\)</ApiKey>.*#\1#p' /srv/appdata/radarr/config.xml)"
 [[ -n ${sonarr_api_key} && -n ${radarr_api_key} ]] || die 'Sonarr or Radarr API key is missing.'
 
 echo STEP_TOLOKA_APP_SYNC
-for attempt in {1..30}; do
+for attempt in {1..5}; do
   docker exec -e ARR_KEY="${sonarr_api_key}" sonarr /bin/sh -c \
     'curl -fsS -H "X-Api-Key: ${ARR_KEY}" http://127.0.0.1:8989/api/v3/indexer' >"${work_dir}/sonarr-indexers.json"
   docker exec -e ARR_KEY="${radarr_api_key}" radarr /bin/sh -c \
@@ -127,6 +129,61 @@ PY
   fi
   sleep 2
 done
+
+ensure_arr_toloka() {
+  local container="$1" port="$2" api_key="$3" categories="$4"
+  local schema_file="${work_dir}/${container}-indexer-schema.json"
+  local indexers_file="${work_dir}/${container}-indexers.json"
+  local payload_file="${work_dir}/${container}-toloka-payload.json"
+  local response_file="${work_dir}/${container}-toloka-response.json"
+
+  docker exec -e ARR_KEY="${api_key}" "${container}" /bin/sh -c \
+    'curl -fsS -H "X-Api-Key: ${ARR_KEY}" "http://127.0.0.1:'"${port}"'/api/v3/indexer/schema"' >"${schema_file}"
+  docker exec -e ARR_KEY="${api_key}" "${container}" /bin/sh -c \
+    'curl -fsS -H "X-Api-Key: ${ARR_KEY}" "http://127.0.0.1:'"${port}"'/api/v3/indexer"' >"${indexers_file}"
+  if python3 - "${indexers_file}" <<'PY'
+import json, sys
+with open(sys.argv[1], encoding="utf-8") as handle:
+    raise SystemExit(0 if any(item.get("name") == "Toloka.to (Prowlarr)" for item in json.load(handle)) else 1)
+PY
+  then
+    return 0
+  fi
+
+  TOLOKA_ID="${toloka_id}" PROWLARR_API_KEY="${prowlarr_api_key}" APP_CATEGORIES="${categories}" \
+    python3 - "${schema_file}" "${payload_file}" <<'PY'
+import json, os, sys
+with open(sys.argv[1], encoding="utf-8") as handle:
+    item = next(value for value in json.load(handle) if value.get("implementation") == "Torznab")
+item.update({"enable": True, "name": "Toloka.to (Prowlarr)", "priority": 10})
+values = {
+    "baseUrl": f"http://prowlarr:9696/{os.environ['TOLOKA_ID']}/",
+    "apiPath": "/api",
+    "apiKey": os.environ["PROWLARR_API_KEY"],
+    "categories": [int(value) for value in os.environ["APP_CATEGORIES"].split(",")],
+    "minimumSeeders": 1,
+}
+for field in item["fields"]:
+    if field.get("name") in values:
+        field["value"] = values[field["name"]]
+with open(sys.argv[2], "w", encoding="utf-8") as handle:
+    json.dump(item, handle)
+PY
+  docker exec -i -e ARR_KEY="${api_key}" "${container}" /bin/sh -c \
+    'curl --fail-with-body --silent --show-error -X POST -H "X-Api-Key: ${ARR_KEY}" -H "Content-Type: application/json" --data-binary @- "http://127.0.0.1:'"${port}"'/api/v3/indexer"' \
+    <"${payload_file}" >"${response_file}"
+}
+
+# Prowlarr 2.5 can stop an application sync when an existing same-name
+# indexer lacks its internal mapping. Ensure the equivalent Torznab entry
+# directly and idempotently in any app that the normal sync did not reach.
+ensure_arr_toloka sonarr 8989 "${sonarr_api_key}" '5000,5040,5050,5070,5080'
+ensure_arr_toloka radarr 7878 "${radarr_api_key}" '2000,2020,2040'
+
+docker exec -e ARR_KEY="${sonarr_api_key}" sonarr /bin/sh -c \
+  'curl -fsS -H "X-Api-Key: ${ARR_KEY}" http://127.0.0.1:8989/api/v3/indexer' >"${work_dir}/sonarr-indexers.json"
+docker exec -e ARR_KEY="${radarr_api_key}" radarr /bin/sh -c \
+  'curl -fsS -H "X-Api-Key: ${ARR_KEY}" http://127.0.0.1:7878/api/v3/indexer' >"${work_dir}/radarr-indexers.json"
 python3 - "${work_dir}/sonarr-indexers.json" "${work_dir}/radarr-indexers.json" <<'PY'
 import json, sys
 for app, path in zip(("Sonarr", "Radarr"), sys.argv[1:]):
