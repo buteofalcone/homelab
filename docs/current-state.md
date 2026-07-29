@@ -1,6 +1,6 @@
 # Current State
 
-Last verified: **2026-07-28** through SSH from SilverBrick.
+Last verified: **2026-07-29** through SSH from SilverBrick.
 
 This document records observed runtime state. Target architecture and future work are documented separately in `docs/architecture.md` and `TASKS.md`.
 
@@ -27,7 +27,7 @@ Application state and databases are under `/srv/appdata`. User files are under `
 | Path | `/opt/homelab` |
 | Remote | `git@github.com:buteofalcone/homelab.git` |
 | Branch | `feature/base-management-stack` |
-| Repository state | Calibre deployment implemented and validated; Git history is authoritative |
+| Repository state | Calibre and media automation implemented and validated; Git history is authoritative |
 
 ## Running services
 
@@ -36,7 +36,7 @@ The following Compose services were running:
 - Management and routing: `homepage`, `homepage-docker-proxy`, `portainer`, `beszel`, `beszel-agent`, `uptime-kuma`, `caddy`.
 - Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`, with Talk 23.0.9 enabled inside Nextcloud.
 - Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
-- Media: `jellyfin`.
+- Media: `jellyfin`, `qbittorrent`, `sonarr`, and `prowlarr`.
 - Books: full Calibre 9.11 desktop application and its built-in Content server, both provided by the single `calibre` container.
 - Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
 - Private AI: `open-webui`, connected through Tailscale to authenticated LM Studio on SilverBrick.
@@ -62,6 +62,9 @@ jellyfin.butenko.online
 ai.butenko.online
 calibre.butenko.online
 books.butenko.online
+torrent.butenko.online
+sonarr.butenko.online
+prowlarr.butenko.online
 ```
 
 Cockpit listens only on `100.65.83.35:9090`. RDP listens on TCP 3389, with the repository-managed nftables rule allowing it only through `tailscale0`. SSH over Tailscale is working. No router port forwarding is required or intended.
@@ -89,6 +92,8 @@ The job creates logical PostgreSQL dumps and stores a local Restic snapshot on t
 Repository integrity, recent snapshots, PostgreSQL dumps, and a targeted restore were independently verified on 2026-07-28. Restic successfully restored the repository README and both compressed database dumps into `/srv/storage/restores/restic-smoke-20260728-115000`; both dumps passed `gzip -t`.
 
 After installing Nextcloud Talk, a fresh snapshot was created and verified. The Nextcloud dump imported into a temporary PostgreSQL instance with the Talk control tables present, and `/srv/appdata/nextcloud` restored into an isolated management audit tree. This confirms recovery coverage for Talk application code, configuration, and conversation database state. Files shared through Talk remain part of Nextcloud user data on the HDD and still require the planned external copy.
+
+The latest verified Restic snapshot contains qBittorrent, Sonarr, and Prowlarr configuration plus the root-only media automation password and Caddy credentials. Downloaded media remains outside the same-disk Restic repository by design.
 
 A complete application-aware restore and an external/off-site copy are still missing. Disaster recovery is therefore **not complete**.
 
@@ -118,5 +123,7 @@ On 2026-07-28:
 - Open WebUI reported healthy, contained one administrator account, reached `qwen/qwen3.5-9b` through the authenticated LM Studio API, and served a trusted HTTPS health response at `ai.butenko.online`.
 - Calibre 9.11 reported healthy, its administration route required authentication, its Content server returned HTTP 200 at `books.butenko.online`, and a generated source document was converted to EPUB and added to the library.
 - Nextcloud Talk 23.0.9 was enabled on Nextcloud 33.0.7; its app integrity, OCC commands, and private HTTPS route passed the tracked verification helper.
+
+On 2026-07-29, the bounded media test downloaded one public-domain episode of *The Adventures of Ozzie & Harriet*. Sonarr imported S01E01 automatically, the qBittorrent and library paths shared one inode with link count 2, and Jellyfin could read the imported file through `/media/TV`. `make media-automation-test-verify` reported `MEDIA_PUBLIC_DOMAIN_TEST_VERIFY_OK`.
 
 No container, firewall rule, package, mount, database, application data, or secret was changed during this audit.

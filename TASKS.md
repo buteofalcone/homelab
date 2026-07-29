@@ -151,7 +151,7 @@ Installation, indexer integration, and one small lawful automatic-download test 
 - [x] Connect Sonarr to qBittorrent with a dedicated category
 - [ ] Verify Jellyfin discovers imported episodes
 - [ ] Add monitoring, backup coverage, private HTTPS, and access controls
-- [ ] Verify one small lawful automatic download with the temporary free-space floor
+- [x] Verify one small lawful automatic download with the temporary free-space floor
 - [ ] Remove the temporary low-volume policy only after the larger HDD is verified
 
 ## Jellyfin
