@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-migration-bootstrap jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-migration-bootstrap immich-migration-api-key immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -23,6 +23,9 @@ help:
 	  'make nextcloud-talk-verify  Verify Nextcloud Talk application state' \
 	  'make immich         Start Immich stack' \
 	  'make immich-migration-bootstrap  Install pinned immich-go and Takeout staging' \
+	  'make immich-migration-api-key    Store a dedicated root-only Immich API key' \
+	  'make immich-takeout-preflight    Validate and fingerprint the small Takeout sample' \
+	  'make immich-takeout-dry-run      Simulate the sample import without mutations' \
 	  'make jellyfin       Start Jellyfin' \
 	  'make apps           Start all optional applications' \
 	  'make beszel-agent   Start the local Beszel agent' \
@@ -96,6 +99,15 @@ immich:
 
 immich-migration-bootstrap:
 	@sudo ./services/immich-migration/bootstrap.sh
+
+immich-migration-api-key:
+	@sudo ./services/immich-migration/configure-api-key.sh
+
+immich-takeout-preflight:
+	@sudo ./services/immich-migration/preflight.sh
+
+immich-takeout-dry-run:
+	@sudo ./services/immich-migration/dry-run.sh
 
 jellyfin:
 	@$(COMPOSE) --profile jellyfin up -d

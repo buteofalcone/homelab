@@ -27,3 +27,22 @@ google-photos-takeout/
 ```
 
 Keep the original Takeout archives outside Immich as an independent source copy. The next gate is a dry-run against `sample`; no full import is allowed until dates, JSON pairing, albums, duplicates, and storage growth are verified.
+
+Create a dedicated temporary API key in **Immich → Account settings → API Keys**. Grant the permissions documented by `immich-go`: `asset.read`, `asset.statistics`, `asset.update`, `asset.upload`, `asset.copy`, `asset.delete`, `asset.download`, `album.create`, `album.read`, `albumAsset.create`, `server.about`, `stack.create`, `tag.asset`, `tag.create`, and `user.read`. Add `job.create` and `job.read` before a real import if background jobs will be paused. Revoke this key when migration is complete.
+
+Store it without echoing it or committing it:
+
+```bash
+make immich-migration-api-key
+```
+
+Prepare a separate small Google Takeout export containing representative JPEG, HEIC, video, album, and JSON sidecar data. Copy the ZIP archive(s), or one unpacked Takeout tree, into `Inbox/google-photos-takeout/sample`. Do not mix ZIP files and unpacked files. The sample is limited to 5 GiB.
+
+Then run:
+
+```bash
+make immich-takeout-preflight
+make immich-takeout-dry-run
+```
+
+Preflight rejects symlinks, corrupt ZIP archives, samples without JSON metadata, samples without supported media, and oversized samples. Dry-run uses two concurrent tasks, preserves archived and unmatched files, reconstructs named albums and people/takeout tags, excludes trash and partner-shared items, and refuses overwrite. It verifies that the Immich asset count, album count, and `/srv/storage/photos` byte size remain unchanged.
