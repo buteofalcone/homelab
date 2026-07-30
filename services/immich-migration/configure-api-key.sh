@@ -21,6 +21,7 @@ chmod 0600 "${tmp_file}"
 printf '%s\n' "${api_key}" > "${tmp_file}"
 unset api_key
 chown root:root "${tmp_file}"
+"$(dirname "${BASH_SOURCE[0]}")/verify-api-key.sh" "${tmp_file}"
 mv -f -- "${tmp_file}" "${secret_file}"
 trap - EXIT
 

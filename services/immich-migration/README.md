@@ -34,7 +34,10 @@ Store it without echoing it or committing it:
 
 ```bash
 make immich-migration-api-key
+make immich-migration-api-key-verify
 ```
+
+Validation calls the local Immich `/api/users/me` endpoint through a temporary root-only curl configuration, so the key is not exposed in the process list or logs.
 
 Prepare a separate small Google Takeout export containing representative JPEG, HEIC, video, album, and JSON sidecar data. Copy the ZIP archive(s), or one unpacked Takeout tree, into `Inbox/google-photos-takeout/sample`. Do not mix ZIP files and unpacked files. The sample is limited to 5 GiB.
 
