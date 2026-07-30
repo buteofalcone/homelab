@@ -35,7 +35,7 @@ The following Compose services were running:
 
 - Management and routing: `homepage`, `homepage-docker-proxy`, `portainer`, `beszel`, `beszel-agent`, `uptime-kuma`, `caddy`.
 - Nextcloud: `nextcloud`, `nextcloud-cron`, `nextcloud-db`, `nextcloud-redis`, with Talk 23.0.9 enabled inside Nextcloud.
-- Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`.
+- Immich: `immich-server`, `immich-machine-learning`, `immich-database`, `immich-redis`. Immich `v3.0.3` uses the pinned CUDA ML container on SilverBrick (`100.91.171.26:3003`, RTX 4060) first and the local ML container as fallback; Windows Firewall permits the unauthenticated ML port only from the HP Server Tailscale address.
 - Media: `jellyfin`, `qbittorrent`, `sonarr`, `prowlarr`, `radarr`, and `seerr`.
 - Books: full Calibre 9.11 desktop application and its built-in Content server, both provided by the single `calibre` container.
 - Backup target: `timemachine`, with separate `TimeMachine-A1502` and `TimeMachine-A1466` shares.
