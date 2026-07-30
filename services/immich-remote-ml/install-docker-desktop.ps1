@@ -14,7 +14,7 @@ if (-not (Test-Command 'wsl.exe')) {
     throw 'WSL is missing. Enable WSL2 before installing Docker Desktop.'
 }
 
-$wslVersionText = (& wsl.exe --version 2>&1 | Out-String)
+$wslVersionText = (& wsl.exe --version 2>&1 | Out-String) -replace "`0", ''
 if ($LASTEXITCODE -ne 0 -or $wslVersionText -notmatch '2\.(\d+)\.(\d+)') {
     throw 'WSL 2.1.5 or newer is required. Run wsl --update from an elevated PowerShell window.'
 }
