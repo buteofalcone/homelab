@@ -70,7 +70,7 @@ make calibre-merge-preflight
 make calibre-merge-apply
 ```
 
-The apply command requires the explicit phrase `MERGE_CALIBRE`. It exports the source through Calibre so OPF metadata, covers, formats, and extra files are retained, creates a timestamped rollback copy of the live library, and imports with `--automerge ignore`. A matching title/author gains missing formats without overwriting an existing same-format file. The staged source is retained as `calibre-merge.completed-TIMESTAMP` until the resulting library and backup are verified.
+The apply command requires the explicit phrase `MERGE_CALIBRE`. It exports the source through Calibre so OPF metadata, covers, formats, and extra files are retained, using a short ID-only export layout to stay below filesystem filename limits. It creates a timestamped rollback copy of the live library and imports with `--automerge ignore`. A matching title/author gains missing formats without overwriting an existing same-format file. The staged source is retained as `calibre-merge.completed-TIMESTAMP` until the resulting library and backup are verified.
 
 Run a disposable conversion and library smoke test with:
 

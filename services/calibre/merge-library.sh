@@ -101,7 +101,8 @@ docker run --rm \
   --volume "${staging_dir}:/source:rw" \
   --volume "${export_dir}:/export:rw" \
   "${calibre_image}" \
-  export --with-library /source --all --to-dir /export --progress
+  export --with-library /source --all --to-dir /export \
+  --template '{id}/{id}' --progress
 
 docker run --rm \
   --user "${PUID}:${PGID}" \
