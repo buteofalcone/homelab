@@ -15,6 +15,12 @@ Set-Location C:\path\to\homelab
 
 Complete Docker Desktop's first-run screen and wait until the Linux engine is running. No separate Ubuntu WSL distribution is required for Docker Desktop's managed WSL2 backend.
 
+If Docker reports `HCS_E_HYPERV_NOT_INSTALLED`, the WSL package exists but Windows **Virtual Machine Platform** is disabled. Verify that CPU virtualization is enabled in BIOS, then run this script from an elevated PowerShell window and restart Windows when it prints `WSL_PLATFORM_ENABLED_RESTART_REQUIRED`:
+
+```powershell
+.\services\immich-remote-ml\enable-wsl-platform.ps1
+```
+
 ## Audit CUDA
 
 ```powershell
