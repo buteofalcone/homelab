@@ -6,6 +6,13 @@ This service prepares a controlled Google Photos Takeout import without storing 
 
 - HP Server Immich: `v3.0.3`
 - `immich-go`: `v0.32.0`
+
+Before connecting SilverBrick Remote ML, replace the moving `release` setting in the live root-only `.env` with the already-running exact version. This does not cross an Immich upgrade boundary; the script refuses to proceed unless the live image reports `v3.0.3`, retains a root-only rollback copy, recreates only the server and local ML containers, and verifies recovery:
+
+```bash
+sudo make immich-pin-version
+```
+
 - Linux x86_64 archive SHA-256: `6e2ad86bafdadb9466d6515de7cb882726c0aea1a21d51164dff361d7d480a97`
 
 `immich-go v0.32.0` is the first release with Immich V3 compatibility. The installer downloads the official GitHub release, verifies the checksum, and installs it under `/usr/local/lib/homelab/immich-go/v0.32.0`.

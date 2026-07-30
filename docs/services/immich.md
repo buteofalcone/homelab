@@ -37,3 +37,5 @@ Google Photos Takeout will be imported with a pinned `immich-go` release because
 The current compatibility baseline is Immich `v3.0.3` with `immich-go v0.32.0`. Bootstrap creates private SMB staging at `/srv/storage/incoming/google-photos-takeout/{sample,full}` and verifies the official Linux archive checksum before installing the tool.
 
 SilverBrick is the planned remote machine-learning host for its RTX 4060. The CUDA ML container must match the HP Server Immich version exactly, remain reachable only from the HP Server over Tailscale, and keep its model cache persistent. Start with the SilverBrick URL first and the local ML container second as fallback. The remote service has no authentication, so TCP 3003 must never be exposed publicly.
+
+The reproducible SilverBrick configuration and PowerShell runbook live in `services/immich-remote-ml/`. The verified baseline is Windows 11 build 22631, WSL 2.2.4, NVIDIA driver 610.62, RTX 4060 8 GB, SilverBrick `100.91.171.26`, and HP Server `100.65.83.35`. Docker Desktop and the isolated CUDA container test remain deployment gates.

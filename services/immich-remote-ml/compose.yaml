@@ -1,0 +1,19 @@
+name: homelab-immich-remote-ml
+
+services:
+  immich-machine-learning:
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3-cuda
+    container_name: immich_remote_machine_learning
+    extends:
+      file: hwaccel.ml.yaml
+      service: cuda
+    volumes:
+      - model-cache:/cache
+    restart: always
+    ports:
+      - "${SILVERBRICK_TAILSCALE_IP:-100.91.171.26}:3003:3003"
+    healthcheck:
+      disable: false
+
+volumes:
+  model-cache:
