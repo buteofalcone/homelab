@@ -21,6 +21,12 @@ If Docker reports `HCS_E_HYPERV_NOT_INSTALLED`, the WSL package exists but Windo
 .\services\immich-remote-ml\enable-wsl-platform.ps1
 ```
 
+If both optional components are enabled but Docker still reports `HCS_E_HYPERV_NOT_INSTALLED`, verify the current boot entry with `bcdedit /enum {current}` from an elevated shell. A deliberately disabled hypervisor appears as `hypervisorlaunchtype Off`. The following reviewed script changes only that value to `Auto`; restart Windows again when it prints its success marker:
+
+```powershell
+.\services\immich-remote-ml\enable-hypervisor-launch.ps1
+```
+
 ## Audit CUDA
 
 ```powershell

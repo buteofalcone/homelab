@@ -121,7 +121,7 @@ Takeout import order and gates:
 
 Remote ML order and gates:
 
-1. SilverBrick host prerequisites verified on 2026-07-30: Windows build 22631, WSL 2.2.4, NVIDIA driver 610.62, RTX 4060 8 GB, BIOS virtualization, and Tailscale `100.91.171.26`. Docker Desktop 4.84.0 is installed; enabling Windows Virtual Machine Platform plus a restart, Docker GPU access, and the isolated CUDA smoke test remain gates.
+1. SilverBrick host prerequisites verified on 2026-07-30: Windows build 22631, WSL 2.2.4, NVIDIA driver 610.62, RTX 4060 8 GB, BIOS virtualization, and Tailscale `100.91.171.26`. Docker Desktop 4.84.0 and Virtual Machine Platform are installed, but the current boot entry has `hypervisorlaunchtype Off`; changing it to `Auto` plus a restart, Docker GPU access, and the isolated CUDA smoke test remain gates.
 2. Deploy the CUDA `immich-machine-learning` image at exactly the same Immich version as the HP Server and persist its model cache.
 3. Bind TCP 3003 only to the private Tailscale path and restrict Windows Firewall to `100.65.83.35`; the ML service has no application authentication and must never be public.
 4. Add `http://100.91.171.26:3003` as the first ML URL while retaining `http://immich-machine-learning:3003` as fallback during validation.
