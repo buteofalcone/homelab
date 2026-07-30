@@ -32,7 +32,10 @@ install -d -m 0770 -o "${PUID}" -g "${PGID}" \
   /srv/storage/incoming/calibre-merge \
   /srv/storage/incoming/torrents \
   /srv/storage/incoming/media \
-  /srv/storage/incoming/transfer
+  /srv/storage/incoming/transfer \
+  /srv/storage/incoming/google-photos-takeout \
+  /srv/storage/incoming/google-photos-takeout/sample \
+  /srv/storage/incoming/google-photos-takeout/full
 
 create_password_file() {
   local label="$1"

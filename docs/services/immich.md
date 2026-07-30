@@ -34,4 +34,6 @@ Immich is resource-intensive and evolves quickly. On this server, the initial ma
 
 Google Photos Takeout will be imported with a pinned `immich-go` release because it can pair media with Google JSON sidecars and reconstruct albums and capture metadata. The first run must use a small representative sample and a dry-run; the complete archives remain immutable until asset counts, dates, albums, duplicates, and backup coverage are verified.
 
+The current compatibility baseline is Immich `v3.0.3` with `immich-go v0.32.0`. Bootstrap creates private SMB staging at `/srv/storage/incoming/google-photos-takeout/{sample,full}` and verifies the official Linux archive checksum before installing the tool.
+
 SilverBrick is the planned remote machine-learning host for its RTX 4060. The CUDA ML container must match the HP Server Immich version exactly, remain reachable only from the HP Server over Tailscale, and keep its model cache persistent. Start with the SilverBrick URL first and the local ML container second as fallback. The remote service has no authentication, so TCP 3003 must never be exposed publicly.

@@ -1,6 +1,6 @@
 services:
   immich-server:
-    image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}"
+    image: "ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-v3.0.3}"
     container_name: immich-server
     restart: unless-stopped
     profiles:
@@ -28,7 +28,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
 
   immich-machine-learning:
-    image: "ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}"
+    image: "ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-v3.0.3}"
     container_name: immich-machine-learning
     restart: unless-stopped
     profiles:
