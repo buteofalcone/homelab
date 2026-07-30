@@ -49,7 +49,13 @@ The Compose project uses a named Docker volume for `/cache`, so downloaded ML mo
 
 ## Immich setting
 
-After the remote verification succeeds, add these URLs in **Immich Administration → Settings → Machine Learning** in this order:
+After the remote verification succeeds, run this on the HP Server:
+
+```bash
+sudo make immich-remote-ml-configure
+```
+
+The command preserves a root-only copy of the current Immich system configuration, changes only the ML URL list through the authenticated Immich API, and verifies this order:
 
 1. `http://100.91.171.26:3003`
 2. `http://immich-machine-learning:3003`

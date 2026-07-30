@@ -122,8 +122,8 @@ Takeout import order and gates:
 Remote ML order and gates:
 
 1. SilverBrick host prerequisites verified on 2026-07-30: Windows build 22631, WSL 2.2.4, NVIDIA driver 610.62, RTX 4060 8 GB, BIOS virtualization, and Tailscale `100.91.171.26`. Docker Desktop 4.84.0, Virtual Machine Platform, and `hypervisorlaunchtype Auto` are active. An isolated pinned CUDA 12.3.2 container successfully accessed the RTX 4060; this gate is complete.
-2. Deploy the CUDA `immich-machine-learning` image at exactly the same Immich version as the HP Server and persist its model cache.
-3. Bind TCP 3003 only to the private Tailscale path and restrict Windows Firewall to `100.65.83.35`; the ML service has no application authentication and must never be public.
+2. Completed 2026-07-30: deploy the pinned `v3.0.3-cuda` machine-learning image at exactly the same version as the HP Server, persist its model cache, and move Docker Desktop's WSL data disk to `E:\DockerData\DockerDesktopWSL`.
+3. Completed 2026-07-30: bind TCP 3003 only to the private Tailscale path and restrict Windows Firewall to `100.65.83.35`; the ML service has no application authentication and must never be public.
 4. Add `http://100.91.171.26:3003` as the first ML URL while retaining `http://immich-machine-learning:3003` as fallback during validation.
 5. Process only the sample, confirm Smart Search and Face Detection, inspect logs for `CUDAExecutionProvider`, and observe RTX 4060 use.
 6. Keep synchronized HP Server and SilverBrick image upgrades in Git. Choose remote-only mode only after explicit acceptance of failed ML jobs whenever SilverBrick is offline; remote-first with local fallback is the safer default.
