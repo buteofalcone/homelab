@@ -135,6 +135,8 @@ sudo grdctl --system status
 
 From a Tailscale client, TCP 3389 must be reachable through the Tailscale address or MagicDNS name. The same port must be unreachable through `192.168.1.130`.
 
+Microsoft RDP clients may automatically attach a local NTLM domain to a bare username. If the GNOME Remote Desktop journal reports `Could not find user in SAM database`, enter the dedicated gateway username as `.\\username` (for example `.\\lan`) and leave any separate domain field empty.
+
 ## Emergency disable
 
 If RDP behavior is unexpected, disable the RDP daemon first while retaining SSH access:

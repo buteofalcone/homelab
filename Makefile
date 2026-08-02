@@ -36,6 +36,7 @@ help:
 	  'make timemachine    Start the provisioned Time Machine service' \
 	  'make repair-family-access  Recover SMB, writable Jellyfin media, SSH, and audit RDP' \
 	  'make verify-lan-access  Verify private LAN endpoints for legacy devices' \
+	  'make smb-inbox-reset-password  Reset the dedicated homelab SMB credential' \
 	  'make rdp-reconfigure  Reset GNOME Remote Desktop credentials and security' \
 	  'make calibre-migration-preflight  Validate a staged Mac Calibre library' \
 	  'make calibre-migration-apply      Replace the test library with validated staging' \
@@ -144,6 +145,9 @@ repair-family-access:
 
 verify-lan-access:
 	@sudo ./scripts/verify-lan-access.sh
+
+smb-inbox-reset-password:
+	@sudo ./services/timemachine/reset-fileshare-password.sh
 
 rdp-reconfigure:
 	@./scripts/configure-rdp.sh

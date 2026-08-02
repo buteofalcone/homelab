@@ -38,6 +38,8 @@ Do not reuse Ubuntu, Tailscale, RDP, Restic, or application passwords.
 
 `Inbox` exposes only `/srv/storage/incoming` over private SMB. It is available through the trusted LAN and Tailscale; port 445 must never be forwarded from the router.
 
+If the dedicated `homelab` credential is lost or rejected, reset only that credential with `make smb-inbox-reset-password`. The command replaces the root-only secret, recreates Samba, verifies its health and account database, and does not modify Inbox or Time Machine data.
+
 ```text
 Inbox/
 ├── books/                individual sources for controlled Calibre import
