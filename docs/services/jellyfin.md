@@ -18,7 +18,7 @@ Media directories:
 /srv/storage/media/HomeVideos
 ```
 
-The media mount is read-only inside the container.
+The media mount is writable inside the container so an administrator can delete media from Jellyfin. Deleting an item removes the library file from `/srv/storage/media`; if it is a hardlink to a retained qBittorrent download, the download-side link and its disk usage remain until that torrent data is removed separately.
 
 ## Intel VA-API transcoding
 

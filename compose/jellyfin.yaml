@@ -17,7 +17,7 @@ services:
     volumes:
       - /srv/appdata/jellyfin/config:/config
       - /srv/appdata/jellyfin/cache:/cache
-      - /srv/storage/media:/media:ro
+      - /srv/storage/media:/media
     devices:
       - /dev/dri/renderD128:/dev/dri/renderD128
     networks:
