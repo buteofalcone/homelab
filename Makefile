@@ -143,7 +143,7 @@ repair-family-access:
 	@sudo ./scripts/repair-family-access.sh
 
 verify-lan-access:
-	@./scripts/verify-lan-access.sh
+	@sudo ./scripts/verify-lan-access.sh
 
 rdp-reconfigure:
 	@./scripts/configure-rdp.sh
