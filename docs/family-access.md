@@ -19,6 +19,22 @@ Cloudflare DNS-only records resolve these names to the HP Server Tailscale addre
 
 Each person should use an individual application account. Do not share the server administrator, Portainer, Cockpit, or SSH credentials with family users.
 
+## Local network access for legacy devices
+
+Devices that cannot run Tailscale may use the server only while connected to the trusted home Wi-Fi/LAN. No router port forwarding is needed:
+
+| Service | Local address |
+| --- | --- |
+| SMB Inbox | `smb://192.168.1.130/Inbox` |
+| Homepage | `http://192.168.1.130:3000` |
+| Nextcloud | `http://192.168.1.130:8080` |
+| Immich | `http://192.168.1.130:2283` |
+| Jellyfin | `http://192.168.1.130:8096` |
+
+The SMB Inbox account is `homelab` with the dedicated root-only password provisioned by `make timemachine-bootstrap`. SMB1 remains disabled; use an SMB2-capable client. An iPad 2 has no modern native Files application, so it needs a compatible third-party SMB client. Modern Immich and Nextcloud web interfaces may not run in the old iOS Safari engine even when network access works; SMB file access and any still-compatible native clients remain usable.
+
+Run `make verify-lan-access` after deployment to verify that the five family endpoints are listening on the LAN address and return healthy responses. These ports must never be forwarded on the router.
+
 For family chat, install the **Nextcloud Talk** app on iOS or Android and sign in with the same personal Nextcloud account and server URL. The browser version is available under **Talk** inside Nextcloud. Text chat works without separate TURN or High Performance Backend services; calls will be evaluated later.
 
 Administrative services remain available at:

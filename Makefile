@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-pin-version immich-remote-ml-configure immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access rdp-reconfigure \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-pin-version immich-remote-ml-configure immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -35,6 +35,7 @@ help:
 	  'make timemachine-bootstrap  Provision Time Machine secrets, storage and Avahi' \
 	  'make timemachine    Start the provisioned Time Machine service' \
 	  'make repair-family-access  Recover SMB, writable Jellyfin media, SSH, and audit RDP' \
+	  'make verify-lan-access  Verify private LAN endpoints for legacy devices' \
 	  'make rdp-reconfigure  Reset GNOME Remote Desktop credentials and security' \
 	  'make calibre-migration-preflight  Validate a staged Mac Calibre library' \
 	  'make calibre-migration-apply      Replace the test library with validated staging' \
@@ -140,6 +141,9 @@ timemachine:
 
 repair-family-access:
 	@sudo ./scripts/repair-family-access.sh
+
+verify-lan-access:
+	@./scripts/verify-lan-access.sh
 
 rdp-reconfigure:
 	@./scripts/configure-rdp.sh
