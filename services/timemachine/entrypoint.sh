@@ -43,11 +43,36 @@ if [[ ${FILESHARE_USER} == "${TIMEMACHINE_A1502_USER}" || ${FILESHARE_USER} == "
   exit 1
 fi
 
-groupadd --gid "${PGID}" timemachine
-useradd --uid "${PUID}" --gid timemachine --no-create-home --shell /usr/sbin/nologin timemachine
-useradd --no-create-home --shell /usr/sbin/nologin "${TIMEMACHINE_A1502_USER}"
-useradd --no-create-home --shell /usr/sbin/nologin "${TIMEMACHINE_A1466_USER}"
-useradd --no-create-home --shell /usr/sbin/nologin "${FILESHARE_USER}"
+ensure_group() {
+  local group_name="$1"
+  local group_id="$2"
+  local current_id
+
+  if getent group "${group_name}" >/dev/null; then
+    current_id="$(getent group "${group_name}" | cut -d: -f3)"
+    [[ ${current_id} == "${group_id}" ]] || {
+      printf 'Group %s already exists with GID %s, expected %s.\n' \
+        "${group_name}" "${current_id}" "${group_id}" >&2
+      exit 1
+    }
+  else
+    groupadd --gid "${group_id}" "${group_name}"
+  fi
+}
+
+ensure_user() {
+  local username="$1"
+  shift
+  if ! id -u "${username}" >/dev/null 2>&1; then
+    useradd --no-create-home --shell /usr/sbin/nologin "$@" "${username}"
+  fi
+}
+
+ensure_group timemachine "${PGID}"
+ensure_user timemachine --uid "${PUID}" --gid timemachine
+ensure_user "${TIMEMACHINE_A1502_USER}"
+ensure_user "${TIMEMACHINE_A1466_USER}"
+ensure_user "${FILESHARE_USER}"
 
 install_samba_password() {
   local username="$1"

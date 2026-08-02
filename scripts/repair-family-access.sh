@@ -9,7 +9,7 @@ load_env
 mountpoint -q /srv/storage || die '/srv/storage is not a mounted filesystem.'
 
 echo 'STEP_SMB_INBOX_RECOVER'
-compose --profile timemachine up -d timemachine
+compose --profile timemachine up -d --build timemachine
 
 for _ in {1..30}; do
   health="$(docker inspect timemachine --format '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' 2>/dev/null || true)"
