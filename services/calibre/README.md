@@ -27,6 +27,8 @@ Family library: `https://books.butenko.online`
 
 OPDS catalog: `https://books.butenko.online/opds`
 
+Legacy LAN-only OPDS catalog: `http://192.168.1.130:8081/opds`. Docker binds this port only to `SERVER_IP`, so an iOS 9 device can read books on trusted home Wi-Fi without Tailscale. TCP 8081 must not be forwarded on the router.
+
 The GUI is sensitive because a full desktop application can access its mounted paths. It is protected by a dedicated password, terminal and sudo features are disabled, and the service is reachable only through the private Tailscale address. Do not share its password with family readers.
 
 The Content Server runs inside the same Calibre process. This is required because two independent Calibre processes must not open the same mutable library. Family access is routed only to port 8081 and does not expose the administration desktop. It has no additional application password because its DNS address is private to the tailnet; review Tailscale sharing policy before inviting family members.

@@ -23,6 +23,8 @@ services:
       - /srv/storage/incoming/books:/incoming:ro
       - /srv/storage/incoming/calibre-migration:/migration:ro
       - /etc/homelab/calibre-gui-password:/run/secrets/calibre-gui-password:ro
+    ports:
+      - "${SERVER_IP:-192.168.1.130}:8081:8081/tcp"
     shm_size: 1gb
     networks:
       - homelab

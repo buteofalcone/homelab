@@ -30,8 +30,11 @@ Devices that cannot run Tailscale may use the server only while connected to the
 | Nextcloud | `http://192.168.1.130:8080` |
 | Immich | `http://192.168.1.130:2283` |
 | Jellyfin | `http://192.168.1.130:8096` |
+| Books / OPDS | `http://192.168.1.130:8081/opds` |
 
 The SMB Inbox account is `homelab` with the dedicated root-only password provisioned by `make timemachine-bootstrap`. SMB1 remains disabled; use an SMB2-capable client. An iPad 2 has no modern native Files application, so it needs a compatible third-party SMB client. Modern Immich and Nextcloud web interfaces may not run in the old iOS Safari engine even when network access works; SMB file access and any still-compatible native clients remain usable.
+
+The Calibre Content Server is bound specifically to the HP Server LAN address, not all interfaces. On an old iPad, configure an OPDS-compatible reader with `http://192.168.1.130:8081/opds`. The catalog works only on the trusted home Wi-Fi and requires no Tailscale client. Do not forward TCP 8081 on the router.
 
 Run `make verify-lan-access` after deployment to verify that the five family endpoints are listening on the LAN address and return healthy responses. These ports must never be forwarded on the router.
 

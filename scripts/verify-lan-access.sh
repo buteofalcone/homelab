@@ -22,10 +22,12 @@ assert_lan_listener Homepage 3000
 assert_lan_listener Nextcloud 8080
 assert_lan_listener Immich 2283
 assert_lan_listener Jellyfin 8096
+assert_lan_listener Books 8081
 
 curl -fsS "http://${lan_ip}:3000/" >/dev/null
 curl -fsS "http://${lan_ip}:8080/status.php" >/dev/null
 curl -fsS "http://${lan_ip}:2283/api/server/ping" >/dev/null
 curl -fsS "http://${lan_ip}:8096/health" >/dev/null
+curl -fsS "http://${lan_ip}:8081/opds" >/dev/null
 
 echo 'LAN_ACCESS_VERIFY_OK'
