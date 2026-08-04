@@ -11,8 +11,10 @@ container_running calibre || die 'The calibre container is not running.'
 mountpoint -q /srv/storage || die '/srv/storage is not a mounted filesystem.'
 
 readonly incoming_root=/srv/storage/incoming/books
-source_path="$(realpath -e -- "$1")" || die 'Input file does not exist.'
-[[ -f ${source_path} ]] || die 'Input path is not a regular file.'
+source_path="$(realpath -e -- "$1")" || die 'Input path does not exist.'
+if [[ ! -f ${source_path} && ! -d ${source_path} ]]; then
+  die 'Input path must be a regular book file or an exploded EPUB directory.'
+fi
 case "${source_path}" in
   "${incoming_root}"/*) ;;
   *) die "Input must be inside ${incoming_root}." ;;
@@ -26,7 +28,20 @@ case "${extension}" in
   *) die "Unsupported input extension: ${extension}" ;;
 esac
 
+exploded_epub=false
+if [[ -d ${source_path} ]]; then
+  [[ ${extension} == epub && -s "${source_path}/META-INF/container.xml" ]] \
+    || die 'A directory input must be an exploded EPUB with META-INF/container.xml.'
+  source_opf="$(find "${source_path}" -type f -iname '*.opf' -print -quit)"
+  [[ -n ${source_opf} ]] || die 'Exploded EPUB does not contain an OPF package document.'
+  exploded_epub=true
+fi
+
 container_source="/incoming/${relative_path}"
+if [[ ${exploded_epub} == true ]]; then
+  opf_relative="${source_opf#${incoming_root}/}"
+  container_source="/incoming/${opf_relative}"
+fi
 tmp_epub="/tmp/calibre-import-$RANDOM-$RANDOM.epub"
 trap 'docker exec calibre rm -f -- "${tmp_epub}" >/dev/null 2>&1 || true' EXIT
 
@@ -35,7 +50,7 @@ library_id="$(docker exec --user "${PUID}:${PGID}" calibre \
 [[ -n ${library_id} && ${library_id} != *$'\n'* ]] || die 'Calibre Content Server did not return exactly one library.'
 readonly library_url="http://127.0.0.1:8081/#${library_id}"
 
-if [[ ${extension} == epub ]]; then
+if [[ ${extension} == epub && ${exploded_epub} == false ]]; then
   docker exec --user "${PUID}:${PGID}" calibre \
     calibredb add --with-library "${library_url}" "${container_source}"
 else

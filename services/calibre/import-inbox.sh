@@ -14,12 +14,14 @@ readonly incoming_root=/srv/storage/incoming/books
 }
 
 mapfile -d '' books < <(
-  find "${incoming_root}" -type f \
-    \( -iname '*.azw3' -o -iname '*.docx' -o -iname '*.epub' \
-       -o -iname '*.fb2' -o -iname '*.html' -o -iname '*.lit' \
-       -o -iname '*.mobi' -o -iname '*.odt' -o -iname '*.pdf' \
-       -o -iname '*.rtf' -o -iname '*.txt' \) \
-    -print0 | sort -z
+  find "${incoming_root}" \
+    \( -type d -iname '*.epub' -print0 -prune \) -o \
+    \( -type f \
+       \( -iname '*.azw3' -o -iname '*.docx' -o -iname '*.epub' \
+          -o -iname '*.fb2' -o -iname '*.html' -o -iname '*.lit' \
+          -o -iname '*.mobi' -o -iname '*.odt' -o -iname '*.pdf' \
+          -o -iname '*.rtf' -o -iname '*.txt' \) \
+       -print0 \) | sort -z
 )
 
 if (( ${#books[@]} == 0 )); then
