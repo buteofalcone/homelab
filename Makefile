@@ -45,6 +45,7 @@ help:
 	  'make calibre-bootstrap  Provision and start full Calibre' \
 	  'make calibre        Start the provisioned Calibre services' \
 	  'make calibre-import BOOK=/srv/storage/incoming/books/file  Convert and import one book' \
+	  'make calibre-import-inbox  Import every supported book staged in Inbox/books' \
 	  'make calibre-verify Run disposable Calibre conversion and service checks' \
 	  'make media-automation-bootstrap  Provision qBittorrent, Sonarr, Prowlarr, Radarr, and Seerr' \
 	  'make media-automation-verify  Verify media paths, auth and idle state' \
@@ -178,6 +179,9 @@ calibre:
 
 calibre-import:
 	@./services/calibre/import-book.sh "$${BOOK:-}"
+
+calibre-import-inbox:
+	@sudo ./services/calibre/import-inbox.sh
 
 calibre-verify:
 	@./services/calibre/verify.sh
