@@ -83,7 +83,7 @@ The July 2026 audit found that several older application ports still listen on a
 | Jellyfin UDP 7359 | LAN client discovery | Kept published for local discovery. |
 | Homepage, Uptime Kuma, Beszel, Nextcloud, Immich, Jellyfin TCP UI ports and Portainer 9443 | Legacy trusted-LAN/recovery access | Not a family-facing route; a future staged change may bind these to loopback after a recovery-access test. |
 
-Open WebUI is already restricted to loopback (`127.0.0.1:3002`) and Calibre publishes no host ports; both are reached through Caddy. No public router forwarding is required or intended. Do not remove or rebind the remaining recovery ports until the router and LAN recovery path have been reviewed.
+Open WebUI keeps its loopback health endpoint and also binds `192.168.1.130:3002` for trusted-LAN family devices. Calibre Content/OPDS binds `192.168.1.130:8081`, and Seerr binds `192.168.1.130:5055`. These LAN-only endpoints support legacy tablets and TV boxes that cannot run Tailscale. No public router forwarding is required or intended.
 
 Time Machine SMB listens on TCP 445 for trusted-LAN and Tailscale clients. Connectivity through the server's Tailscale address was verified from SilverBrick. Avahi publishes `hp-server Time Machine` through Bonjour for local-LAN discovery.
 

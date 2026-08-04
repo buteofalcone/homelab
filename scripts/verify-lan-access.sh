@@ -42,6 +42,8 @@ assert_lan_listener Nextcloud 8080
 assert_lan_listener Immich 2283
 assert_lan_listener Jellyfin 8096
 assert_lan_listener Books 8081
+assert_lan_listener Requests 5055
+assert_lan_listener AI 3002
 
 wait_http Homepage "http://${lan_ip}:3000/"
 wait_http Nextcloud "http://${lan_ip}:8080/status.php"
@@ -50,5 +52,7 @@ wait_http Jellyfin "http://${lan_ip}:8096/health"
 # The full Calibre GUI image may need up to two minutes after recreation before
 # its embedded Content Server starts accepting connections.
 wait_http Books "http://${lan_ip}:8081/opds" 75
+wait_http Requests "http://${lan_ip}:5055/api/v1/settings/public"
+wait_http AI "http://${lan_ip}:3002/health"
 
 echo 'LAN_ACCESS_VERIFY_OK'

@@ -121,6 +121,8 @@ services:
       PORT: "5055"
     volumes:
       - /srv/appdata/seerr:/app/config
+    ports:
+      - "${SERVER_IP:-192.168.1.130}:5055:5055/tcp"
     networks:
       - homelab
     healthcheck:

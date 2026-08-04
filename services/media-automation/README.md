@@ -72,6 +72,8 @@ Owner URLs:
 - `https://radarr.butenko.online`
 - `https://requests.butenko.online`
 
+Family devices on the trusted home LAN that cannot run Tailscale may use Seerr at `http://192.168.1.130:5055`. This binding is limited to `SERVER_IP`; never forward TCP 5055 on the router.
+
 Do not forward TCP/UDP 6881 on the router until the download policy is deliberately reviewed. On the temporary disk, use only a small lawful test series and keep high-volume monitoring disabled. After the 8–16 TB migration, adjust the free-space floor and policy without changing container paths.
 
 ## Backup boundary

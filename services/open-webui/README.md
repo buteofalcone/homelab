@@ -9,7 +9,7 @@ Open WebUI is the private family chat interface for the model served by LM Studi
 - Secrets: `/etc/homelab/open-webui.env`, root-only, bind-mounted read-only, and backed up by Restic.
 - Model API: LM Studio at `http://100.91.171.26:1234/v1` over Tailscale.
 - Browser URL: `https://ai.butenko.online` through Caddy.
-- Direct port: `127.0.0.1:3002` only; it is not exposed to the LAN or tailnet.
+- Direct ports: `127.0.0.1:3002` for host health checks and `SERVER_IP:3002` for trusted-LAN family devices. Neither requires router forwarding.
 
 The service has no Docker socket, host filesystem, shell, or arbitrary tool access. Open WebUI Tools/Functions and web search start disabled. Agent tools will be added later as narrow, reviewed services with approval gates.
 
