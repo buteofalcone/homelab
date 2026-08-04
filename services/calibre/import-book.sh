@@ -4,11 +4,48 @@ set -Eeuo pipefail
 readonly service_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly repo_dir="$(cd "${service_dir}/../.." && pwd)"
 source "${repo_dir}/scripts/lib.sh"
+require_root
 load_env
 
 (( $# == 1 )) || die 'Usage: make calibre-import BOOK=/srv/storage/incoming/books/example.pdf'
-container_running calibre || die 'The calibre container is not running.'
 mountpoint -q /srv/storage || die '/srv/storage is not a mounted filesystem.'
+docker container inspect calibre >/dev/null 2>&1 || die 'The calibre container does not exist.'
+
+readonly calibre_image="$(docker inspect calibre --format '{{.Config.Image}}')"
+readonly import_managed="${CALIBRE_IMPORT_OFFLINE_MANAGED:-false}"
+restart_needed=false
+
+wait_for_calibre() {
+  local health
+  for _ in {1..48}; do
+    health="$(docker inspect calibre --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' 2>/dev/null || true)"
+    [[ ${health} == healthy ]] && return 0
+    sleep 5
+  done
+  return 1
+}
+
+restart_calibre() {
+  cd "${repo_dir}"
+  compose --profile books up -d calibre
+  wait_for_calibre || die 'Calibre did not become healthy after offline import.'
+}
+
+cleanup() {
+  if [[ ${restart_needed} == true ]]; then
+    restart_calibre || true
+  fi
+}
+trap cleanup EXIT
+
+if [[ ${import_managed} == true ]]; then
+  container_running calibre && die 'Managed offline import requires Calibre to be stopped.'
+else
+  container_running calibre || die 'The calibre container is not running.'
+  echo 'STEP_CALIBRE_OFFLINE_STOP'
+  compose --profile books stop calibre
+  restart_needed=true
+fi
 
 readonly incoming_root=/srv/storage/incoming/books
 source_path="$(realpath -e -- "$1")" || die 'Input path does not exist.'
@@ -43,22 +80,32 @@ if [[ ${exploded_epub} == true ]]; then
   container_source="/incoming/${opf_relative}"
 fi
 tmp_epub="/tmp/calibre-import-$RANDOM-$RANDOM.epub"
-trap 'docker exec calibre rm -f -- "${tmp_epub}" >/dev/null 2>&1 || true' EXIT
-
-library_id="$(docker exec --user "${PUID}:${PGID}" calibre \
-  calibredb list --with-library 'http://127.0.0.1:8081/#-')"
-[[ -n ${library_id} && ${library_id} != *$'\n'* ]] || die 'Calibre Content Server did not return exactly one library.'
-readonly library_url="http://127.0.0.1:8081/#${library_id}"
+readonly -a run_args=(
+  --rm
+  --user "${PUID}:${PGID}"
+  --env HOME=/tmp
+  --volume "${incoming_root}:/incoming:ro"
+  --volume /srv/storage/books:/library
+)
 
 if [[ ${extension} == epub && ${exploded_epub} == false ]]; then
-  docker exec --user "${PUID}:${PGID}" calibre \
-    calibredb add --with-library "${library_url}" "${container_source}"
+  docker run "${run_args[@]}" --entrypoint calibredb "${calibre_image}" \
+    add --with-library /library "${container_source}"
 else
-  docker exec --user "${PUID}:${PGID}" calibre \
-    ebook-convert "${container_source}" "${tmp_epub}"
-  docker exec --user "${PUID}:${PGID}" calibre ebook-meta "${tmp_epub}" >/dev/null
-  docker exec --user "${PUID}:${PGID}" calibre \
-    calibredb add --with-library "${library_url}" "${tmp_epub}"
+  docker run "${run_args[@]}" --entrypoint /bin/bash "${calibre_image}" \
+    -euo pipefail -c '
+      source_path="$1"
+      output_path="$2"
+      ebook-convert "${source_path}" "${output_path}"
+      ebook-meta "${output_path}" >/dev/null
+      calibredb add --with-library /library "${output_path}"
+    ' calibre-import "${container_source}" "${tmp_epub}"
+fi
+
+if [[ ${import_managed} == false ]]; then
+  echo 'STEP_CALIBRE_OFFLINE_START'
+  restart_calibre
+  restart_needed=false
 fi
 
 echo "CALIBRE_IMPORT_OK ${source_path}"

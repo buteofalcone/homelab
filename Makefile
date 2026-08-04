@@ -178,7 +178,7 @@ calibre:
 	@$(COMPOSE) --profile books up -d calibre
 
 calibre-import:
-	@./services/calibre/import-book.sh "$${BOOK:-}"
+	@sudo ./services/calibre/import-book.sh "$${BOOK:-}"
 
 calibre-import-inbox:
 	@sudo ./services/calibre/import-inbox.sh

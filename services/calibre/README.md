@@ -47,7 +47,7 @@ The SMB path `Inbox/books` maps to that server directory. Copying files does not
 make calibre-import-inbox
 ```
 
-The batch command processes nested folders and filenames with spaces, reports each failure, and deliberately leaves the source files in place. It also recognizes an exploded `.epub` directory containing `META-INF/container.xml` and rebuilds it from its OPF package document instead of importing internal bookmark or metadata files. After checking the imported titles in Books, archive or remove the staged sources to prevent an accidental repeat import.
+The batch command processes nested folders and filenames with spaces, reports each failure, and deliberately leaves the source files in place. It also recognizes an exploded `.epub` directory containing `META-INF/container.xml` and rebuilds it from its OPF package document instead of importing internal bookmark or metadata files. Imports run offline: the GUI container is stopped once, `calibredb` writes directly to the mounted library, and the script always restarts Calibre and waits for a healthy state. This avoids concurrent `metadata.db` access and does not depend on anonymous Content Server write authorization. After checking the imported titles in Books, archive or remove the staged sources to prevent an accidental repeat import.
 
 Supported controlled inputs are AZW3, DOCX, EPUB, FB2, HTML, LIT, MOBI, ODT, PDF, RTF and TXT. Non-EPUB input is converted with `ebook-convert`, validated with `ebook-meta`, then added with `calibredb`. The source is deliberately retained until the imported result is checked.
 
