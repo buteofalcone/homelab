@@ -27,7 +27,7 @@ Devices that cannot run Tailscale may use the server only while connected to the
 | --- | --- |
 | SMB Inbox | `smb://192.168.1.130/Inbox` |
 | Homepage | `http://192.168.1.130:3000` |
-| Nextcloud | `http://192.168.1.130:8082` |
+| Nextcloud | `http://192.168.1.130:8080` |
 | Immich | `http://192.168.1.130:2283` |
 | Jellyfin | `http://192.168.1.130:8096` |
 | Books / OPDS | `http://192.168.1.130:8081/opds` |

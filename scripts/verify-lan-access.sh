@@ -38,7 +38,7 @@ wait_http() {
 
 assert_lan_listener SMB 445
 assert_lan_listener Homepage 3000
-assert_lan_listener Nextcloud "${NEXTCLOUD_PORT:-8082}"
+assert_lan_listener Nextcloud "${NEXTCLOUD_PORT:-8080}"
 assert_lan_listener Immich 2283
 assert_lan_listener Jellyfin 8096
 assert_lan_listener Books 8081
@@ -46,7 +46,7 @@ assert_lan_listener Requests 5055
 assert_lan_listener AI 3002
 
 wait_http Homepage "http://${lan_ip}:3000/"
-wait_http Nextcloud "http://${lan_ip}:${NEXTCLOUD_PORT:-8082}/status.php"
+wait_http Nextcloud "http://${lan_ip}:${NEXTCLOUD_PORT:-8080}/status.php"
 wait_http Immich "http://${lan_ip}:2283/api/server/ping"
 wait_http Jellyfin "http://${lan_ip}:8096/health"
 # The full Calibre GUI image may need up to two minutes after recreation before
