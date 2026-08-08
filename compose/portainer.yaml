@@ -1,0 +1,14 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:lts
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "${PORTAINER_PORT:-9443}:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /srv/appdata/portainer:/data
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"

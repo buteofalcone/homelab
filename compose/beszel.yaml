@@ -1,0 +1,40 @@
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    ports:
+      - "${BESZEL_PORT:-8090}:8090"
+    environment:
+      APP_URL: "https://beszel.${BASE_DOMAIN:-butenko.online}"
+    volumes:
+      - /srv/appdata/beszel:/beszel_data
+      - beszel_socket:/beszel_socket
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    profiles:
+      - beszel-agent
+    network_mode: host
+    environment:
+      LISTEN: /beszel_socket/beszel.sock
+      HUB_URL: "http://127.0.0.1:${BESZEL_PORT:-8090}"
+      KEY: "${BESZEL_AGENT_KEY}"
+      TOKEN: "${BESZEL_AGENT_TOKEN}"
+    volumes:
+      - /srv/appdata/beszel-agent:/var/lib/beszel-agent
+      - beszel_socket:/beszel_socket
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /srv/storage:/extra-filesystems/storage:ro
+    labels:
+      com.centurylinklabs.watchtower.enable: "true"
+
+volumes:
+  beszel_socket:
+    name: beszel_socket

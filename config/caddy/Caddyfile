@@ -1,0 +1,103 @@
+{
+	acme_dns cloudflare {env.CLOUDFLARE_API_TOKEN}
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(common) {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
+
+home.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy homepage:3000
+}
+
+portainer.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy portainer:9000
+}
+
+beszel.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy beszel:8090
+}
+
+uptime.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy uptime-kuma:3001
+}
+
+nextcloud.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy nextcloud:80
+}
+
+immich.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy immich-server:2283
+}
+
+jellyfin.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy jellyfin:8096
+}
+
+ai.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy open-webui:8080
+}
+
+calibre.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy https://calibre:8181 {
+		transport http {
+			tls_insecure_skip_verify
+		}
+	}
+}
+
+books.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy calibre:8081
+}
+
+torrent.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy qbittorrent:8080
+}
+
+sonarr.{$BASE_DOMAIN} {
+	import common
+	basic_auth {
+		{$MEDIA_ADMIN_USER} {$MEDIA_ADMIN_HASH}
+	}
+	reverse_proxy sonarr:8989
+}
+
+prowlarr.{$BASE_DOMAIN} {
+	import common
+	basic_auth {
+		{$MEDIA_ADMIN_USER} {$MEDIA_ADMIN_HASH}
+	}
+	reverse_proxy prowlarr:9696
+}
+
+radarr.{$BASE_DOMAIN} {
+	import common
+	basic_auth {
+		{$MEDIA_ADMIN_USER} {$MEDIA_ADMIN_HASH}
+	}
+	reverse_proxy radarr:7878
+}
+
+requests.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy seerr:5055
+}

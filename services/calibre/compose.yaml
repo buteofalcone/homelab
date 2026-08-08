@@ -1,0 +1,43 @@
+services:
+  calibre:
+    image: "${CALIBRE_IMAGE:-lscr.io/linuxserver/calibre@sha256:1e9d545e20af654af9aca439a54cdd3988cf067f64efcd409cc2bc053aeb6d15}"
+    container_name: calibre
+    restart: unless-stopped
+    profiles:
+      - books
+    environment:
+      PUID: "${PUID:-1000}"
+      PGID: "${PGID:-1000}"
+      TZ: "${TZ:-Europe/Madrid}"
+      CUSTOM_USER: "${CALIBRE_ADMIN_USER:-butenko}"
+      FILE__PASSWORD: /run/secrets/calibre-gui-password
+      TITLE: Butenko Calibre
+      FILE_MANAGER_PATH: /incoming
+      DISABLE_SUDO: "true"
+      DISABLE_TERMINALS: "true"
+      DISABLE_OPEN_TOOLS: "true"
+      HARDEN_KEYBINDS: "true"
+    volumes:
+      - /srv/appdata/calibre:/config
+      - /srv/storage/books:/config/Calibre Library
+      - /srv/storage/incoming/books:/incoming:ro
+      - /srv/storage/incoming/calibre-migration:/migration:ro
+      - /etc/homelab/calibre-gui-password:/run/secrets/calibre-gui-password:ro
+    ports:
+      - "${SERVER_IP:-192.168.1.130}:8081:8081/tcp"
+    shm_size: 1gb
+    networks:
+      - homelab
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          gui_status="$$(curl --insecure --silent --output /dev/null --write-out '%{http_code}' https://127.0.0.1:8181/)" &&
+          { [ "$${gui_status}" = 200 ] || [ "$${gui_status}" = 401 ]; } &&
+          curl --fail --silent http://127.0.0.1:8081/ >/dev/null
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 120s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"

@@ -1,0 +1,43 @@
+services:
+  open-webui:
+    image: "${OPEN_WEBUI_IMAGE:-ghcr.io/open-webui/open-webui:v0.11.0@sha256:72c0ba641ba75e7aa52655cb242570906ececd09b1140fb736483038a22b3228}"
+    container_name: open-webui
+    restart: unless-stopped
+    profiles:
+      - agents
+    ports:
+      - "127.0.0.1:${OPEN_WEBUI_PORT:-3002}:8080"
+      - "${SERVER_IP:-192.168.1.130}:${OPEN_WEBUI_PORT:-3002}:8080"
+    command:
+      - bash
+      - -c
+      - |
+        set -a
+        source /run/secrets/open-webui.env
+        set +a
+        exec bash start.sh
+    environment:
+      WEBUI_URL: "https://ai.${BASE_DOMAIN:-butenko.online}"
+      WEBUI_NAME: "Butenko AI"
+      ENABLE_OLLAMA_API: "false"
+      ENABLE_OPENAI_API: "true"
+      ENABLE_OPENAI_API_PASSTHROUGH: "false"
+      ENABLE_SIGNUP: "false"
+      DEFAULT_USER_ROLE: "pending"
+      ENABLE_PLUGINS: "false"
+      ENABLE_WEB_SEARCH: "false"
+      ENABLE_PERSISTENT_CONFIG: "true"
+      TASK_MODEL_EXTERNAL: "${LM_STUDIO_MODEL:-qwen/qwen3.5-9b}"
+    volumes:
+      - /srv/appdata/open-webui:/app/backend/data
+      - /etc/homelab/open-webui.env:/run/secrets/open-webui.env:ro
+    networks:
+      - homelab
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"

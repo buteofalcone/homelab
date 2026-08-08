@@ -1,9 +1,21 @@
+name: homelab
+
 include:
-  - ./services/homepage/compose.yaml
-  - ./services/portainer/compose.yaml
-  - ./services/beszel/compose.yaml
-  - ./services/uptime-kuma/compose.yaml
-  - ./services/paperless/compose.yaml
-  - ./services/nextcloud/compose.yaml
-  - ./services/immich/compose.yaml
-  - ./services/jellyfin/compose.yaml
+  - ./compose/homepage.yaml
+  - ./compose/portainer.yaml
+  - ./compose/beszel.yaml
+  - ./compose/uptime-kuma.yaml
+  - ./compose/watchtower.yaml
+  - ./compose/caddy.yaml
+  - ./compose/nextcloud.yaml
+  - ./compose/immich.yaml
+  - ./compose/jellyfin.yaml
+  - ./services/timemachine/compose.yaml
+  - ./services/open-webui/compose.yaml
+  - ./services/calibre/compose.yaml
+  - ./services/media-automation/compose.yaml
+
+networks:
+  homelab:
+    name: homelab
+    driver: bridge

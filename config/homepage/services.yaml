@@ -1,0 +1,105 @@
+- Сімейний сервер:
+    - Як користуватися:
+        icon: mdi-book-open-page-variant
+        href: https://github.com/buteofalcone/homelab/blob/feature/base-management-stack/docs/family-guide-uk.md
+        description: Коротка інструкція для всієї сім’ї
+
+    - Nextcloud:
+        icon: nextcloud.svg
+        href: https://nextcloud.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Документи, файли та сімейний чат
+        server: local
+        container: nextcloud
+
+    - Immich:
+        icon: immich.svg
+        href: https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Приватна фотогалерея і синхронізація
+        server: local
+        container: immich-server
+
+    - Jellyfin:
+        icon: jellyfin.svg
+        href: https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Фільми та серіали без реклами
+        server: local
+        container: jellyfin
+
+    - Замовити фільм або серіал:
+        icon: seerr.svg
+        href: https://requests.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Зручний пошук у сімейній медіатеці
+        server: local
+        container: seerr
+
+    - Books:
+        icon: calibre.svg
+        href: https://books.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Книги EPUB для Apple Books
+        server: local
+        container: calibre
+
+    - Butenko AI:
+        icon: open-webui.svg
+        href: https://ai.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Приватний сімейний AI-чат
+        server: local
+        container: open-webui
+
+- Керування сервером:
+    - Portainer:
+        icon: portainer.svg
+        href: https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Керування Docker
+        server: local
+        container: portainer
+
+    - Beszel:
+        icon: beszel.svg
+        href: https://beszel.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Навантаження і ресурси сервера
+        server: local
+        container: beszel
+
+    - Uptime Kuma:
+        icon: uptime-kuma.svg
+        href: https://uptime.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Стан і доступність сервісів
+        server: local
+        container: uptime-kuma
+
+- Медіатека — власник:
+    - Calibre Admin:
+        icon: calibre.svg
+        href: https://calibre.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Додавання та конвертація книг
+        server: local
+        container: calibre
+
+    - qBittorrent:
+        icon: qbittorrent.svg
+        href: https://torrent.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Завантаження .torrent і magnet-посилань
+        server: local
+        container: qbittorrent
+
+    - Sonarr:
+        icon: sonarr.svg
+        href: https://sonarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Пошук та автоматизація серіалів
+        server: local
+        container: sonarr
+
+    - Radarr:
+        icon: radarr.svg
+        href: https://radarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Пошук та автоматизація фільмів
+        server: local
+        container: radarr
+
+    - Prowlarr:
+        icon: prowlarr.svg
+        href: https://prowlarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}
+        description: Налаштування джерел пошуку
+        server: local
+        container: prowlarr

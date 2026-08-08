@@ -1,0 +1,97 @@
+services:
+  nextcloud-db:
+    image: postgres:16-alpine
+    container_name: nextcloud-db
+    restart: unless-stopped
+    profiles:
+      - nextcloud
+    environment:
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: "${NEXTCLOUD_DB_PASSWORD}"
+    volumes:
+      - /srv/appdata/nextcloud/postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nextcloud -d nextcloud"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+
+  nextcloud-redis:
+    image: redis:7-alpine
+    container_name: nextcloud-redis
+    restart: unless-stopped
+    profiles:
+      - nextcloud
+    command: ["redis-server", "--requirepass", "${NEXTCLOUD_REDIS_PASSWORD}"]
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${NEXTCLOUD_REDIS_PASSWORD}\" ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    environment:
+      NEXTCLOUD_REDIS_PASSWORD: "${NEXTCLOUD_REDIS_PASSWORD}"
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+
+  nextcloud:
+    image: "${NEXTCLOUD_IMAGE:-nextcloud:33-apache}"
+    container_name: nextcloud
+    restart: unless-stopped
+    profiles:
+      - nextcloud
+    ports:
+      - "${NEXTCLOUD_PORT:-8080}:80"
+    depends_on:
+      nextcloud-db:
+        condition: service_healthy
+      nextcloud-redis:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: nextcloud-db
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: "${NEXTCLOUD_DB_PASSWORD}"
+      REDIS_HOST: nextcloud-redis
+      REDIS_HOST_PASSWORD: "${NEXTCLOUD_REDIS_PASSWORD}"
+      NEXTCLOUD_ADMIN_USER: "${NEXTCLOUD_ADMIN_USER}"
+      NEXTCLOUD_ADMIN_PASSWORD: "${NEXTCLOUD_ADMIN_PASSWORD}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "nextcloud.${BASE_DOMAIN:-butenko.online} ${SERVER_IP:-192.168.1.130} localhost"
+      APACHE_DISABLE_REWRITE_IP: "1"
+      TRUSTED_PROXIES: "172.16.0.0/12"
+      OVERWRITEHOST: "nextcloud.${BASE_DOMAIN:-butenko.online}"
+      OVERWRITEPROTOCOL: "https"
+      OVERWRITECLIURL: "https://nextcloud.${BASE_DOMAIN:-butenko.online}"
+      PHP_MEMORY_LIMIT: 512M
+      PHP_UPLOAD_LIMIT: 10G
+      TZ: "${TZ:-Europe/Madrid}"
+    volumes:
+      - /srv/appdata/nextcloud/html:/var/www/html
+      - /srv/storage/files/nextcloud:/var/www/html/data
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+
+  nextcloud-cron:
+    image: "${NEXTCLOUD_IMAGE:-nextcloud:33-apache}"
+    container_name: nextcloud-cron
+    restart: unless-stopped
+    profiles:
+      - nextcloud
+    entrypoint: /cron.sh
+    depends_on:
+      - nextcloud
+    volumes:
+      - /srv/appdata/nextcloud/html:/var/www/html
+      - /srv/storage/files/nextcloud:/var/www/html/data
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
