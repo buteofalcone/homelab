@@ -1,0 +1,38 @@
+services:
+  clickhouse:
+    image: "${CLICKHOUSE_IMAGE:-clickhouse/clickhouse-server:25.3}"
+    container_name: clickhouse
+    restart: unless-stopped
+    profiles:
+      - clickhouse
+    environment:
+      CLICKHOUSE_DB: default
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: "1"
+      TZ: "${TZ:-Europe/Madrid}"
+    ports:
+      # Database ports remain local to the server. Use an SSH/Tailscale tunnel
+      # for a workstation client rather than exposing ClickHouse on the LAN.
+      - "127.0.0.1:8123:8123/tcp"
+      - "127.0.0.1:9000:9000/tcp"
+    volumes:
+      # Cold table data and files to import stay on the HDD.
+      - /srv/storage/databases/clickhouse/data:/var/lib/clickhouse
+      - /srv/storage/databases/clickhouse/cold:/var/lib/clickhouse/user_files
+      # Temporary query files and logs stay on the SSD.
+      - /srv/appdata/clickhouse/tmp:/var/lib/clickhouse/tmp
+      - /srv/appdata/clickhouse/log:/var/log/clickhouse-server
+      - ./config.d/storage.xml:/etc/clickhouse-server/config.d/storage.xml:ro
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    networks:
+      - homelab
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8123/ping | grep -qx 'Ok.'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"

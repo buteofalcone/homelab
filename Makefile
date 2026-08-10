@@ -1,10 +1,10 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
-PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile media-automation
+PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile media-automation --profile clickhouse
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-pin-version immich-remote-ml-configure immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-pin-version immich-remote-ml-configure immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -47,6 +47,9 @@ help:
 	  'make calibre-import BOOK=/srv/storage/incoming/books/file  Convert and import one book' \
 	  'make calibre-import-inbox  Import every supported book staged in Inbox/books' \
 	  'make calibre-verify Run disposable Calibre conversion and service checks' \
+	  'make clickhouse-bootstrap  Provision HDD/SSD paths and start private ClickHouse' \
+	  'make clickhouse           Start the provisioned ClickHouse service' \
+	  'make clickhouse-verify    Verify ClickHouse storage placement and SQL endpoint' \
 	  'make media-automation-bootstrap  Provision qBittorrent, Sonarr, Prowlarr, Radarr, and Seerr' \
 	  'make media-automation-verify  Verify media paths, auth and idle state' \
 	  'make media-automation-toloka  Securely configure the private Toloka.to indexer' \
@@ -185,6 +188,15 @@ calibre-import-inbox:
 
 calibre-verify:
 	@./services/calibre/verify.sh
+
+clickhouse-bootstrap:
+	@sudo ./services/clickhouse/bootstrap.sh
+
+clickhouse:
+	@$(COMPOSE) --profile clickhouse up -d clickhouse
+
+clickhouse-verify:
+	@sudo ./services/clickhouse/verify.sh
 
 media-automation-bootstrap:
 	@sudo ./services/media-automation/bootstrap.sh
