@@ -48,6 +48,10 @@ Inbox/
 ├── google-photos-takeout/
 │   ├── sample/           small representative Takeout test set
 │   └── full/             immutable complete Takeout archives
+├── databases/
+│   ├── parquet/          ClickHouse Parquet staging
+│   ├── csv/              ClickHouse CSV staging
+│   └── sql/              ClickHouse SQL staging
 ├── torrents/             staging only; Seerr and the qBittorrent UI remain preferred
 ├── media/                manual media staging
 └── transfer/             temporary general file transfer

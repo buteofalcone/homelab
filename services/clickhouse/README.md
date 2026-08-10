@@ -43,6 +43,36 @@ ssh -L 8123:127.0.0.1:8123 butenko@hp-server
 
 Then use `http://127.0.0.1:8123` from your workstation. Do not place source files directly in `data`; use the matching `cold/parquet`, `cold/csv`, or `cold/sql` directory.
 
+## Copying source files from a Mac
+
+The database directories are deliberately not exposed by Samba: ClickHouse owns its
+live `data` directory, and the cold source files should not be edited while a query
+is using them. Instead, provision the private SMB staging folders once:
+
+```bash
+cd /opt/homelab
+sudo make clickhouse-inbox-bootstrap
+```
+
+In Finder, connect with the existing `homelab` SMB account and copy files into:
+
+```text
+smb://192.168.1.130/Inbox/databases/parquet/
+smb://192.168.1.130/Inbox/databases/csv/
+smb://192.168.1.130/Inbox/databases/sql/
+```
+
+When the copy has finished, move the staged regular files into the matching cold
+directory on the HDD:
+
+```bash
+sudo make clickhouse-inbox-import
+```
+
+The command accepts `.parquet` in `parquet`, `.csv` in `csv`, and `.sql` or
+`.sql.gz` in `sql`. It never overwrites an existing cold file: conflicts remain in
+Inbox for review. Do not use Inbox as the permanent copy of a dataset.
+
 ## Backup boundary
 
 Current Restic backups deliberately do not include the HDD. The ClickHouse table data and cold source files need a future HDD/off-site backup policy before they are treated as the only copy of anything important.

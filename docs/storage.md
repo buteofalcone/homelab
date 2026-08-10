@@ -25,6 +25,10 @@ HDD
     ├── incoming
     │   ├── books
     │   ├── calibre-migration
+    │   ├── databases
+    │   │   ├── parquet
+    │   │   ├── csv
+    │   │   └── sql
     │   ├── torrents
     │   ├── media
     │   └── transfer
@@ -48,3 +52,7 @@ Time Machine uses separate Samba shares and reported size limits for each Mac. T
 The same Samba container exposes `/srv/storage/incoming` as the private `Inbox` share through a separate `homelab` account. This avoids a second process competing for TCP 445. The share is staging only and never exposes application-managed data directories.
 
 ClickHouse keeps table parts and staged cold source files on the HDD under `/srv/storage/databases/clickhouse`. Its temporary query files and logs live on the SSD under `/srv/appdata/clickhouse`. ClickHouse's mark and uncompressed caches are memory caches; it does not transparently create an SSD disk cache for local HDD table parts. The SSD path therefore holds the query working area rather than silently duplicating the cold database.
+
+The private Samba `Inbox/databases/{parquet,csv,sql}` folders are a staging area for
+Mac uploads. `make clickhouse-inbox-import` validates the expected extension and
+moves files into the matching ClickHouse cold directory without overwriting files.
