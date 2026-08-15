@@ -101,3 +101,8 @@ requests.{$BASE_DOMAIN} {
 	import common
 	reverse_proxy seerr:5055
 }
+
+kurhan.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy kurhan:8765
+}

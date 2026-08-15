@@ -4,6 +4,7 @@ include:
   - ./compose/homepage.yaml
   - ./compose/portainer.yaml
   - ./compose/beszel.yaml
+  - ./compose/kurhan.yaml
   - ./compose/uptime-kuma.yaml
   - ./compose/watchtower.yaml
   - ./compose/caddy.yaml
