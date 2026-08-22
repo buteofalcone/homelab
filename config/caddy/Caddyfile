@@ -106,3 +106,11 @@ kurhan.{$BASE_DOMAIN} {
 	import common
 	reverse_proxy kurhan:8765
 }
+
+dashboard.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy host.docker.internal:8787 {
+		header_up X-Dashboard-Proxy-Token {env.DASHBOARD_PROXY_TOKEN}
+		header_up X-Dashboard-Client-IP {http.request.remote.host}
+	}
+}

@@ -1,0 +1,20 @@
+[Unit]
+Description=Restrict HPServer dashboard direct port
+After=network-online.target docker.service tailscaled.service
+Wants=network-online.target
+Before=hp-dashboard.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/hp-dashboard-firewall
+RemainAfterExit=true
+User=root
+Group=root
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+CapabilityBoundingSet=CAP_NET_ADMIN
+AmbientCapabilities=CAP_NET_ADMIN
+
+[Install]
+WantedBy=multi-user.target

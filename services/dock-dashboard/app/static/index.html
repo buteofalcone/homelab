@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#10151d">
+  <title>HPServer Console</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">HOME LAB / DOCK</p>
+      <h1>HPServer</h1>
+    </div>
+    <div class="header-state">
+      <span id="overall-dot" class="state-dot unknown" aria-hidden="true"></span>
+      <div>
+        <strong id="overall-label">Підключення…</strong>
+        <span id="last-update">очікування даних</span>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="alert-strip" class="alert-strip hidden" aria-live="polite"></section>
+
+    <section class="metrics-grid" aria-label="Основні метрики">
+      <article class="metric-card accent-cpu">
+        <div class="metric-head"><span>CPU</span><span id="cpu-temp" class="metric-note">—</span></div>
+        <strong id="cpu-value" class="metric-value">—</strong>
+        <span id="cpu-detail" class="metric-detail">load —</span>
+        <canvas id="cpu-chart" class="sparkline" width="280" height="48" aria-label="Історія CPU"></canvas>
+      </article>
+      <article class="metric-card accent-ram">
+        <div class="metric-head"><span>RAM</span><span id="ram-total" class="metric-note">—</span></div>
+        <strong id="ram-value" class="metric-value">—</strong>
+        <span id="ram-detail" class="metric-detail">—</span>
+        <canvas id="ram-chart" class="sparkline" width="280" height="48" aria-label="Історія RAM"></canvas>
+      </article>
+      <article class="metric-card accent-net">
+        <div class="metric-head"><span>Мережа</span><span id="tail-state" class="metric-note">—</span></div>
+        <strong id="lan-address" class="metric-value compact">—</strong>
+        <span id="network-detail" class="metric-detail">LAN / Tailscale</span>
+        <div class="mini-status"><span id="phone-dot" class="state-dot unknown"></span><span id="phone-state">GT Neo —</span></div>
+      </article>
+      <article class="metric-card accent-time">
+        <div class="metric-head"><span>Uptime</span><span class="metric-note">kernel</span></div>
+        <strong id="uptime-value" class="metric-value compact">—</strong>
+        <span id="kernel-value" class="metric-detail">—</span>
+        <div class="mini-status"><span id="backup-dot" class="state-dot unknown"></span><span id="backup-state">Backup —</span></div>
+      </article>
+    </section>
+
+    <section class="panel" aria-labelledby="storage-title">
+      <div class="section-head">
+        <div><p class="eyebrow">STORAGE</p><h2 id="storage-title">Диски</h2></div>
+        <span id="storage-summary" class="section-badge">—</span>
+      </div>
+      <div id="disk-list" class="disk-list"><div class="skeleton-row"></div></div>
+    </section>
+
+    <section class="panel" aria-labelledby="apps-title">
+      <div class="section-head">
+        <div><p class="eyebrow">SERVICES</p><h2 id="apps-title">Застосунки</h2></div>
+        <span id="container-summary" class="section-badge">—</span>
+      </div>
+      <div id="app-grid" class="app-grid"><div class="skeleton-card"></div><div class="skeleton-card"></div></div>
+      <details class="container-details">
+        <summary>Усі контейнери <span id="container-count">—</span></summary>
+        <div id="container-list" class="container-list"></div>
+      </details>
+    </section>
+
+    <section class="panel actions-panel" aria-labelledby="actions-title">
+      <div class="section-head">
+        <div><p class="eyebrow">CONTROL</p><h2 id="actions-title">Безпечні дії</h2></div>
+        <button id="auth-button" class="text-button">Увійти</button>
+      </div>
+      <p id="auth-hint" class="panel-hint">Статус доступний без входу. Керування потребує захищеної сесії.</p>
+      <div class="actions-grid">
+        <button class="action-button" data-action="backup"><span>Backup</span><small>Запустити Restic job</small></button>
+        <button class="action-button" data-action="smart-short" data-target="system-ssd"><span>SMART SSD</span><small>Короткий self-test</small></button>
+        <button class="action-button" data-action="smart-short" data-target="storage-hdd"><span>SMART HDD</span><small>Короткий self-test</small></button>
+        <button class="action-button danger" data-action="reboot"><span>Reboot</span><small>Перезапустити сервер</small></button>
+        <button class="action-button danger" data-action="shutdown"><span>Shutdown</span><small>Вимкнути сервер</small></button>
+      </div>
+      <div class="restart-row">
+        <label for="restart-target">Restart app</label>
+        <select id="restart-target">
+          <option value="jellyfin">Jellyfin</option><option value="immich">Immich</option>
+          <option value="nextcloud">Nextcloud</option><option value="calibre">Calibre</option>
+          <option value="open-webui">Open WebUI</option><option value="seerr">Seerr</option>
+          <option value="media-automation">Media automation</option><option value="kurhan">Kurhan</option>
+          <option value="ridni">Ridni staging</option>
+        </select>
+        <button id="restart-button" class="action-button compact-button">Restart</button>
+      </div>
+      <div id="job-toast" class="job-toast hidden" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer><span>HPServer Console</span><span id="footer-version">collector —</span></footer>
+
+  <dialog id="login-dialog">
+    <form id="login-form" method="dialog">
+      <button type="button" class="dialog-close" data-close aria-label="Закрити">×</button>
+      <p class="eyebrow">SECURE SESSION</p><h2>Вхід оператора</h2>
+      <label>Користувач<input id="login-user" name="username" autocomplete="username" value="butenko" required></label>
+      <label>Пароль<input id="login-password" name="password" type="password" autocomplete="current-password" required></label>
+      <p id="login-error" class="form-error"></p>
+      <button class="primary-button" type="submit">Відкрити керування</button>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog">
+    <form id="confirm-form" method="dialog">
+      <button type="button" class="dialog-close" data-close aria-label="Закрити">×</button>
+      <p class="eyebrow">CONFIRM ACTION</p><h2 id="confirm-title">Підтвердити дію</h2>
+      <p id="confirm-copy" class="dialog-copy"></p>
+      <label id="confirm-text-wrap" class="hidden">Введіть <code>hp-server</code><input id="confirm-text" autocomplete="off"></label>
+      <label id="confirm-password-wrap" class="hidden">Повторіть пароль<input id="confirm-password" type="password" autocomplete="current-password"></label>
+      <p id="confirm-error" class="form-error"></p>
+      <button id="confirm-submit" class="primary-button" type="submit">Підтвердити</button>
+    </form>
+  </dialog>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

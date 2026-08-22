@@ -12,6 +12,8 @@ services:
       - "${CADDY_HTTPS_PORT:-443}:443/udp"
     environment:
       BASE_DOMAIN: "${BASE_DOMAIN:-butenko.online}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - /opt/homelab/config/caddy:/etc/caddy:ro
       - /etc/homelab/caddy.env:/run/secrets/caddy.env:ro

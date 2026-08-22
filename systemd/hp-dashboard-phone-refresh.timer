@@ -1,0 +1,11 @@
+[Unit]
+Description=Periodically restore the HPServer dock phone
+
+[Timer]
+OnBootSec=45s
+OnUnitActiveSec=60s
+AccuracySec=5s
+Unit=hp-dashboard-phone.service
+
+[Install]
+WantedBy=timers.target
