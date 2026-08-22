@@ -32,17 +32,29 @@ COOKIE_NAME = "hp_dashboard_session"
 LOGIN_WINDOW_SECONDS = 900
 LOGIN_MAX_FAILURES = 5
 
-RESTART_TARGETS = {
-    "immich",
-    "jellyfin",
-    "nextcloud",
-    "calibre",
-    "open-webui",
-    "seerr",
-    "media-automation",
-    "kurhan",
-    "ridni",
-}
+CATALOG_FILE = Path(os.getenv("DASHBOARD_CATALOG_FILE", "/etc/homelab/dashboard-service-catalog.json"))
+
+
+def load_action_catalog() -> list[dict[str, str]]:
+    candidates = [CATALOG_FILE, Path("/opt/homelab/config/service-catalog.json"), APP_DIR.parents[2] / "config" / "service-catalog.json"]
+    for candidate in candidates:
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        targets = []
+        for application in payload.get("applications", []):
+            if isinstance(application, dict) and isinstance(application.get("restart"), list) and application.get("restart"):
+                target = application.get("id")
+                label = application.get("label")
+                if isinstance(target, str) and isinstance(label, str):
+                    targets.append({"id": target, "label": label})
+        return targets
+    return []
+
+
+RESTART_CATALOG = load_action_catalog()
+RESTART_TARGETS = {item["id"] for item in RESTART_CATALOG}
 SMART_TARGETS = {"system-ssd", "storage-hdd"}
 ACTIONS = {"restart", "backup", "smart-short", "reboot", "shutdown"}
 
@@ -175,6 +187,17 @@ async def status() -> JSONResponse:
     generated = payload.get("generated_at_epoch")
     payload["stale"] = not isinstance(generated, (int, float)) or time.time() - generated > 45
     return JSONResponse(payload, headers={"Cache-Control": "no-store"})
+
+
+@app.get("/api/v1/catalog")
+async def catalog() -> dict[str, Any]:
+    return {
+        "restart_targets": RESTART_CATALOG,
+        "smart_targets": [
+            {"id": "system-ssd", "label": "System SSD"},
+            {"id": "storage-hdd", "label": "Storage HDD"},
+        ],
+    }
 
 
 @app.post("/api/v1/auth/login")

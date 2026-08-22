@@ -17,6 +17,7 @@ os.environ["DASHBOARD_PASSWORD_HASH"] = PasswordHasher().hash("correct-horse-bat
 os.environ["DASHBOARD_PROXY_TOKEN"] = "test-proxy-token"
 os.environ["DASHBOARD_HOST"] = "dashboard.butenko.online"
 os.environ["DASHBOARD_ACTION_HELPER"] = "/bin/false"
+os.environ["DASHBOARD_CATALOG_FILE"] = str(SERVICE_DIR.parents[1] / "config" / "service-catalog.json")
 main = importlib.import_module("main")
 client = TestClient(main.app)
 proxy_headers = {"X-Dashboard-Proxy-Token": "test-proxy-token", "Origin": "https://dashboard.butenko.online"}
@@ -73,3 +74,11 @@ def test_action_requires_csrf() -> None:
         json={"target": "jellyfin", "confirmation": "CONFIRM"},
     )
     assert response.status_code == 403
+
+
+def test_catalog_exposes_only_allowlisted_actions() -> None:
+    response = client.get("/api/v1/catalog")
+    assert response.status_code == 200
+    targets = {item["id"] for item in response.json()["restart_targets"]}
+    assert "jellyfin" in targets
+    assert "core" not in targets

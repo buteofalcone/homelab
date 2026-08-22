@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profil
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-pin-version immich-remote-ml-configure immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-pin-version immich-remote-ml-configure immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -14,6 +14,7 @@ help:
 	  'make host-bootstrap Install clean Ubuntu host prerequisites (requires sudo)' \
 	  'make recovery-preflight  Read-only clean-host prerequisite checks' \
 	  'make storage-inventory   Read-only disk and /srv/storage inventory' \
+	  'make catalog        Render Homepage services from the shared catalog' \
 	  'make validate       Validate Docker Compose configuration' \
 	  'make install        Create host directories and start base services' \
 	  'make homepage-deploy  Publish tracked Homepage configuration (requires sudo)' \
@@ -85,6 +86,9 @@ recovery-preflight:
 
 storage-inventory:
 	@./scripts/storage-inventory.sh
+
+catalog:
+	@./scripts/render-service-catalog.py
 
 validate:
 	@./scripts/validate.sh

@@ -10,6 +10,10 @@ collector = importlib.util.module_from_spec(spec)
 assert spec and spec.loader
 spec.loader.exec_module(collector)
 
+APPLICATIONS = [
+    {"id": "jellyfin", "label": "Jellyfin", "containers": ["jellyfin"], "restart": ["jellyfin"]},
+]
+
 
 def test_intentionally_stopped_watchtower_does_not_alert() -> None:
     alerts = collector.build_alerts(
@@ -21,6 +25,7 @@ def test_intentionally_stopped_watchtower_does_not_alert() -> None:
         [{"name": "watchtower", "state": "exited", "health": "none"}],
         {"backup": {"result": "success"}},
         {"tailscale_online": True},
+        applications=APPLICATIONS,
     )
     assert alerts == []
 
@@ -32,7 +37,22 @@ def test_failed_smart_and_unhealthy_container_alert() -> None:
         [{"name": "jellyfin", "state": "running", "health": "unhealthy"}],
         {"backup": {"result": "success"}},
         {"tailscale_online": True},
+        applications=APPLICATIONS,
     )
     messages = " ".join(item["message"] for item in alerts)
     assert "SMART" in messages
     assert "jellyfin" in messages
+
+
+def test_percent_parser_is_safe() -> None:
+    assert collector.percent("12.34%") == 12.34
+    assert collector.percent("not-a-number") == 0
+    assert collector.bytes_from_human("1.5 GiB") == 1610612736
+    assert collector.bytes_from_human("254.7MiB") == 267072307
+
+
+def test_repository_catalog_is_valid() -> None:
+    catalog = collector.load_catalog()
+    applications = catalog["applications"]
+    assert catalog["version"] == 1
+    assert any(item["id"] == "jellyfin" and item["restart"] == ["jellyfin"] for item in applications)

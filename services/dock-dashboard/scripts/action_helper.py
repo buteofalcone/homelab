@@ -11,17 +11,7 @@ from pathlib import Path
 
 
 CONFIG_PATH = Path("/etc/homelab/dashboard-actions.json")
-RESTART_GROUPS = {
-    "immich": ["immich-server", "immich-machine-learning"],
-    "jellyfin": ["jellyfin"],
-    "nextcloud": ["nextcloud", "nextcloud-cron"],
-    "calibre": ["calibre"],
-    "open-webui": ["open-webui"],
-    "seerr": ["seerr"],
-    "media-automation": ["qbittorrent", "sonarr", "radarr", "prowlarr"],
-    "kurhan": ["kurhan"],
-    "ridni": ["ridni-staging-app-1", "ridni-staging-horizon-1", "ridni-staging-scheduler-1", "ridni-staging-nginx-1"],
-}
+CATALOG_PATH = Path("/etc/homelab/dashboard-service-catalog.json")
 
 
 def logger() -> logging.Logger:
@@ -52,6 +42,26 @@ def load_smart_targets() -> dict[str, str]:
     return allowed
 
 
+def load_restart_groups() -> dict[str, list[str]]:
+    try:
+        payload = json.loads(CATALOG_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    allowed: dict[str, list[str]] = {}
+    for application in payload.get("applications", []):
+        if not isinstance(application, dict):
+            continue
+        target = application.get("id")
+        containers = application.get("restart")
+        if not isinstance(target, str) or not isinstance(containers, list) or not containers:
+            continue
+        if not target.replace("-", "").isalnum():
+            continue
+        if all(isinstance(name, str) and name.replace("-", "").replace("_", "").isalnum() for name in containers):
+            allowed[target] = containers
+    return allowed
+
+
 def fail(message: str, code: int = 2) -> int:
     print(message, file=sys.stderr)
     return code
@@ -70,17 +80,19 @@ def main(argv: list[str]) -> int:
     log = logger()
     log.info("action=%s target=%s caller_uid=%s", action, target or "-", os.getuid())
 
-    if action == "restart" and target in RESTART_GROUPS:
-        missing = [name for name in RESTART_GROUPS[target] if run(["docker", "inspect", name], timeout=15).returncode != 0]
+    restart_groups = load_restart_groups()
+    if action == "restart" and target in restart_groups:
+        restart_containers = restart_groups[target]
+        missing = [name for name in restart_containers if run(["docker", "inspect", name], timeout=15).returncode != 0]
         if missing:
             return fail(f"Refusing partial restart; missing containers: {', '.join(missing)}", 4)
         stopped = [
-            name for name in RESTART_GROUPS[target]
+            name for name in restart_containers
             if run(["docker", "inspect", "-f", "{{.State.Running}}", name], timeout=15).stdout.strip() != "true"
         ]
         if stopped:
             return fail(f"Refusing to start stopped containers: {', '.join(stopped)}", 4)
-        result = run(["docker", "restart", *RESTART_GROUPS[target]])
+        result = run(["docker", "restart", *restart_containers])
         if result.returncode:
             return fail(result.stderr.strip() or "Container restart failed", result.returncode)
         print(f"Restarted {target}")

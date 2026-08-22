@@ -18,30 +18,26 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.0.0"
-APP_GROUPS = {
-    "Core": ["caddy", "homepage", "homepage-docker-proxy", "portainer"],
-    "Immich": ["immich-server", "immich-machine-learning", "immich-database", "immich-redis"],
-    "Jellyfin": ["jellyfin"],
-    "Nextcloud": ["nextcloud", "nextcloud-cron", "nextcloud-db", "nextcloud-redis"],
-    "Calibre": ["calibre"],
-    "Open WebUI": ["open-webui"],
-    "Seerr": ["seerr"],
-    "Media": ["qbittorrent", "sonarr", "radarr", "prowlarr"],
-    "Kurhan": ["kurhan"],
-    "Ridni": ["ridni-staging-app-1", "ridni-staging-nginx-1", "ridni-staging-horizon-1", "ridni-staging-scheduler-1", "ridni-staging-mysql-1", "ridni-staging-redis-1"],
-    "Monitoring": ["beszel", "beszel-agent", "uptime-kuma"],
-    "Time Machine": ["timemachine"],
-}
-APP_PROBES = {
-    "Immich": "http://127.0.0.1:2283/api/server/ping",
-    "Jellyfin": "http://127.0.0.1:8096/health",
-    "Nextcloud": "http://127.0.0.1:8080/status.php",
-    "Open WebUI": "http://127.0.0.1:3002/health",
-    "Calibre": "https://books.butenko.online/",
-    "Seerr": "https://requests.butenko.online/",
-    "Kurhan": "https://kurhan.butenko.online/",
-}
+VERSION = "1.1.0"
+DEFAULT_CATALOG = Path("/etc/homelab/dashboard-service-catalog.json")
+
+
+def load_catalog(path: Path | None = None) -> dict[str, Any]:
+    candidates = [path] if path else [
+        Path(os.getenv("DASHBOARD_CATALOG_FILE", str(DEFAULT_CATALOG))),
+        Path("/opt/homelab/config/service-catalog.json"),
+        Path(__file__).resolve().parents[3] / "config" / "service-catalog.json",
+    ]
+    for candidate in candidates:
+        if candidate is None or not candidate.is_file():
+            continue
+        try:
+            payload = json.loads(candidate.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if isinstance(payload.get("applications"), list):
+            return payload
+    return {"version": 0, "applications": []}
 
 
 def run(command: list[str], timeout: float = 6) -> subprocess.CompletedProcess[str]:
@@ -112,12 +108,12 @@ def collect_memory() -> dict[str, Any]:
     }
 
 
-def filesystem_row(label: str, mountpoint: str, device: str | None, smart: dict[str, Any]) -> dict[str, Any]:
+def filesystem_row(label: str, mountpoint: str | None, device: str | None, smart: dict[str, Any], size_bytes: int | None = None, external: bool = False) -> dict[str, Any]:
     try:
-        usage = shutil.disk_usage(mountpoint)
+        usage = shutil.disk_usage(mountpoint) if mountpoint else None
         used = usage.total - usage.free
         percent = used / usage.total * 100 if usage.total else 0
-    except OSError:
+    except (OSError, AttributeError):
         usage = None
         used = 0
         percent = 0
@@ -125,13 +121,14 @@ def filesystem_row(label: str, mountpoint: str, device: str | None, smart: dict[
         "label": label,
         "mountpoint": mountpoint,
         "device": device,
-        "total_bytes": usage.total if usage else None,
+        "total_bytes": usage.total if usage else size_bytes,
         "used_bytes": used if usage else None,
         "free_bytes": usage.free if usage else None,
         "usage_percent": round(percent, 1) if usage else None,
         "smart_status": "unknown",
         "temperature_c": None,
         "model": None,
+        "external": external,
     }
     if device and device in smart:
         row.update(smart[device])
@@ -179,11 +176,44 @@ def collect_disks() -> list[dict[str, Any]]:
     storage_source = mount_source("/srv/storage")
     root_disk = parent_disk(root_source) if root_source else None
     storage_disk = parent_disk(storage_source) if storage_source else None
-    smart = smart_for_devices({item for item in (root_disk, storage_disk) if item})
-    return [
+    external: list[dict[str, Any]] = []
+    result = run(["lsblk", "-J", "-b", "-T", "-o", "PATH,TYPE,TRAN,RM,HOTPLUG,MODEL,SIZE,MOUNTPOINTS"], timeout=10)
+    try:
+        blockdevices = json.loads(result.stdout).get("blockdevices", [])
+    except json.JSONDecodeError:
+        blockdevices = []
+    excluded = {item for item in (root_disk, storage_disk) if item}
+    for disk in blockdevices:
+        if disk.get("type") != "disk" or disk.get("path") in excluded:
+            continue
+        if not (disk.get("tran") == "usb" or bool(disk.get("rm")) or bool(disk.get("hotplug"))):
+            continue
+        mounts: list[str] = []
+        stack = list(disk.get("children") or [])
+        while stack:
+            child = stack.pop(0)
+            mounts.extend(item for item in (child.get("mountpoints") or []) if item)
+            stack.extend(child.get("children") or [])
+        mounts.extend(item for item in (disk.get("mountpoints") or []) if item)
+        model = str(disk.get("model") or "External disk").strip()
+        external.append({
+            "label": f"USB · {model}",
+            "mountpoint": mounts[0] if mounts else None,
+            "device": disk.get("path"),
+            "size_bytes": disk.get("size") if isinstance(disk.get("size"), int) else None,
+        })
+    devices = {item for item in (root_disk, storage_disk) if item}
+    devices.update(item["device"] for item in external if item.get("device"))
+    smart = smart_for_devices(devices)
+    disks = [
         filesystem_row("System SSD", "/", root_disk, smart),
         filesystem_row("Storage HDD", "/srv/storage", storage_disk, smart),
     ]
+    disks.extend(
+        filesystem_row(item["label"], item["mountpoint"], item["device"], smart, item["size_bytes"], external=True)
+        for item in external
+    )
+    return disks
 
 
 def collect_network() -> dict[str, Any]:
@@ -247,6 +277,46 @@ def collect_containers() -> list[dict[str, str]]:
     return sorted(containers, key=lambda item: item["name"])
 
 
+def percent(value: str) -> float:
+    try:
+        return round(float(value.strip().rstrip("%")), 2)
+    except (AttributeError, ValueError):
+        return 0.0
+
+
+def bytes_from_human(value: str) -> int:
+    match = re.fullmatch(r"\s*([0-9.]+)\s*([KMGT]?i?B)\s*", value, re.IGNORECASE)
+    if not match:
+        return 0
+    units = {"b": 1, "kb": 1000, "kib": 1024, "mb": 1000**2, "mib": 1024**2, "gb": 1000**3, "gib": 1024**3, "tb": 1000**4, "tib": 1024**4}
+    return int(float(match.group(1)) * units.get(match.group(2).lower(), 0))
+
+
+def collect_container_resources() -> dict[str, list[dict[str, Any]]]:
+    result = run(["docker", "stats", "--no-stream", "--format", "{{json .}}"], timeout=15)
+    rows: list[dict[str, Any]] = []
+    for line in result.stdout.splitlines():
+        try:
+            item = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        name = item.get("Name") or item.get("Container")
+        if not isinstance(name, str) or not name:
+            continue
+        memory_usage = str(item.get("MemUsage", "")).split(" / ", 1)[0]
+        rows.append({
+            "name": name,
+            "cpu_percent": percent(item.get("CPUPerc", "0")),
+            "memory_percent": percent(item.get("MemPerc", "0")),
+            "memory_usage": memory_usage,
+            "memory_bytes": bytes_from_human(memory_usage),
+        })
+    return {
+        "cpu": sorted(rows, key=lambda item: item["cpu_percent"], reverse=True)[:3],
+        "memory": sorted(rows, key=lambda item: item["memory_bytes"], reverse=True)[:3],
+    }
+
+
 def probe_url(url: str) -> tuple[bool, str]:
     request = urllib.request.Request(url, headers={"User-Agent": "hp-dashboard-collector/1.0"})
     try:
@@ -258,10 +328,12 @@ def probe_url(url: str) -> tuple[bool, str]:
         return False, "endpoint down"
 
 
-def collect_apps(containers: list[dict[str, str]]) -> list[dict[str, str]]:
+def collect_apps(containers: list[dict[str, str]], applications: list[dict[str, Any]]) -> list[dict[str, str]]:
     by_name = {item["name"]: item for item in containers}
     apps: list[dict[str, str]] = []
-    for app_name, names in APP_GROUPS.items():
+    for application in applications:
+        app_name = str(application.get("label") or application.get("id") or "Unknown")
+        names = [name for name in application.get("containers", []) if isinstance(name, str)]
         members = [by_name.get(name) for name in names]
         present = [member for member in members if member]
         bad = [member for member in present if member["state"] != "running" or member["health"] == "unhealthy"]
@@ -272,8 +344,9 @@ def collect_apps(containers: list[dict[str, str]]) -> list[dict[str, str]]:
         else:
             status = "healthy"
             detail = f"{len(present)} container" + ("s" if len(present) != 1 else "")
-        if status == "healthy" and app_name in APP_PROBES:
-            reachable, probe_detail = probe_url(APP_PROBES[app_name])
+        probe = application.get("probe")
+        if status == "healthy" and isinstance(probe, str):
+            reachable, probe_detail = probe_url(probe)
             if not reachable:
                 status, detail = "degraded", probe_detail
         apps.append({"name": app_name, "status": status, "detail": detail})
@@ -312,7 +385,7 @@ def collect_timers() -> dict[str, Any]:
     }
 
 
-def build_alerts(memory: dict[str, Any], disks: list[dict[str, Any]], containers: list[dict[str, str]], timers: dict[str, Any], network: dict[str, Any], apps: list[dict[str, str]] | None = None) -> list[dict[str, str]]:
+def build_alerts(memory: dict[str, Any], disks: list[dict[str, Any]], containers: list[dict[str, str]], timers: dict[str, Any], network: dict[str, Any], apps: list[dict[str, str]] | None = None, applications: list[dict[str, Any]] | None = None) -> list[dict[str, str]]:
     alerts: list[dict[str, str]] = []
     if (memory.get("usage_percent") or 0) >= 90:
         alerts.append({"level": "critical", "message": f"RAM usage is {memory['usage_percent']:.0f}%"})
@@ -325,7 +398,12 @@ def build_alerts(memory: dict[str, Any], disks: list[dict[str, Any]], containers
             alerts.append({"level": "critical", "message": f"{disk['label']} SMART health failed"})
         if (disk.get("temperature_c") or 0) >= 55:
             alerts.append({"level": "warning", "message": f"{disk['label']} temperature is {disk['temperature_c']}°C"})
-    expected = {name for names in APP_GROUPS.values() for name in names}
+    expected = {
+        name
+        for application in (applications or [])
+        for name in application.get("containers", [])
+        if isinstance(name, str)
+    }
     unhealthy = [
         item["name"] for item in containers
         if item["name"] in expected and (item["state"] != "running" or item["health"] == "unhealthy")
@@ -343,14 +421,19 @@ def build_alerts(memory: dict[str, Any], disks: list[dict[str, Any]], containers
 
 
 def collect() -> dict[str, Any]:
+    catalog = load_catalog()
+    applications = [item for item in catalog.get("applications", []) if isinstance(item, dict)]
     cpu = collect_cpu()
     memory = collect_memory()
     disks = collect_disks()
     network = collect_network()
     containers = collect_containers()
+    top_containers = collect_container_resources()
     timers = collect_timers()
-    apps = collect_apps(containers)
-    alerts = build_alerts(memory, disks, containers, timers, network, apps)
+    apps = collect_apps(containers, applications)
+    alerts = build_alerts(memory, disks, containers, timers, network, apps, applications)
+    if not applications:
+        alerts.append({"level": "warning", "message": "Service catalog is unavailable"})
     now = dt.datetime.now(dt.timezone.utc)
     state = "critical" if any(item["level"] == "critical" for item in alerts) else "warning" if alerts else "good"
     return {
@@ -368,6 +451,7 @@ def collect() -> dict[str, Any]:
         "disks": disks,
         "network": network,
         "containers": containers,
+        "top_containers": top_containers,
         "apps": apps,
         "timers": timers,
         "alerts": alerts,

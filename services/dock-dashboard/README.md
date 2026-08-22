@@ -4,6 +4,16 @@ Local FastAPI dashboard for the Realme GT Neo 3 dock panel. It exposes read-only
 host status to trusted LAN/Tailscale clients and permits only explicitly
 allowlisted actions after an authenticated HTTPS session.
 
+The one-screen frontend uses locally vendored Bootstrap 5 components and the
+Bootstrap Icons SVG sprite. It has no CDN dependency and no frontend build
+step. Service groups, probes, Homepage entries and restart allowlists originate
+from `config/service-catalog.json`; run `make catalog` after editing it.
+
+The collector reads host CPU/RAM from `/proc`, temperatures from `/sys`, Docker
+state and live resource usage from the Docker CLI, SMART data from `smartctl`,
+and network state from Tailscale. Removable/USB block devices discovered through
+`lsblk` are included even when they are not mounted.
+
 ## Security boundary
 
 - `hp-dashboard` is an unprivileged system user and is not in the Docker group.

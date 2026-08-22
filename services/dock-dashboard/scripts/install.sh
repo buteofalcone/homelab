@@ -16,6 +16,13 @@ if ! id hp-dashboard >/dev/null 2>&1; then
   useradd --system --gid hp-dashboard --home-dir /nonexistent --shell /usr/sbin/nologin hp-dashboard
 fi
 
+install -d -m 0700 /etc/homelab
+python3 "${repo_dir}/scripts/render-service-catalog.py" --check || {
+  echo "Homepage catalog output is stale; run scripts/render-service-catalog.py" >&2
+  exit 1
+}
+install -m 0640 -o root -g hp-dashboard "${repo_dir}/config/service-catalog.json" /etc/homelab/dashboard-service-catalog.json
+
 install -d -m 0750 -o root -g hp-dashboard /srv/appdata/hp-dashboard
 if [[ ! -x /srv/appdata/hp-dashboard/venv/bin/python ]]; then
   python3 -m venv /srv/appdata/hp-dashboard/venv
@@ -27,7 +34,6 @@ install -m 0755 -o root -g root "${service_dir}/scripts/collector.py" /usr/local
 install -m 0755 -o root -g root "${service_dir}/scripts/action_helper.py" /usr/local/libexec/hp-dashboard-action
 install -m 0755 -o root -g root "${service_dir}/scripts/firewall.py" /usr/local/libexec/hp-dashboard-firewall
 
-install -d -m 0700 /etc/homelab
 if [[ ! -f /etc/homelab/dashboard.env ]]; then
   /srv/appdata/hp-dashboard/venv/bin/python "${service_dir}/scripts/configure_auth.py" \
     --config /etc/homelab/dashboard.env --group hp-dashboard --username butenko --generate-bootstrap
