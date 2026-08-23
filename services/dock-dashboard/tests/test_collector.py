@@ -56,3 +56,12 @@ def test_repository_catalog_is_valid() -> None:
     applications = catalog["applications"]
     assert catalog["version"] == 1
     assert any(item["id"] == "jellyfin" and item["restart"] == ["jellyfin"] for item in applications)
+
+
+def test_top_processes_use_sample_delta_and_hide_collector() -> None:
+    before = {10: {"name": "jellyfin", "cpu_ticks": 100, "memory_bytes": 100}, 20: {"name": "python3", "cpu_ticks": 100, "memory_bytes": 999}}
+    after = {10: {"name": "jellyfin", "cpu_ticks": 125, "memory_bytes": 100}, 20: {"name": "python3", "cpu_ticks": 200, "memory_bytes": 999}}
+    result = collector.build_top_processes(before, after, seconds=1.0, current_pid=20)
+    assert result["cpu"]["name"] == "jellyfin"
+    assert result["memory"]["name"] == "jellyfin"
+    assert result["cpu"]["cpu_percent"] > 0

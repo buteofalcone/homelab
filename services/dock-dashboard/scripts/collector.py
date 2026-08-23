@@ -18,7 +18,7 @@ from pathlib import Path
 from typing import Any
 
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 DEFAULT_CATALOG = Path("/etc/homelab/dashboard-service-catalog.json")
 
 
@@ -106,6 +106,49 @@ def collect_memory() -> dict[str, Any]:
         "used_bytes": used,
         "usage_percent": round(used / total * 100, 1) if total else None,
     }
+
+
+def process_snapshot() -> dict[int, dict[str, Any]]:
+    snapshot: dict[int, dict[str, Any]] = {}
+    page_size = os.sysconf("SC_PAGE_SIZE")
+    for path in Path("/proc").glob("[0-9]*/stat"):
+        try:
+            pid = int(path.parent.name)
+            raw = path.read_text(encoding="utf-8", errors="replace")
+            close = raw.rfind(")")
+            name = raw[raw.find("(") + 1:close]
+            fields = raw[close + 2:].split()
+            snapshot[pid] = {
+                "name": name,
+                "cpu_ticks": int(fields[11]) + int(fields[12]),
+                "memory_bytes": max(0, int(fields[21])) * page_size,
+            }
+        except (OSError, ValueError, IndexError):
+            continue
+    return snapshot
+
+
+def build_top_processes(before: dict[int, dict[str, Any]], after: dict[int, dict[str, Any]], seconds: float, current_pid: int) -> dict[str, dict[str, Any] | None]:
+    clock_ticks = os.sysconf("SC_CLK_TCK")
+    rows: list[dict[str, Any]] = []
+    for pid, current in after.items():
+        previous = before.get(pid)
+        if pid == current_pid or not previous or seconds <= 0:
+            continue
+        cpu_percent = max(0.0, (current["cpu_ticks"] - previous["cpu_ticks"]) / clock_ticks / seconds * 100)
+        rows.append({"pid": pid, "name": current["name"], "cpu_percent": round(cpu_percent, 1), "memory_bytes": current["memory_bytes"]})
+    return {
+        "cpu": max(rows, key=lambda item: item["cpu_percent"], default=None),
+        "memory": max(rows, key=lambda item: item["memory_bytes"], default=None),
+    }
+
+
+def collect_top_processes() -> dict[str, dict[str, Any] | None]:
+    before = process_snapshot()
+    started = time.monotonic()
+    time.sleep(0.25)
+    after = process_snapshot()
+    return build_top_processes(before, after, time.monotonic() - started, os.getpid())
 
 
 def filesystem_row(label: str, mountpoint: str | None, device: str | None, smart: dict[str, Any], size_bytes: int | None = None, external: bool = False) -> dict[str, Any]:
@@ -248,12 +291,22 @@ def collect_network() -> dict[str, Any]:
                 break
     except json.JSONDecodeError:
         pass
+    rx_bytes = None
+    tx_bytes = None
+    if interface and re.fullmatch(r"[A-Za-z0-9_.-]+", interface):
+        try:
+            rx_bytes = int(read_text(f"/sys/class/net/{interface}/statistics/rx_bytes").strip())
+            tx_bytes = int(read_text(f"/sys/class/net/{interface}/statistics/tx_bytes").strip())
+        except ValueError:
+            pass
     return {
         "interface": interface,
         "lan_ipv4": lan_ipv4,
         "tailscale_ipv4": tailscale_ipv4,
         "tailscale_online": tailscale_online,
         "phone_online": phone_online,
+        "rx_bytes": rx_bytes,
+        "tx_bytes": tx_bytes,
     }
 
 
@@ -425,6 +478,7 @@ def collect() -> dict[str, Any]:
     applications = [item for item in catalog.get("applications", []) if isinstance(item, dict)]
     cpu = collect_cpu()
     memory = collect_memory()
+    top_processes = collect_top_processes()
     disks = collect_disks()
     network = collect_network()
     containers = collect_containers()
@@ -448,6 +502,7 @@ def collect() -> dict[str, Any]:
         },
         "cpu": cpu,
         "memory": memory,
+        "top_processes": top_processes,
         "disks": disks,
         "network": network,
         "containers": containers,

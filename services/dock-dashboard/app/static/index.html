@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#080d13">
   <title>HPServer Console</title>
   <link rel="stylesheet" href="/static/vendor/bootstrap.min.css?v=5.3.8">
-  <link rel="stylesheet" href="/static/styles.css?v=2">
+  <link rel="stylesheet" href="/static/styles.css?v=3">
 </head>
 <body>
   <div class="kiosk-shell">
@@ -22,39 +22,44 @@
       <section id="alert-strip" class="alert-strip hidden" aria-live="polite"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#exclamation-triangle"></use></svg><span id="alert-text"></span></section>
 
       <section class="status-strip" aria-label="Швидкий стан">
-        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#router"></use></svg><span><b id="lan-address">—</b><small id="tail-state">Tailscale —</small></span></div>
-        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#phone"></use></svg><span><b id="phone-state">GT Neo —</b><small id="network-detail">мережа</small></span></div>
-        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#clock-history"></use></svg><span><b id="uptime-value">—</b><small id="backup-state">Backup —</small></span></div>
+        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#router"></use></svg><span><b id="lan-address">—</b><small id="tail-state">TS —</small></span></div>
+        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#phone"></use></svg><span><b id="phone-state">GT —</b><small id="network-detail">TS IP</small></span></div>
+        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#clock-history"></use></svg><span><b id="uptime-value">UP —</b><small id="backup-state">BKP —</small></span></div>
       </section>
 
       <section class="metrics-grid" aria-label="Основні метрики">
         <article class="card metric-card cpu-card">
-          <div class="metric-title"><span><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#cpu"></use></svg>CPU</span><span id="cpu-temp" class="temperature">—</span></div>
+          <div class="metric-title"><span><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#cpu"></use></svg>CPU</span><span class="temperature"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#thermometer-half"></use></svg><b id="cpu-temp">—</b></span></div>
           <div class="metric-number"><strong id="cpu-value">—</strong><small id="cpu-detail">load —</small></div>
-          <div class="top-list"><div class="top-caption">TOP CONTAINERS</div><div id="cpu-top"></div></div>
+          <canvas id="cpu-chart" class="cpu-chart" aria-label="CPU history"></canvas>
+          <div id="cpu-process" class="process-highlight"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#gear-wide-connected"></use></svg><span>—</span><b>—</b></div>
         </article>
 
         <article class="card metric-card ram-card">
           <div class="metric-title"><span><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#memory"></use></svg>RAM</span><span id="ram-total" class="temperature">—</span></div>
           <div class="metric-number ram-number"><strong id="ram-value">—</strong><small id="ram-detail">—</small></div>
           <div id="ram-stack" class="progress-stacked ram-stack" aria-label="Використання RAM"></div>
-          <div class="top-list"><div class="top-caption">TOP CONTAINERS</div><div id="ram-top"></div></div>
+          <div id="ram-process" class="process-highlight"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#gear-wide-connected"></use></svg><span>—</span><b>—</b></div>
         </article>
       </section>
 
       <section class="card storage-panel" aria-labelledby="storage-title">
         <div class="storage-head"><h2 id="storage-title"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#device-hdd"></use></svg>Диски</h2><span id="storage-summary" class="count-badge">—</span></div>
         <div id="disk-list" class="disk-list"><div class="skeleton-row"></div></div>
+        <div class="network-traffic">
+          <div class="network-head"><span><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#arrow-down-up"></use></svg>NET</span><span><b id="rx-rate">↓ —</b><b id="tx-rate">↑ —</b></span></div>
+          <canvas id="network-chart" aria-label="Network RX and TX traffic"></canvas>
+        </div>
       </section>
       <div id="job-toast" class="job-toast hidden" aria-live="polite"></div>
     </main>
 
     <nav class="bottom-bar" aria-label="Безпечні дії">
-      <button class="nav-action" id="restart-action"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#arrow-clockwise"></use></svg><span>Restart</span></button>
-      <button class="nav-action" data-action="backup"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#cloud-arrow-up"></use></svg><span>Backup</span></button>
+      <button class="nav-action" id="restart-action"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#arrow-clockwise"></use></svg><span>RST</span></button>
+      <button class="nav-action" data-action="backup"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#cloud-arrow-up"></use></svg><span>BKP</span></button>
       <button class="nav-action" id="smart-action"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#activity"></use></svg><span>SMART</span></button>
-      <button class="nav-action danger" data-action="reboot"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#bootstrap-reboot"></use></svg><span>Reboot</span></button>
-      <button class="nav-action danger" data-action="shutdown"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#power"></use></svg><span>Off</span></button>
+      <button class="nav-action danger" data-action="reboot"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#bootstrap-reboot"></use></svg><span>REBOOT</span></button>
+      <button class="nav-action danger" data-action="shutdown"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#power"></use></svg><span>OFF</span></button>
     </nav>
   </div>
 
@@ -89,6 +94,6 @@
       <button id="confirm-submit" class="primary-button" type="submit">Підтвердити</button>
     </form>
   </dialog>
-  <script src="/static/app.js?v=2" defer></script>
+  <script src="/static/app.js?v=4" defer></script>
 </body>
 </html>
