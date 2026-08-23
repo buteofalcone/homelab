@@ -35,8 +35,12 @@ optional exact-hash duplicate candidates. The copy-only sample keeps sidecars
 and album metadata for image/video/HEIC/GPS/date/favorite/edited/motion cases.
 
 Create a dedicated import API key with the permissions required by
-`immich-go`, store it with `make immich-migration-api-key`, and never place it
-in Git or command-line arguments.
+`immich-go`, including `album.delete` for the exact-name excluded-album cleanup,
+store it with `make immich-migration-api-key`, and never place it in Git or
+command-line arguments. The cleanup snapshots pre-existing `Без назви` album
+IDs, imports every asset, and deletes only matching albums first observed in
+that run through the official API. It never deletes their assets or a
+pre-existing same-name album.
 
 Run the real sample twice:
 

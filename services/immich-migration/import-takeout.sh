@@ -51,8 +51,10 @@ install -d -m 0700 "${state_dir}"
 photo_prepare_logs
 photo_rotate_log "${PHOTO_AI_LOG_DIR}/immich-go.log"
 config_file="$(mktemp /tmp/immich-go-config.XXXXXX.yaml)"
-trap 'rm -f -- "${config_file}"' EXIT
+excluded_album_state="$(mktemp /tmp/immich-excluded-albums.XXXXXX.json)"
+trap 'rm -f -- "${config_file}" "${excluded_album_state}"' EXIT
 chmod 0600 "${config_file}"
+chmod 0600 "${excluded_album_state}"
 printf '%s\n' \
   'concurrent-tasks: 2' \
   "on-errors: ${on_errors}" \
@@ -84,17 +86,31 @@ printf '%s mode=%s action=%s event=start assets=%s albums=%s bytes=%s\n' \
   "${timestamp}" "${mode}" "${action}" "${before_assets}" "${before_albums}" "${before_bytes}" >> "${PHOTO_AI_LOG_DIR}/import.log"
 
 command=(immich-go upload from-google-photos --config "${config_file}" --no-ui \
-  --ban-file 'Без назви/' \
   --log-file "${PHOTO_AI_LOG_DIR}/immich-go.log" --log-level INFO)
 [[ ${action} == dry-run ]] && command+=(--dry-run)
 command+=("${input_dir}")
 
 exec 9>"${state_dir}/import.lock"
 flock -n 9 || die 'Another Takeout import is already running.'
+if [[ ${action} == apply ]]; then
+  "${service_dir}/excluded-albums.py" snapshot \
+    --state-file "${excluded_album_state}" --name 'Без назви'
+fi
 set +e
 "${command[@]}"
 exit_code=$?
 set -e
+
+if [[ ${action} == apply ]]; then
+  set +e
+  "${service_dir}/excluded-albums.py" apply \
+    --state-file "${excluded_album_state}" --name 'Без назви'
+  cleanup_exit=$?
+  set -e
+  if (( cleanup_exit != 0 && exit_code == 0 )); then
+    exit_code=${cleanup_exit}
+  fi
+fi
 
 after_assets="$(photo_asset_count)"
 after_albums="$(photo_album_count)"
