@@ -33,6 +33,8 @@ descriptions or coordinates. Reports count malformed/direct/inferred/missing
 sidecars, extensions, albums, numbered/edited names, motion candidates and
 optional exact-hash duplicate candidates. The copy-only sample keeps sidecars
 and album metadata for image/video/HEIC/GPS/date/favorite/edited/motion cases.
+Its generated `sample-manifest.json` is explicitly excluded from immich-go
+discovery so it cannot be misreported as an unsupported Google sidecar.
 
 Create a dedicated import API key with the permissions required by
 `immich-go`, including `album.delete` for the exact-name excluded-album cleanup,

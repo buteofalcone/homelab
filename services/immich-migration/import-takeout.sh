@@ -87,6 +87,7 @@ printf '%s mode=%s action=%s event=start assets=%s albums=%s bytes=%s\n' \
 
 command=(immich-go upload from-google-photos --config "${config_file}" --no-ui \
   --log-file "${PHOTO_AI_LOG_DIR}/immich-go.log" --log-level INFO)
+[[ ${mode} == sample ]] && command+=(--ban-file 'sample-manifest.json')
 [[ ${action} == dry-run ]] && command+=(--dry-run)
 command+=("${input_dir}")
 
