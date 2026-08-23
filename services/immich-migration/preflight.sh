@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-readonly sample_dir=/srv/storage/incoming/google-photos-takeout/sample
-readonly max_sample_bytes=$((5 * 1024 * 1024 * 1024))
+readonly service_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=storage-guard.sh
+source "${service_dir}/storage-guard.sh"
+photo_load_config
+readonly sample_dir="${PHOTO_SAMPLE_DIR}"
+readonly max_sample_bytes="${PHOTO_SAMPLE_MAX_BYTES:-$((5 * 1024 * 1024 * 1024))}"
 
 [[ ${EUID} -eq 0 ]] || { echo 'Run as root.' >&2; exit 1; }
+photo_assert_mount
 [[ -d ${sample_dir} ]] || { echo "Missing sample directory: ${sample_dir}" >&2; exit 1; }
 find "${sample_dir}" -type l -print -quit | grep -q . && {
   echo 'Symlinks are not allowed in the Takeout sample.' >&2

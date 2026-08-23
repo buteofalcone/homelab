@@ -1,10 +1,10 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
-PROFILES_ALL := --profile nextcloud --profile immich --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile media-automation --profile clickhouse
+PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallback --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile media-automation --profile clickhouse --profile photo-ai
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-pin-version immich-remote-ml-configure immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-preflight immich-takeout-dry-run jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -23,6 +23,10 @@ help:
 	  'make nextcloud-talk-bootstrap  Install and enable compatible Nextcloud Talk' \
 	  'make nextcloud-talk-verify  Verify Nextcloud Talk application state' \
 	  'make immich         Start Immich stack' \
+	  'make photo-ai       Start private AI queue/API on HPServer' \
+	  'make immich-storage-plan  Print the wd3tb mount migration plan only' \
+	  'make immich-takeout-inspect  Build privacy-safe Takeout inventory' \
+	  'make immich-takeout-sample   Build a copy-only representative sample' \
 	  'make immich-pin-version  Pin live Immich release to the verified exact version' \
 	  'make immich-remote-ml-configure  Prefer SilverBrick ML with local fallback' \
 	  'make immich-migration-bootstrap  Install pinned immich-go and Takeout staging' \
@@ -114,11 +118,32 @@ nextcloud-talk-verify:
 immich:
 	@$(COMPOSE) --profile immich up -d
 
+immich-ml-fallback:
+	@$(COMPOSE) --profile immich-ml-fallback up -d immich-machine-learning
+
+photo-ai:
+	@$(COMPOSE) --profile photo-ai up -d --build photo-ai-db photo-ai-api
+
+photo-ai-bootstrap:
+	@sudo ./services/photo-pipeline/bootstrap.sh
+
+photo-ai-reconcile:
+	@sudo ./services/photo-pipeline/reconcile.sh
+
+photo-ai-smoke-test:
+	@./services/photo-pipeline/smoke-test.sh
+
 immich-pin-version:
 	@sudo ./services/immich-migration/pin-immich-version.sh
 
 immich-remote-ml-configure:
 	@sudo ./services/immich-migration/configure-remote-ml.sh
+
+immich-storage-plan:
+	@sudo ./services/immich-migration/storage-plan.sh
+
+immich-storage-migrate:
+	@sudo ./services/immich-migration/migrate-library.sh
 
 immich-migration-bootstrap:
 	@sudo ./services/immich-migration/bootstrap.sh
@@ -132,8 +157,23 @@ immich-migration-api-key-verify:
 immich-takeout-preflight:
 	@sudo ./services/immich-migration/preflight.sh
 
+immich-takeout-inspect:
+	@sudo ./services/immich-migration/inspect-takeout.sh
+
+immich-takeout-sample:
+	@sudo ./services/immich-migration/prepare-sample.sh
+
 immich-takeout-dry-run:
 	@sudo ./services/immich-migration/dry-run.sh
+
+immich-takeout-sample-import:
+	@sudo ./services/immich-migration/import-takeout.sh sample apply
+
+immich-takeout-full-import:
+	@sudo ./services/immich-migration/import-takeout.sh full apply
+
+immich-import-verify:
+	@sudo ./services/immich-migration/verify-import.sh $${ACCEPT_SAMPLE:+--accept-sample}
 
 jellyfin:
 	@$(COMPOSE) --profile jellyfin up -d

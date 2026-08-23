@@ -5,8 +5,7 @@ readonly service_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly repo_dir="$(cd "${service_dir}/../.." && pwd)"
 readonly key_file="${1:-/etc/homelab/immich-go-api-key}"
 readonly api_url='http://127.0.0.1:2283/api/system-config'
-readonly remote_url='http://100.91.171.26:3003'
-readonly fallback_url='http://immich-machine-learning:3003'
+readonly remote_url="${IMMICH_REMOTE_ML_URL:-http://100.91.171.26:3003}"
 readonly backup_dir='/etc/homelab/immich-system-config'
 
 source "${repo_dir}/scripts/lib.sh"
@@ -21,7 +20,7 @@ if (( ${#api_key} < 20 || ${#api_key} > 256 )) || [[ ! ${api_key} =~ ^[A-Za-z0-9
 fi
 
 echo 'STEP_IMMICH_ML_CONNECTIVITY'
-docker exec immich-server node - "${remote_url}" "${fallback_url}" <<'NODE'
+docker exec immich-server node - "${remote_url}" <<'NODE'
 (async () => {
   const urls = process.argv.slice(2);
   for (const url of urls) {
@@ -71,18 +70,18 @@ unset api_key
 echo 'STEP_IMMICH_ML_CONFIG_READ'
 curl --config "${curl_config}" --output "${current_config}" "${api_url}"
 
-python3 - "${current_config}" "${desired_config}" "${remote_url}" "${fallback_url}" <<'PY'
+python3 - "${current_config}" "${desired_config}" "${remote_url}" <<'PY'
 import json
 from pathlib import Path
 import shutil
 import sys
 
-source, destination, remote_url, fallback_url = sys.argv[1:]
+source, destination, remote_url = sys.argv[1:]
 config = json.loads(Path(source).read_text())
 machine_learning = config.get("machineLearning")
 if not isinstance(machine_learning, dict) or not isinstance(machine_learning.get("urls"), list):
     raise SystemExit("Immich API returned an unexpected machineLearning configuration.")
-desired_urls = [remote_url, fallback_url]
+desired_urls = [remote_url]
 if machine_learning["urls"] == desired_urls:
     shutil.copyfile(source, destination)
     raise SystemExit(0)
@@ -111,14 +110,14 @@ updated=true
 
 echo 'STEP_IMMICH_ML_CONFIG_VERIFY'
 curl --config "${curl_config}" --output "${verify_config}" "${api_url}"
-python3 - "${verify_config}" "${remote_url}" "${fallback_url}" <<'PY'
+python3 - "${verify_config}" "${remote_url}" <<'PY'
 import json
 from pathlib import Path
 import sys
 
 config = json.loads(Path(sys.argv[1]).read_text())
 actual = config.get("machineLearning", {}).get("urls")
-expected = [sys.argv[2], sys.argv[3]]
+expected = [sys.argv[2]]
 if actual != expected:
     raise SystemExit(f"Unexpected Immich ML URL order: {actual!r}")
 print("IMMICH_REMOTE_ML_CONFIG_OK")

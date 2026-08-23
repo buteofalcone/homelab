@@ -1,58 +1,62 @@
 # Google Photos to Immich migration
 
-This service prepares a controlled Google Photos Takeout import without storing API keys or personal media in Git.
+This service implements a gated, repeatable migration without committing API
+keys or personal metadata. Versions remain pinned to Immich `v3.0.3` and
+`immich-go v0.32.0`; upgrading is a separate maintenance workflow.
 
-## Pinned tools
+## Safety and storage
 
-- HP Server Immich: `v3.0.3`
-- `immich-go`: `v0.32.0`
+The Takeout tree is immutable. `storage-plan.sh` is read-only by default and
+prints the exact UUID/mount/fstab plan. Apply mode requires the one-time token
+printed by the plan, refuses busy mounts, backs up `fstab`, and rolls back if
+UUID or Takeout checks fail. Do not provide that token until the plan is
+reviewed immediately before execution.
 
-Before connecting SilverBrick Remote ML, replace the moving `release` setting in the live root-only `.env` with the already-running exact version. This does not cross an Immich upgrade boundary; the script refuses to proceed unless the live image reports `v3.0.3`, retains a root-only rollback copy, recreates only the server and local ML containers, and verifies recovery:
+`migrate-library.sh` separately requires a copy approval token. It creates and
+tests a PostgreSQL dump, runs `rsync` without `--delete`, checksum-verifies the
+copy, switches only Immich server, checks `/data` and the API, and restores the
+old binding on failure. `/srv/storage/photos` remains untouched as rollback.
 
-```bash
-sudo make immich-pin-version
-```
+## Inventory and representative sample
 
-- Linux x86_64 archive SHA-256: `6e2ad86bafdadb9466d6515de7cb882726c0aea1a21d51164dff361d7d480a97`
-
-`immich-go v0.32.0` is the first release with Immich V3 compatibility. The installer downloads the official GitHub release, verifies the checksum, and installs it under `/usr/local/lib/homelab/immich-go/v0.32.0`.
-
-## Staging
-
-Run:
-
-```bash
-sudo make immich-migration-bootstrap
-```
-
-The private SMB `Inbox` then contains:
-
-```text
-google-photos-takeout/
-├── sample/   small representative test input
-└── full/     complete immutable Takeout archives
-```
-
-Keep the original Takeout archives outside Immich as an independent source copy. The next gate is a dry-run against `sample`; no full import is allowed until dates, JSON pairing, albums, duplicates, and storage growth are verified.
-
-Create a dedicated temporary API key in **Immich → Account settings → API Keys**. Grant the permissions documented by `immich-go`: `asset.read`, `asset.statistics`, `asset.update`, `asset.upload`, `asset.copy`, `asset.delete`, `asset.download`, `album.create`, `album.read`, `albumAsset.create`, `server.about`, `stack.create`, `tag.asset`, `tag.create`, and `user.read`. Add `job.create` and `job.read` before a real import if background jobs will be paused. Revoke this key when migration is complete.
-
-Store it without echoing it or committing it:
+After the separately approved storage phase:
 
 ```bash
-make immich-migration-api-key
-make immich-migration-api-key-verify
-```
-
-Validation calls the local Immich `/api/users/me` endpoint through a temporary root-only curl configuration, so the key is not exposed in the process list or logs.
-
-Prepare a separate small Google Takeout export containing representative JPEG, HEIC, video, album, and JSON sidecar data. Copy the ZIP archive(s), or one unpacked Takeout tree, into `Inbox/google-photos-takeout/sample`. Do not mix ZIP files and unpacked files. The sample is limited to 5 GiB.
-
-Then run:
-
-```bash
+make immich-takeout-inspect
+make immich-takeout-sample
 make immich-takeout-preflight
 make immich-takeout-dry-run
 ```
 
-Preflight rejects symlinks, corrupt ZIP archives, samples without JSON metadata, samples without supported media, and oversized samples. Dry-run uses two concurrent tasks, preserves archived and unmatched files, reconstructs named albums and people/takeout tags, excludes trash and partner-shared items, and refuses overwrite. It verifies that the Immich asset count, album count, and `/srv/storage/photos` byte size remain unchanged.
+The manifest uses relative paths and hashed identifiers; it never logs
+descriptions or coordinates. Reports count malformed/direct/inferred/missing
+sidecars, extensions, albums, numbered/edited names, motion candidates and
+optional exact-hash duplicate candidates. The copy-only sample keeps sidecars
+and album metadata for image/video/HEIC/GPS/date/favorite/edited/motion cases.
+
+Create a dedicated import API key with the permissions required by
+`immich-go`, store it with `make immich-migration-api-key`, and never place it
+in Git or command-line arguments.
+
+Run the real sample twice:
+
+```bash
+make immich-takeout-sample-import
+make immich-import-verify
+make immich-takeout-sample-import
+ACCEPT_SAMPLE=1 make immich-import-verify
+```
+
+Acceptance requires a positive first asset delta, zero second asset/album
+delta, and no latest import error marker. Capture time/timezone, GPS, albums,
+favorites, descriptions, video and motion cases must also be spot-checked in
+Immich before acceptance.
+
+Only then can `make immich-takeout-full-import` pass its gates: exact mount
+UUID, recent verified DB dump, accepted sample, healthy API, and free space of
+at least `1.5 × Takeout bytes + 100 GiB`. Concurrency is two, overwrite is
+disabled, and repeated runs use the same device identity. Suspicious
+duplicates are reported, never deleted.
+
+Verification emits JSON and Markdown under `wd3tb/ai/manifests`. Application
+logs use the supplied logrotate policy; Docker logs use Compose size limits.

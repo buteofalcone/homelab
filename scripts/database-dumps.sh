@@ -24,6 +24,15 @@ if container_running immich-database; then
   echo "Created Immich database dump."
 fi
 
+if container_running photo-ai-db; then
+  tmp="${dump_dir}/photo-ai.sql.gz.tmp"
+  docker exec -e PGPASSWORD="${PHOTO_AI_DB_PASSWORD}" photo-ai-db \
+    pg_dump -U photo_ai --clean --if-exists photo_ai | gzip -9 > "${tmp}"
+  mv "${tmp}" "${dump_dir}/photo-ai.sql.gz"
+  chmod 0600 "${dump_dir}/photo-ai.sql.gz"
+  echo "Created Photo AI database dump."
+fi
+
 if container_running open-webui; then
   tmp="${dump_dir}/open-webui.db.tmp"
   rm -f -- "${tmp}"

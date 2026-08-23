@@ -37,6 +37,8 @@ replace NEXTCLOUD_ADMIN_PASSWORD "$(random_hex)"
 replace NEXTCLOUD_DB_PASSWORD "$(random_hex)"
 replace NEXTCLOUD_REDIS_PASSWORD "$(random_hex)"
 replace IMMICH_DB_PASSWORD "$(random_hex)"
+replace PHOTO_AI_DB_PASSWORD "$(random_hex)"
+replace PHOTO_AI_API_TOKEN "$(random_hex)"
 
 chmod 0600 "${ENV_FILE}"
 

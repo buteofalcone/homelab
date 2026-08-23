@@ -55,13 +55,18 @@ After the remote verification succeeds, run this on the HP Server:
 sudo make immich-remote-ml-configure
 ```
 
-The command preserves a root-only copy of the current Immich system configuration, changes only the ML URL list through the authenticated Immich API, and verifies this order:
+The command preserves a root-only copy of the current Immich system configuration, changes only the ML URL list through the authenticated Immich API, and verifies this remote-only list:
 
 1. `http://100.91.171.26:3003`
-2. `http://immich-machine-learning:3003`
-
-The local container remains the fallback whenever SilverBrick is asleep. Do not configure router port forwarding, Cloudflare proxying, Caddy, or public DNS for TCP 3003.
+When SilverBrick sleeps, stock ML jobs wait/retry while Immich storage and UI
+remain available. The HPServer service belongs to the explicit
+`immich-ml-fallback` profile and is never started during normal operation. Do
+not configure router port forwarding, Cloudflare proxying, Caddy, or public
+DNS for TCP 3003.
 
 ## Upgrade contract
 
-Read the Immich release notes first. In one reviewed commit, update the HP Server `IMMICH_VERSION`, the server and local-ML defaults, and the SilverBrick CUDA image. Upgrade both machines during the same maintenance window and verify both ML URLs before running new jobs.
+Read the Immich release notes first. In one reviewed commit, update the HP
+Server `IMMICH_VERSION`, the optional local-ML default, and the SilverBrick
+CUDA image. Upgrade both machines during the same maintenance window and
+verify the remote ML URL before running new jobs.

@@ -2,7 +2,7 @@ name: homelab-immich-remote-ml
 
 services:
   immich-machine-learning:
-    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3-cuda
+    image: ghcr.io/immich-app/immich-machine-learning:v3.0.3-cuda@sha256:0d66acce99224495fda2288e2d8f52b459712b2e897e67b492729bce07775c08
     container_name: immich_remote_machine_learning
     extends:
       file: hwaccel.ml.yaml

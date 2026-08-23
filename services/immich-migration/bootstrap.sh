@@ -6,15 +6,19 @@ readonly repo_dir="$(cd "${service_dir}/../.." && pwd)"
 source "${repo_dir}/scripts/lib.sh"
 
 require_root
-load_env
-mountpoint -q /srv/storage || die '/srv/storage is not a mounted filesystem.'
+# shellcheck source=storage-guard.sh
+source "${service_dir}/storage-guard.sh"
+photo_load_config
+photo_assert_mount
 
-install -d -m 0770 -o "${PUID}" -g "${PGID}" \
-  /srv/storage/incoming/google-photos-takeout \
-  /srv/storage/incoming/google-photos-takeout/sample \
-  /srv/storage/incoming/google-photos-takeout/full
+install -d -m 0750 -o "${PUID}" -g "${PGID}" \
+  "${PHOTO_AI_ROOT}/manifests" \
+  "${PHOTO_AI_ROOT}/cache" \
+  "${PHOTO_AI_ROOT}/exports" \
+  "${PHOTO_AI_LOG_DIR}"
+photo_prepare_logs
 
 "${service_dir}/install-immich-go.sh"
 
 echo 'IMMICH_MIGRATION_BOOTSTRAP_OK'
-echo 'Copy a small representative Takeout sample into Inbox/google-photos-takeout/sample.'
+echo 'Run make immich-takeout-inspect, then make immich-takeout-sample-prepare.'
