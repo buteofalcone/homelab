@@ -3,11 +3,11 @@
 # Shared storage safety checks. This file is sourced by migration commands.
 
 photo_load_config() {
-  local service_dir repo_dir
-  service_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-  repo_dir="$(cd "${service_dir}/../.." && pwd)"
+  local guard_service_dir guard_repo_dir
+  guard_service_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  guard_repo_dir="$(cd "${guard_service_dir}/../.." && pwd)"
   # shellcheck source=../../scripts/lib.sh
-  source "${repo_dir}/scripts/lib.sh"
+  source "${guard_repo_dir}/scripts/lib.sh"
   load_env
 
   WD3TB_UUID="${WD3TB_UUID:-6a4f504f-0103-4015-84b2-48bfa947d5b7}"
