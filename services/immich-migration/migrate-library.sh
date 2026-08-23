@@ -12,6 +12,8 @@ photo_load_config
 readonly source_dir="${IMMICH_OLD_UPLOAD_LOCATION:-/srv/storage/photos}"
 readonly target_dir="${IMMICH_UPLOAD_LOCATION}"
 readonly approval="COPY-IMMICH-TO-WD3TB-${WD3TB_UUID}"
+readonly env_backup="/etc/homelab/homelab.env.before-immich-storage-$(date -u +%Y%m%dT%H%M%SZ)"
+env_updated=false
 
 photo_assert_mount
 [[ -d ${source_dir} ]] || die "Missing current Immich storage: ${source_dir}"
@@ -32,6 +34,9 @@ echo "Stopping only Immich server; database and Valkey stay available."
 docker stop immich-server
 restart_required=true
 cleanup() {
+  if [[ ${env_updated} == true ]]; then
+    install -m 0600 -o root -g root "${env_backup}" "${ENV_FILE}" || true
+  fi
   if [[ ${restart_required} == true ]]; then
     docker start immich-server >/dev/null || true
   fi
@@ -43,9 +48,20 @@ echo "Verifying copied bytes with checksum dry-run; no files are deleted."
 verification="$(rsync -aHAXnc --numeric-ids --out-format='%i %n' "${source_dir}/" "${target_dir}/")"
 [[ -z ${verification} ]] || die "Checksum verification found differences; source is preserved."
 
+install -m 0600 -o root -g root "${ENV_FILE}" "${env_backup}"
+if grep -q '^IMMICH_UPLOAD_LOCATION=' "${ENV_FILE}"; then
+  sed -i "s|^IMMICH_UPLOAD_LOCATION=.*$|IMMICH_UPLOAD_LOCATION=${target_dir}|" "${ENV_FILE}"
+else
+  printf '\nIMMICH_UPLOAD_LOCATION=%s\n' "${target_dir}" >> "${ENV_FILE}"
+fi
+chmod 0600 "${ENV_FILE}"
+env_updated=true
+
 echo "Recreating only immich-server with the reviewed /data location."
 if ! compose --profile immich up -d --no-deps --force-recreate immich-server; then
   echo "Recreate failed; restoring the old /data binding." >&2
+  install -m 0600 -o root -g root "${env_backup}" "${ENV_FILE}"
+  env_updated=false
   IMMICH_UPLOAD_LOCATION="${source_dir}" compose --profile immich up -d --no-deps --force-recreate immich-server
   die "Storage switch failed; rollback is active."
 fi
@@ -53,15 +69,20 @@ restart_required=false
 
 actual_source="$(docker inspect -f '{{range .Mounts}}{{if eq .Destination "/data"}}{{.Source}}{{end}}{{end}}' immich-server)"
 if [[ ${actual_source} != "${target_dir}" ]]; then
+  install -m 0600 -o root -g root "${env_backup}" "${ENV_FILE}"
+  env_updated=false
   IMMICH_UPLOAD_LOCATION="${source_dir}" compose --profile immich up -d --no-deps --force-recreate immich-server
   die "Unexpected /data source ${actual_source}; rolled back."
 fi
 for attempt in {1..30}; do
   curl --fail --silent http://127.0.0.1:2283/api/server/version >/dev/null && break
   (( attempt == 30 )) && {
+    install -m 0600 -o root -g root "${env_backup}" "${ENV_FILE}"
+    env_updated=false
     IMMICH_UPLOAD_LOCATION="${source_dir}" compose --profile immich up -d --no-deps --force-recreate immich-server
     die "Immich API did not recover; rolled back."
   }
   sleep 2
 done
+env_updated=false
 echo "IMMICH_STORAGE_MIGRATION_OK source=${source_dir} target=${target_dir} rollback_preserved=true"
