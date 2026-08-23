@@ -127,3 +127,7 @@ updated=false
 trap - ERR EXIT
 cleanup
 echo "IMMICH_REMOTE_ML_BACKUP_OK ${backup_file}"
+if container_running immich-machine-learning; then
+  docker stop immich-machine-learning >/dev/null
+  echo 'IMMICH_LOCAL_ML_STOPPED profile=immich-ml-fallback'
+fi
