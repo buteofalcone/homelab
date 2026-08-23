@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallbac
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -25,6 +25,7 @@ help:
 	  'make immich         Start Immich stack' \
 	  'make photo-ai       Start private AI queue/API on HPServer' \
 	  'make immich-storage-plan  Print the wd3tb mount migration plan only' \
+	  'make immich-storage-apply Apply that plan only with PHOTO_STORAGE_APPROVAL' \
 	  'make immich-takeout-inspect  Build privacy-safe Takeout inventory' \
 	  'make immich-takeout-sample   Build a copy-only representative sample' \
 	  'make immich-pin-version  Pin live Immich release to the verified exact version' \
@@ -142,8 +143,11 @@ immich-remote-ml-configure:
 immich-storage-plan:
 	@sudo ./services/immich-migration/storage-plan.sh
 
+immich-storage-apply:
+	@sudo --preserve-env=PHOTO_STORAGE_APPROVAL ./services/immich-migration/storage-plan.sh --apply
+
 immich-storage-migrate:
-	@sudo ./services/immich-migration/migrate-library.sh
+	@sudo --preserve-env=PHOTO_STORAGE_APPROVAL ./services/immich-migration/migrate-library.sh
 
 immich-migration-bootstrap:
 	@sudo ./services/immich-migration/bootstrap.sh
