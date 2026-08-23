@@ -28,7 +28,11 @@ if [[ ${mode} == sample ]]; then
 else
   input_dir="${TAKEOUT_ROOT}"
   on_errors=continue
-  pause_jobs=true
+  if [[ ${action} == apply ]]; then
+    pause_jobs=true
+  else
+    pause_jobs=false
+  fi
   backup_dump=/srv/appdata/_backup-dumps/immich.sql.gz
   [[ -s ${backup_dump} ]] || die "Verified Immich dump is required before full import: ${backup_dump}"
   backup_age="$(( $(date +%s) - $(stat -c %Y "${backup_dump}") ))"

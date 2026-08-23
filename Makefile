@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallbac
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-dry-run immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
@@ -35,6 +35,10 @@ help:
 	  'make immich-migration-api-key-verify  Validate the stored key without exposing it' \
 	  'make immich-takeout-preflight    Validate and fingerprint the small Takeout sample' \
 	  'make immich-takeout-dry-run      Simulate the sample import without mutations' \
+	  'make immich-takeout-sample-import  Import the accepted representative sample' \
+	  'make immich-takeout-full-dry-run Simulate the complete Takeout import without mutations' \
+	  'make immich-takeout-full-import  Import the complete Takeout after all gates pass' \
+	  'make immich-import-verify        Generate API-based import verification reports' \
 	  'make jellyfin       Start Jellyfin' \
 	  'make apps           Start all optional applications' \
 	  'make beszel-agent   Start the local Beszel agent' \
@@ -172,6 +176,9 @@ immich-takeout-dry-run:
 
 immich-takeout-sample-import:
 	@sudo ./services/immich-migration/import-takeout.sh sample apply
+
+immich-takeout-full-dry-run:
+	@sudo ./services/immich-migration/import-takeout.sh full dry-run
 
 immich-takeout-full-import:
 	@sudo ./services/immich-migration/import-takeout.sh full apply

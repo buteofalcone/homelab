@@ -59,11 +59,13 @@ invalidate that historical evidence. Capture time/timezone, GPS, albums,
 favorites, descriptions, video and motion cases must also be spot-checked in
 Immich before acceptance.
 
-Only then can `make immich-takeout-full-import` pass its gates: exact mount
-UUID, recent verified DB dump, accepted sample, healthy API, and free space of
-at least `1.5 × Takeout bytes + 100 GiB`. Concurrency is two, overwrite is
-disabled, and repeated runs use the same device identity. Suspicious
-duplicates are reported, never deleted.
+Only then can `make immich-takeout-full-dry-run` and
+`make immich-takeout-full-import` pass their gates: exact mount UUID, recent
+verified DB dump, accepted sample, healthy API, and free space of at least
+`1.5 × Takeout bytes + 100 GiB`. The full dry-run explicitly leaves job
+pausing disabled. Concurrency is two, overwrite is disabled, and repeated runs
+use the same device identity. Suspicious duplicates are reported, never
+deleted.
 
 Verification emits JSON and Markdown under `wd3tb/ai/manifests`. Application
 logs use the supplied logrotate policy; Docker logs use Compose size limits.
