@@ -64,7 +64,7 @@ printf '%s\n' \
   '  overwrite: false' \
   "  pause-immich-jobs: ${pause_jobs}" \
   '  server: http://127.0.0.1:2283' \
-  '  session-tag: true' \
+  '  session-tag: false' \
   '  from-google-photos:' \
   '    include-archived: true' \
   '    include-partner: false' \
@@ -84,6 +84,7 @@ printf '%s mode=%s action=%s event=start assets=%s albums=%s bytes=%s\n' \
   "${timestamp}" "${mode}" "${action}" "${before_assets}" "${before_albums}" "${before_bytes}" >> "${PHOTO_AI_LOG_DIR}/import.log"
 
 command=(immich-go upload from-google-photos --config "${config_file}" --no-ui \
+  --ban-file 'Без назви/' \
   --log-file "${PHOTO_AI_LOG_DIR}/immich-go.log" --log-level INFO)
 [[ ${action} == dry-run ]] && command+=(--dry-run)
 command+=("${input_dir}")
