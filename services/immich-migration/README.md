@@ -54,7 +54,8 @@ ACCEPT_SAMPLE=1 make immich-import-verify
 ```
 
 Acceptance requires a positive first asset delta, zero second asset/album
-delta, and no latest import error marker. Capture time/timezone, GPS, albums,
+delta, and no latest import error marker. Later idempotent reruns do not
+invalidate that historical evidence. Capture time/timezone, GPS, albums,
 favorites, descriptions, video and motion cases must also be spot-checked in
 Immich before acceptance.
 

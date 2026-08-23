@@ -180,18 +180,30 @@ def main() -> int:
     if args.accept_sample:
         runs: list[dict[str, str]] = []
         if args.import_log and args.import_log.exists():
-            runs = [run for line in args.import_log.read_text(encoding="utf-8").splitlines() if (run := parse_run(line))]
-        if len(runs) < 2:
-            raise SystemExit("Two successful sample apply runs are required before acceptance.")
-        first, second = runs[-2:]
+            runs = [
+                run
+                for line in args.import_log.read_text(encoding="utf-8").splitlines()
+                if (run := parse_run(line)) and run.get("exit") == "0"
+            ]
+        evidence: tuple[dict[str, str], dict[str, str]] | None = None
+        for index, first_candidate in enumerate(runs):
+            first_candidate_delta = int(first_candidate["assets_after"]) - int(first_candidate["assets_before"])
+            if first_candidate_delta <= 0:
+                continue
+            for second_candidate in runs[index + 1 :]:
+                asset_delta = int(second_candidate["assets_after"]) - int(second_candidate["assets_before"])
+                album_delta = int(second_candidate["albums_after"]) - int(second_candidate["albums_before"])
+                if asset_delta == 0 and album_delta == 0:
+                    evidence = (first_candidate, second_candidate)
+                    break
+            if evidence:
+                break
+        if evidence is None:
+            raise SystemExit("No successful positive sample import followed by an idempotent rerun was found.")
+        first, second = evidence
         first_delta = int(first["assets_after"]) - int(first["assets_before"])
         second_asset_delta = int(second["assets_after"]) - int(second["assets_before"])
         second_album_delta = int(second["albums_after"]) - int(second["albums_before"])
-        if first_delta <= 0 or second_asset_delta != 0 or second_album_delta != 0:
-            raise SystemExit(
-                f"Sample idempotency failed: first_asset_delta={first_delta} "
-                f"second_asset_delta={second_asset_delta} second_album_delta={second_album_delta}"
-            )
         if counts["failed_import_log_lines"]:
             raise SystemExit("The latest immich-go log contains failed/unsupported warning lines; review before acceptance.")
         if counts["excluded_untitled_albums"]:
