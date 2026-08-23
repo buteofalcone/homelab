@@ -95,6 +95,8 @@ flock -n 9 || die 'Another Takeout import is already running.'
 if [[ ${action} == apply ]]; then
   "${service_dir}/excluded-albums.py" snapshot \
     --state-file "${excluded_album_state}" --name 'Без назви'
+else
+  echo 'EXCLUDED_ALBUM_CLEANUP_PLANNED name=Без_назви action=apply-only assets_preserved=true'
 fi
 set +e
 "${command[@]}"

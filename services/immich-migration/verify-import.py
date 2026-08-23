@@ -144,6 +144,9 @@ def main() -> int:
             counts["live_or_motion"] += 1
 
     counts["albums"] = len(albums) if isinstance(albums, list) else 0
+    counts["excluded_untitled_albums"] = (
+        sum(album.get("albumName") == "Без назви" for album in albums) if isinstance(albums, list) else 0
+    )
     counts["tags"] = len(tags) if isinstance(tags, list) else 0
     go_log = args.immich_go_log.read_text(encoding="utf-8", errors="replace") if args.immich_go_log and args.immich_go_log.exists() else ""
     counts["failed_import_log_lines"] = len(
@@ -191,6 +194,8 @@ def main() -> int:
             )
         if counts["failed_import_log_lines"]:
             raise SystemExit("The latest immich-go log contains failed/unsupported warning lines; review before acceptance.")
+        if counts["excluded_untitled_albums"]:
+            raise SystemExit("Excluded Takeout album 'Без назви' remains in Immich; review API cleanup before acceptance.")
         marker = {
             "schema_version": 1,
             "accepted_at": now.isoformat(),
