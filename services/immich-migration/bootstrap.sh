@@ -21,4 +21,4 @@ photo_prepare_logs
 "${service_dir}/install-immich-go.sh"
 
 echo 'IMMICH_MIGRATION_BOOTSTRAP_OK'
-echo 'Run make immich-takeout-inspect, then make immich-takeout-sample-prepare.'
+echo 'Run make immich-takeout-inspect, then make immich-takeout-sample.'

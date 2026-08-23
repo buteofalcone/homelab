@@ -69,6 +69,7 @@ def main() -> int:
     sidecar_fields: Counter[str] = Counter()
     sizes: dict[int, list[tuple[Path, str]]] = defaultdict(list)
     motion: dict[tuple[str, str], set[str]] = defaultdict(set)
+    collision_names: dict[tuple[str, str, str], list[str]] = defaultdict(list)
     manifest: list[dict[str, Any]] = []
     malformed: list[dict[str, str]] = []
 
@@ -141,8 +142,10 @@ def main() -> int:
         media_kind = "image" if suffix in IMAGE_EXTENSIONS else "video"
         counts["media_files"] += 1
         counts[f"{media_kind}_files"] += 1
-        if NUMBERED_RE.search(path.stem):
+        normalized_stem = NUMBERED_RE.sub("", path.stem).casefold()
+        if normalized_stem != path.stem.casefold():
             counts["numbered_suffix_media"] += 1
+        collision_names[(str(path.parent), normalized_stem, suffix)].append(path_id)
         if any(token in path.stem.casefold() for token in EDITED_TOKENS):
             counts["edited_name_media"] += 1
         sizes[stat.st_size].append((path, path_id))
@@ -175,6 +178,9 @@ def main() -> int:
     counts["same_stem_motion_candidates"] = sum(
         bool(exts & IMAGE_EXTENSIONS) and bool(exts & VIDEO_EXTENSIONS) for exts in motion.values()
     )
+    collision_groups = [path_ids for path_ids in collision_names.values() if len(path_ids) > 1]
+    counts["numbered_collision_groups"] = len(collision_groups)
+    counts["numbered_collision_files"] = sum(len(path_ids) for path_ids in collision_groups)
     generated_at = datetime.now(timezone.utc).isoformat()
     report = {
         "schema_version": 1,

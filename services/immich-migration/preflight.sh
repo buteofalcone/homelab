@@ -26,8 +26,9 @@ import zipfile
 root = Path(sys.argv[1])
 maximum = int(sys.argv[2])
 media_extensions = {
-    ".3gp", ".avi", ".gif", ".heic", ".jpeg", ".jpg", ".m4v", ".mkv",
-    ".mov", ".mp4", ".mpeg", ".mpg", ".png", ".tif", ".tiff", ".webp",
+    ".3gp", ".avi", ".avif", ".bmp", ".cr2", ".cr3", ".dng", ".gif", ".heic", ".heif",
+    ".jpeg", ".jpg", ".m4v", ".mkv", ".mov", ".mp4", ".mpeg", ".mpg", ".nef", ".orf",
+    ".png", ".raf", ".raw", ".rw2", ".tif", ".tiff", ".webm", ".webp",
 }
 files = sorted(path for path in root.rglob("*") if path.is_file())
 if not files:
