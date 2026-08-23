@@ -25,6 +25,8 @@ fstab_entry=${fstab_line}
 takeout_source=${current_mount}/takeout-extracted/Takeout
 immich_source=/srv/storage/photos
 immich_target=${IMMICH_UPLOAD_LOCATION}
+mount_approval_token=MOUNT-WD3TB-${WD3TB_UUID}
+copy_approval_token=COPY-IMMICH-TO-WD3TB-${WD3TB_UUID}
 No changes were made.
 EOF
 
