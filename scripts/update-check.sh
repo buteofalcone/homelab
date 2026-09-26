@@ -4,7 +4,11 @@ source "$(dirname "$0")/lib.sh"
 require_root
 load_env
 
-operator_user="${SUDO_USER:-root}"
+operator_user="${SUDO_USER:-}"
+if [[ -z "${operator_user}" || "${operator_user}" == "root" ]]; then
+  operator_user="$(stat -c '%U' "${REPO_DIR}")"
+fi
+id "${operator_user}" >/dev/null 2>&1 || die "Cannot resolve repository owner: ${operator_user}"
 git_as_operator() {
   sudo -H -u "${operator_user}" git -C "${REPO_DIR}" "$@"
 }
