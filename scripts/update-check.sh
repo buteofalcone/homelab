@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 source "$(dirname "$0")/lib.sh"
+require_root
 load_env
 
+operator_user="${SUDO_USER:-root}"
+git_as_operator() {
+  sudo -H -u "${operator_user}" git -C "${REPO_DIR}" "$@"
+}
+
 printf 'STEP_GIT_STATE\n'
-git -C "${REPO_DIR}" status --short --branch
+git_as_operator status --short --branch
 
 printf 'STEP_UBUNTU_UPDATES\n'
 if command -v nala >/dev/null 2>&1; then
