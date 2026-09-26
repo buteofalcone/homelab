@@ -114,3 +114,5 @@ dashboard.{$BASE_DOMAIN} {
 		header_up X-Dashboard-Client-IP {http.request.remote.host}
 	}
 }
+
+import grants.caddy

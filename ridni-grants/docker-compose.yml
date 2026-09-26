@@ -1,0 +1,29 @@
+services:
+  ridni-grants:
+    build: .
+    container_name: ridni-grants
+    restart: unless-stopped
+    user: "1000:1000"
+    expose:
+      - "8088"
+    environment:
+      GRANTS_USER: ${GRANTS_USER:?Set GRANTS_USER in .env}
+      GRANTS_PASSWORD: ${GRANTS_PASSWORD:?Set GRANTS_PASSWORD in .env}
+    volumes:
+      - ./data:/app/data
+    networks:
+      - homelab
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import socket;s=socket.create_connection(('127.0.0.1',8088),3);s.close()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+networks:
+  homelab:
+    external: true
+    name: homelab
