@@ -12,6 +12,11 @@
   "schedule": [
     "every weekend"
   ],
+  "docker-compose": {
+    "managerFilePatterns": [
+      "/^compose/.*\\.ya?ml$/"
+    ]
+  },
   "prConcurrentLimit": 5,
   "automerge": false,
   "packageRules": [
