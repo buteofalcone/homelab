@@ -5,7 +5,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallbac
 .DEFAULT_GOAL := help
 
 .PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-dry-run immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
-        ps logs pull update update-all doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
+        ps logs pull update-check update update-all install-update-tools doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
         check-lm-studio configure-cloudflare-dns caddy-reload stop down
 
 help:
@@ -68,8 +68,10 @@ help:
 	  'make media-automation-test-verify  Verify the public-domain import and hardlink' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
-	  'make update         Update base services only' \
-	  'make update-all     Update all enabled profiles' \
+	  'make update-check   Show Ubuntu, Compose and Renovate update status' \
+	  'make update         Back up and update only currently running services' \
+	  'make update-all     Deprecated alias for make update' \
+	  'make install-update-tools  Install Cockpit updates, Nala and monitor-only Watchtower' \
 	  'make doctor         Run diagnostics' \
 	  'make health         Run storage and SMART checks (requires sudo)' \
 	  'make install-monitoring-timer  Install the 15-minute health timer' \
@@ -292,11 +294,18 @@ logs:
 pull:
 	@$(COMPOSE) $(PROFILES_ALL) pull
 
+update-check:
+	@sudo ./scripts/update-check.sh
+
 update:
-	@./scripts/update.sh
+	@sudo ./scripts/update.sh
 
 update-all:
-	@./scripts/update.sh nextcloud immich jellyfin beszel-agent agents books media-automation
+	@printf '%s\n' 'make update-all is deprecated; running the safe updater.'
+	@sudo ./scripts/update.sh
+
+install-update-tools:
+	@sudo ./scripts/install-update-tools.sh
 
 doctor:
 	@./scripts/doctor.sh

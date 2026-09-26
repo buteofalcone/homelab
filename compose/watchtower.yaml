@@ -6,9 +6,11 @@ services:
     environment:
       TZ: "${TZ:-Europe/Madrid}"
       WATCHTOWER_LABEL_ENABLE: "true"
-      WATCHTOWER_CLEANUP: "true"
+      WATCHTOWER_MONITOR_ONLY: "true"
+      WATCHTOWER_CLEANUP: "false"
       WATCHTOWER_SCHEDULE: "0 0 4 * * *"
-      WATCHTOWER_ROLLING_RESTART: "true"
+      WATCHTOWER_ROLLING_RESTART: "false"
+      WATCHTOWER_NO_STARTUP_MESSAGE: "true"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:

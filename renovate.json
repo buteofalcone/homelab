@@ -1,0 +1,48 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests"
+  ],
+  "dependencyDashboard": true,
+  "labels": [
+    "dependencies"
+  ],
+  "timezone": "Europe/Paris",
+  "schedule": [
+    "before 05:00 on Saturday"
+  ],
+  "prConcurrentLimit": 5,
+  "automerge": false,
+  "packageRules": [
+    {
+      "description": "Major container upgrades always require a separate maintenance decision",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Keep Immich application images in one reviewable pull request",
+      "matchPackageNames": [
+        "/^ghcr\\.io\\/immich-app\\//"
+      ],
+      "groupName": "Immich application images"
+    },
+    {
+      "description": "Never merge stateful image changes automatically",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchFileNames": [
+        "compose/immich.yaml",
+        "compose/nextcloud.yaml",
+        "services/**/compose.yaml"
+      ],
+      "automerge": false
+    }
+  ]
+}
