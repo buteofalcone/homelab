@@ -10,7 +10,7 @@
   ],
   "timezone": "Europe/Paris",
   "schedule": [
-    "before 05:00 on Saturday"
+    "every weekend"
   ],
   "prConcurrentLimit": 5,
   "automerge": false,
