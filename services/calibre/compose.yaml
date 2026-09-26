@@ -1,6 +1,6 @@
 services:
   calibre:
-    image: "${CALIBRE_IMAGE:-lscr.io/linuxserver/calibre@sha256:1e9d545e20af654af9aca439a54cdd3988cf067f64efcd409cc2bc053aeb6d15}"
+    image: "${CALIBRE_IMAGE:-lscr.io/linuxserver/calibre@sha256:6ca1c00b4083e0f2b0e504355b069d1ecb9791c0419beefcc5d4e6228fa9fe00}"
     container_name: calibre
     restart: unless-stopped
     profiles:
