@@ -1,0 +1,4 @@
+grants.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy ridni-grants:8088
+}

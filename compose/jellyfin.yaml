@@ -1,0 +1,26 @@
+services:
+  jellyfin:
+    image: "${JELLYFIN_IMAGE:-jellyfin/jellyfin:10@sha256:aefb67e6a7ff1debdd154a78a7bbb780fd0c873d8639210a7f6a2016ad2b35db}"
+    container_name: jellyfin
+    restart: unless-stopped
+    profiles:
+      - jellyfin
+    user: "${PUID:-1000}:${PGID:-1000}"
+    group_add:
+      - "${JELLYFIN_RENDER_GID:-990}"
+    ports:
+      - "${JELLYFIN_PORT:-8096}:8096/tcp"
+      - "7359:7359/udp"
+    environment:
+      TZ: "${TZ:-Europe/Madrid}"
+      JELLYFIN_PublishedServerUrl: "https://jellyfin.${BASE_DOMAIN:-butenko.online}"
+    volumes:
+      - /srv/appdata/jellyfin/config:/config
+      - /srv/appdata/jellyfin/cache:/cache
+      - /srv/storage/media:/media
+    devices:
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    networks:
+      - homelab
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"

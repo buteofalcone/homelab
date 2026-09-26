@@ -1,0 +1,25 @@
+name: photo-ai-worker
+
+services:
+  photo-ai-worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    image: homelab/photo-ai-worker:1.0.0-cuda12.8
+    restart: unless-stopped
+    environment:
+      PHOTO_AI_API_URL: "${PHOTO_AI_API_URL}"
+      PHOTO_AI_API_TOKEN: "${PHOTO_AI_API_TOKEN}"
+      PHOTO_AI_WORKER_ID: "${PHOTO_AI_WORKER_ID:-silverbrick-rtx4060}"
+      PHOTO_AI_POLL_SECONDS: "${PHOTO_AI_POLL_SECONDS:-30}"
+      PHOTO_AI_MAX_EDGE: "${PHOTO_AI_MAX_EDGE:-1280}"
+      PHOTO_AI_VISION_FALLBACK_MODEL: "${PHOTO_AI_VISION_FALLBACK_MODEL:-microsoft/Florence-2-large}"
+    volumes:
+      - photo-ai-model-cache:/models
+    gpus: all
+    logging:
+      driver: json-file
+      options: {max-size: "20m", max-file: "5"}
+
+volumes:
+  photo-ai-model-cache:

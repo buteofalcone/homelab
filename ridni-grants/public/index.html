@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ridni Grant Hub</title>
+  <meta name="description" content="Робочий простір грантів Ridni.org">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23163742'/%3E%3Cpath d='M17 43V19h14c10 0 16 4 16 12 0 5-3 9-8 11l9 11H36l-7-9h-2v9zm10-16h4c4 0 6-2 6-4.5S35 18 31 18h-4z' fill='%23fae6ad'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="#grants"><span class="brand-mark">R</span><span>Ridni<br><b>Grant Hub</b></span></a>
+    <nav>
+      <button class="nav active" data-view="grants">◈ Можливості <span id="grantCount"></span></button>
+      <button class="nav" data-view="calendar">▦ Календар</button>
+      <button class="nav" data-view="drafts">✦ Чернетки <span id="draftCount"></span></button>
+      <button class="nav" data-view="profile">◎ Профіль Ridni</button>
+    </nav>
+    <div class="side-note"><i></i><span>Щоденна перевірка офіційних джерел налаштована</span></div>
+  </aside>
+  <main>
+    <header><div><p class="eyebrow">ПРИВАТНИЙ РОБОЧИЙ ПРОСТІР</p><h1 id="pageTitle">Грантові можливості</h1></div><div class="header-actions"><span class="checked" id="checkedAt">Завантаження…</span><button class="primary" id="addGrant">+ Додати грант</button></div></header>
+    <section id="grantsView" class="view">
+      <div class="scoreboard"><div><span>Ранжування</span><strong>за відповідністю Ridni</strong></div><p>Теги профілю визначають фільтри й допомагають оцінювати відповідність.</p></div>
+      <div class="filters" id="tagFilters"></div>
+      <div class="toolbar"><label class="search">⌕ <input id="search" placeholder="Пошук за програмою, фондом або темою"></label><select id="sort"><option value="relevance">Найвища релевантність</option><option value="deadline">Найближчий дедлайн</option></select></div>
+      <div class="cards" id="grantCards"></div>
+    </section>
+    <section id="calendarView" class="view hidden"><div class="calendar-intro"><h2>Найближчі дедлайни</h2><p>Усі відкриті можливості — за датою.</p></div><div id="calendar" class="deadline-list"></div></section>
+    <section id="draftsView" class="view hidden"><div class="calendar-intro"><h2>Чернетки для схвалення</h2><p>Вподобайте грант — система підготує стартову чернетку з профілю Ridni.</p></div><div id="drafts" class="draft-list"></div></section>
+    <section id="profileView" class="view hidden">
+      <div class="profile-head"><div><p class="eyebrow">ДАНІ ДЛЯ ЗАЯВОК</p><h2>Профіль Ridni</h2><p>Збережені поля підтягуються у чернетки; заповнюйте лише ті дані, які готові використовувати в заявках.</p></div><button class="primary" id="saveProfile">Зберегти профіль</button></div>
+      <div class="profile-grid" id="profileFields"></div>
+      <section class="tag-editor"><div><p class="eyebrow">НАПРЯМИ ДІЯЛЬНОСТІ</p><h3>Теги Ridni</h3><p>Вони також працюють як фільтри та сигнал релевантності.</p></div><div class="tag-box"><div id="editableTags"></div><form id="tagForm"><input id="newTag" required placeholder="Новий напрям"><input id="tagColor" type="color" value="#2f6f66"><button>Додати</button></form></div></section>
+    </section>
+  </main>
+</div>
+<dialog id="grantDialog"><form method="dialog" id="grantForm" class="dialog-card"><button class="close" value="cancel">×</button><p class="eyebrow">ВЕРИФІКОВАНА МОЖЛИВІСТЬ</p><h2>Додати грант</h2><label>Назва<input name="title" required></label><label>Фонд / програма<input name="funder" required></label><label>Офіційне посилання<input name="official_url" type="url" required></label><div class="two"><label>Дедлайн<input name="deadline" type="date"></label><label>Релевантність 0–100<input name="relevance" type="number" value="70" min="0" max="100"></label></div><label>Коротко: чому підходить<textarea name="fit"></textarea></label><label>Теги через кому<input name="tags" placeholder="архіви, OCR / HTR"></label><button class="primary" value="default">Зберегти</button></form></dialog>
+<dialog id="draftDialog"><form method="dialog" class="dialog-card draft-dialog"><button class="close" value="cancel">×</button><p class="eyebrow">ПОТРЕБУЄ МОГО СХВАЛЕННЯ</p><h2 id="draftTitle"></h2><div id="draftBody"></div><button class="primary" value="cancel">Закрити</button></form></dialog>
+<template id="cardTemplate"><article class="grant-card"><div class="card-top"><span class="status">Відкрито</span><span class="score"></span></div><h2></h2><p class="funder"></p><div class="tag-row"></div><dl><div><dt>Дедлайн</dt><dd class="deadline"></dd></div><div><dt>Фінансування</dt><dd class="funding"></dd></div><div><dt>Географія</dt><dd class="geography"></dd></div></dl><p class="fit"></p><details><summary>Eligibility, ризики та перші кроки</summary><div class="grant-details"></div></details><div class="card-actions"><a class="official" target="_blank" rel="noreferrer">Офіційний конкурс ↗</a><button class="like">♡ Вподобати й створити чернетку</button><button class="draft">Підготувати чернетку</button></div></article></template>
+<script src="/app.js"></script>
+</body></html>

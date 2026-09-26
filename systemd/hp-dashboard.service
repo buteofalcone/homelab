@@ -1,0 +1,31 @@
+[Unit]
+Description=HPServer dock dashboard
+After=network-online.target hp-dashboard-firewall.service hp-dashboard-collector.service
+Wants=network-online.target hp-dashboard-firewall.service hp-dashboard-collector.service
+
+[Service]
+Type=simple
+User=hp-dashboard
+Group=hp-dashboard
+EnvironmentFile=/etc/homelab/dashboard.env
+Environment=PYTHONDONTWRITEBYTECODE=1
+ExecStart=/srv/appdata/hp-dashboard/venv/bin/uvicorn main:app --app-dir /opt/homelab/services/dock-dashboard/app --host 0.0.0.0 --port 8787 --no-proxy-headers
+Restart=on-failure
+RestartSec=3s
+UMask=0027
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ProtectClock=true
+ProtectHostname=true
+RestrictRealtime=true
+RestrictSUIDSGID=false
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

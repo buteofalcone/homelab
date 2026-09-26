@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "applications": [
+    {
+      "id": "core",
+      "label": "Core",
+      "containers": ["caddy", "homepage", "homepage-docker-proxy", "portainer"]
+    },
+    {
+      "id": "immich",
+      "label": "Immich",
+      "containers": ["immich-server", "immich-machine-learning", "immich-database", "immich-redis"],
+      "probe": "http://127.0.0.1:2283/api/server/ping",
+      "restart": ["immich-server", "immich-machine-learning"]
+    },
+    {
+      "id": "jellyfin",
+      "label": "Jellyfin",
+      "containers": ["jellyfin"],
+      "probe": "http://127.0.0.1:8096/health",
+      "restart": ["jellyfin"]
+    },
+    {
+      "id": "nextcloud",
+      "label": "Nextcloud",
+      "containers": ["nextcloud", "nextcloud-cron", "nextcloud-db", "nextcloud-redis"],
+      "probe": "http://127.0.0.1:8080/status.php",
+      "restart": ["nextcloud", "nextcloud-cron"]
+    },
+    {
+      "id": "calibre",
+      "label": "Calibre",
+      "containers": ["calibre"],
+      "probe": "https://books.butenko.online/",
+      "restart": ["calibre"]
+    },
+    {
+      "id": "open-webui",
+      "label": "Open WebUI",
+      "containers": ["open-webui"],
+      "probe": "http://127.0.0.1:3002/health",
+      "restart": ["open-webui"]
+    },
+    {
+      "id": "seerr",
+      "label": "Seerr",
+      "containers": ["seerr"],
+      "probe": "https://requests.butenko.online/",
+      "restart": ["seerr"]
+    },
+    {
+      "id": "media-automation",
+      "label": "Media",
+      "containers": ["qbittorrent", "sonarr", "radarr", "prowlarr"],
+      "restart": ["qbittorrent", "sonarr", "radarr", "prowlarr"]
+    },
+    {
+      "id": "kurhan",
+      "label": "Kurhan",
+      "containers": ["kurhan"],
+      "probe": "https://kurhan.butenko.online/",
+      "restart": ["kurhan"]
+    },
+    {
+      "id": "ridni",
+      "label": "Ridni",
+      "containers": ["ridni-staging-app-1", "ridni-staging-nginx-1", "ridni-staging-horizon-1", "ridni-staging-scheduler-1", "ridni-staging-mysql-1", "ridni-staging-redis-1"],
+      "restart": ["ridni-staging-app-1", "ridni-staging-horizon-1", "ridni-staging-scheduler-1", "ridni-staging-nginx-1"]
+    },
+    {
+      "id": "monitoring",
+      "label": "Monitoring",
+      "containers": ["beszel", "beszel-agent", "uptime-kuma"]
+    },
+    {
+      "id": "timemachine",
+      "label": "Time Machine",
+      "containers": ["timemachine"]
+    }
+  ],
+  "homepage": [
+    {
+      "group": "Сімейний сервер",
+      "items": [
+        {"name": "Як користуватися", "icon": "mdi-book-open-page-variant", "href": "https://github.com/buteofalcone/homelab/blob/feature/base-management-stack/docs/family-guide-uk.md", "description": "Коротка інструкція для всієї сім’ї"},
+        {"name": "Nextcloud", "icon": "nextcloud.svg", "href": "https://nextcloud.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Документи, файли та сімейний чат", "container": "nextcloud"},
+        {"name": "Immich", "icon": "immich.svg", "href": "https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Приватна фотогалерея і синхронізація", "container": "immich-server"},
+        {"name": "Jellyfin", "icon": "jellyfin.svg", "href": "https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Фільми та серіали без реклами", "container": "jellyfin"},
+        {"name": "Замовити фільм або серіал", "icon": "seerr.svg", "href": "https://requests.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Зручний пошук у сімейній медіатеці", "container": "seerr"},
+        {"name": "Books", "icon": "calibre.svg", "href": "https://books.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Книги EPUB для Apple Books", "container": "calibre"},
+        {"name": "Butenko AI", "icon": "open-webui.svg", "href": "https://ai.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Приватний сімейний AI-чат", "container": "open-webui"}
+      ]
+    },
+    {
+      "group": "Керування сервером",
+      "items": [
+        {"name": "HPServer Dock", "icon": "mdi-monitor-dashboard", "href": "https://dashboard.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Компактна touch-консоль", "container": "caddy"},
+        {"name": "Portainer", "icon": "portainer.svg", "href": "https://portainer.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Керування Docker", "container": "portainer"},
+        {"name": "Beszel", "icon": "beszel.svg", "href": "https://beszel.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Навантаження і ресурси сервера", "container": "beszel"},
+        {"name": "Uptime Kuma", "icon": "uptime-kuma.svg", "href": "https://uptime.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Стан і доступність сервісів", "container": "uptime-kuma"}
+      ]
+    },
+    {
+      "group": "Медіатека — власник",
+      "items": [
+        {"name": "Calibre Admin", "icon": "calibre.svg", "href": "https://calibre.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Додавання та конвертація книг", "container": "calibre"},
+        {"name": "qBittorrent", "icon": "qbittorrent.svg", "href": "https://torrent.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Завантаження .torrent і magnet-посилань", "container": "qbittorrent"},
+        {"name": "Sonarr", "icon": "sonarr.svg", "href": "https://sonarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Пошук та автоматизація серіалів", "container": "sonarr"},
+        {"name": "Radarr", "icon": "radarr.svg", "href": "https://radarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Пошук та автоматизація фільмів", "container": "radarr"},
+        {"name": "Prowlarr", "icon": "prowlarr.svg", "href": "https://prowlarr.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Налаштування джерел пошуку", "container": "prowlarr"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+table inet homelab_rdp {
+    chain input {
+        type filter hook input priority -10; policy accept;
+
+        iifname "tailscale0" tcp dport 3389 counter accept comment "Allow RDP from Tailscale"
+        tcp dport 3389 counter reject with tcp reset comment "Reject RDP from other interfaces"
+    }
+}

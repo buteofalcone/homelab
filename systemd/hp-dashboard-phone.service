@@ -1,0 +1,18 @@
+[Unit]
+Description=Restore Fully Kiosk on the HPServer dock phone
+After=hp-dashboard.service
+ConditionPathExists=/etc/homelab/dashboard-phone.env
+
+[Service]
+Type=oneshot
+User=butenko
+Group=butenko
+SupplementaryGroups=plugdev
+Environment=HOME=/home/butenko
+ExecStart=/opt/homelab/services/dock-dashboard/scripts/phone-dock.sh
+PrivateNetwork=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+NoNewPrivileges=true
+RestrictAddressFamilies=AF_UNIX AF_INET
