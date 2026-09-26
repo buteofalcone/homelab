@@ -1,6 +1,6 @@
 services:
   clickhouse:
-    image: "${CLICKHOUSE_IMAGE:-clickhouse/clickhouse-server:25.3}"
+    image: "${CLICKHOUSE_IMAGE:-clickhouse/clickhouse-server:25.3@sha256:b627d7a9bc0e0c1bac26cdbe9d2fc6316faa29c5d8a174f28f5abd57d0fa6ba2}"
     container_name: clickhouse
     restart: unless-stopped
     profiles:

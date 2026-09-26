@@ -1,9 +1,9 @@
-FROM caddy:2-builder-alpine AS builder
+FROM caddy:2-builder-alpine@sha256:0aa610043dab5da82ad0a0268e46bb852785e6f5160f12f1c6fe3f42903d7e1b AS builder
 
 RUN xcaddy build \
     --with github.com/caddy-dns/cloudflare
 
-FROM caddy:2-alpine
+FROM caddy:2-alpine@sha256:6aeddd44c3078b0f9a35206472a11420648a79c184603ef95957d0a20044cb2b
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 COPY docker/caddy/entrypoint.sh /usr/local/bin/homelab-caddy-entrypoint
