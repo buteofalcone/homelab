@@ -35,7 +35,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
 
   sonarr:
-    image: "${SONARR_IMAGE:-lscr.io/linuxserver/sonarr@sha256:24acea2956a0ccb11f103877d9f4f8576600fb34bff34820ed749c2256dab89f}"
+    image: "${SONARR_IMAGE:-lscr.io/linuxserver/sonarr@sha256:f247545d23ba8b233d6604575347e48a623fe6ad75dda02348bf81917f3b5c06}"
     container_name: sonarr
     restart: unless-stopped
     profiles:
