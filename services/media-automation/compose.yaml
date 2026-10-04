@@ -84,7 +84,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
 
   radarr:
-    image: "${RADARR_IMAGE:-lscr.io/linuxserver/radarr@sha256:e35056574cdc695a9ee745aa1ecda9eab3842450bf4b7b8471b023790fa3861d}"
+    image: "${RADARR_IMAGE:-lscr.io/linuxserver/radarr@sha256:7dfd049e79c00b16fbc29c3f5d96a9e7b9e73a23930b4c5b3c4541d60b366814}"
     container_name: radarr
     restart: unless-stopped
     profiles:
