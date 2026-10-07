@@ -60,7 +60,7 @@ services:
       com.centurylinklabs.watchtower.enable: "false"
 
   prowlarr:
-    image: "${PROWLARR_IMAGE:-lscr.io/linuxserver/prowlarr@sha256:2f3d31307beba3ba2dd226d191f5f5c14ee3b4d8b49277c64683f5ed97083179}"
+    image: "${PROWLARR_IMAGE:-lscr.io/linuxserver/prowlarr@sha256:f9151e5bc1025c6d0a630d503210cdcb6bb55a7cc098562609d96a408d838902}"
     container_name: prowlarr
     restart: unless-stopped
     profiles:
