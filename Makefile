@@ -6,7 +6,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallbac
 
 .PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-dry-run immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update-check update update-all install-update-tools doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
-        check-lm-studio configure-cloudflare-dns caddy-reload stop down
+		check-lm-studio configure-cloudflare-dns caddy-reload episode-buffer-configure episode-buffer-install episode-buffer-run episode-buffer-verify episode-buffer-activate stop down
 
 help:
 	@printf '%s\n' \
@@ -66,6 +66,11 @@ help:
 	  'make media-automation-verify  Verify media paths, auth and idle state' \
 	  'make media-automation-toloka  Securely configure the private Toloka.to indexer' \
 	  'make media-automation-test-verify  Verify the public-domain import and hardlink' \
+	  'make episode-buffer-configure  Configure safe Jellyfin/Sonarr rolling buffer' \
+	  'make episode-buffer-install    Install the 15-minute dry-run timer' \
+	  'make episode-buffer-run        Run one buffer evaluation now' \
+	  'make episode-buffer-verify     Verify credentials, Sonarr policy and timer' \
+	  'make episode-buffer-activate   Enable recycling after explicit confirmation' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
 	  'make update-check   Show Ubuntu, Compose and Renovate update status' \
@@ -280,6 +285,21 @@ media-automation-test:
 
 media-automation-test-verify:
 	@./services/media-automation/verify-public-domain-test.sh
+
+episode-buffer-configure:
+	@sudo ./services/episode-buffer/configure.sh
+
+episode-buffer-install:
+	@sudo ./services/episode-buffer/install.sh
+
+episode-buffer-run:
+	@sudo ./services/episode-buffer/run.sh run
+
+episode-buffer-verify:
+	@sudo ./services/episode-buffer/verify.sh
+
+episode-buffer-activate:
+	@sudo ./services/episode-buffer/activate.sh
 
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps

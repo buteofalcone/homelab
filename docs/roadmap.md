@@ -1,6 +1,10 @@
 # Roadmap
 
-Last updated: **2026-07-28**.
+## Rolling TV episode storage
+
+The tracked `services/episode-buffer` automation keeps a three-episode rolling buffer for explicitly tagged Sonarr series. It uses the primary Jellyfin user's watched state, Sonarr's seven-day Recycle Bin, a 24-hour grace period, and a mandatory dry-run before activation.
+
+Last updated: **2026-10-11**.
 
 This is the execution order for planned work. It complements `docs/architecture.md`; it does not authorize removing or reconfiguring working services.
 

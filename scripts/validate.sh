@@ -14,6 +14,7 @@ if [[ -d "${REPO_DIR}/services" ]]; then
 fi
 
 python3 -m json.tool "${REPO_DIR}/config/service-catalog.json" >/dev/null
+python3 "${REPO_DIR}/services/episode-buffer/test_episode_buffer.py"
 python3 "${REPO_DIR}/scripts/render-service-catalog.py" \
   --catalog "${REPO_DIR}/config/service-catalog.json" \
   --output "${REPO_DIR}/config/homepage/services.yaml" \
