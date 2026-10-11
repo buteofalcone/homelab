@@ -1,6 +1,6 @@
 services:
   qbittorrent:
-    image: "${QBITTORRENT_IMAGE:-lscr.io/linuxserver/qbittorrent@sha256:b024436f8ca665d16d9a997d26fd27fdf867ee5566ba09f32764e7b2976d3e02}"
+    image: "${QBITTORRENT_IMAGE:-lscr.io/linuxserver/qbittorrent@sha256:97333cc1ccf903e0bbcd8eb67e3332e4970e9c1ecabe145e499e9c0847ebcaed}"
     container_name: qbittorrent
     restart: unless-stopped
     profiles:
