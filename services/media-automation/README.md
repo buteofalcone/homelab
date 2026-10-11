@@ -21,6 +21,8 @@ make media-automation-bootstrap
 
 The bootstrap creates a root-only password, removes qBittorrent's one-time password log by recreating the container, enables external Sonarr/Prowlarr/Radarr authentication behind Caddy, connects the applications, adds Internet Archive, starts Seerr, and verifies the complete pipeline. qBittorrent refuses new data when free space drops below `MEDIA_MIN_FREE_GB` (80 GiB by default).
 
+If Seerr loses its Docker network attachment or the Arr applications are temporarily banned by qBittorrent after stale credentials, run `sudo make media-automation-repair`. It first verifies the root-only qBittorrent secret, safely recreates only qBittorrent and Seerr, refreshes all integrations and Toloka sync, and verifies the complete pipeline without deleting torrents or media.
+
 Connect the applications and add the lawful Internet Archive indexer:
 
 ```bash
