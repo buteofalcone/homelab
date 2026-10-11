@@ -6,9 +6,6 @@ services:
     user: "1000:1000"
     expose:
       - "8088"
-    environment:
-      GRANTS_USER: ${GRANTS_USER:?Set GRANTS_USER in .env}
-      GRANTS_PASSWORD: ${GRANTS_PASSWORD:?Set GRANTS_PASSWORD in .env}
     volumes:
       - ./data:/app/data
     networks:
