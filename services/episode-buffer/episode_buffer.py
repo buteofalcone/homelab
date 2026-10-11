@@ -156,6 +156,7 @@ class EpisodeBuffer:
         self.buffer_size = env_int("EPISODE_BUFFER_SIZE", 3, 1)
         self.grace = timedelta(hours=env_int("EPISODE_BUFFER_GRACE_HOURS", 24, 0))
         self.recycle_days = env_int("EPISODE_BUFFER_RECYCLE_DAYS", 7, 1)
+        self.manage_all = os.environ.get("EPISODE_BUFFER_MANAGE_ALL", "true").lower() != "false"
         self.managed_tag = os.environ.get("EPISODE_BUFFER_MANAGED_TAG", "rolling-3")
         self.keep_tag = os.environ.get("EPISODE_BUFFER_KEEP_TAG", "keep")
         self.user = self._find_user()
@@ -210,7 +211,7 @@ class EpisodeBuffer:
         if self.keep_tag in labels:
             log(f"SKIP_KEEP series={series['title']}")
             return
-        if self.managed_tag not in labels:
+        if not self.manage_all and self.managed_tag not in labels:
             log(f"SKIP_UNMANAGED series={series['title']} required_tag={self.managed_tag}")
             return
 

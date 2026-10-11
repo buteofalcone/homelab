@@ -52,6 +52,7 @@ class BufferPolicyTest(unittest.TestCase):
         app.tags = {1: "rolling-3", 2: "keep"}
         app.managed_tag = "rolling-3"
         app.keep_tag = "keep"
+        app.manage_all = True
         app.buffer_size = 3
         app.dry_run = dry_run
         app.sonarr = FakeApi(episodes)
@@ -80,6 +81,19 @@ class BufferPolicyTest(unittest.TestCase):
 
     def test_keep_tag_blocks_all_mutations(self):
         app, series = self.make_app(self.episodes(), tags=[1, 2])
+        app.process_series(series, [{"Id": "jf-1", "ParentIndexNumber": 1, "IndexNumber": 1}])
+        self.assertFalse(app.sonarr.puts or app.sonarr.posts or app.sonarr.deletes)
+
+    def test_untagged_series_is_managed_by_default(self):
+        app, series = self.make_app(self.episodes())
+        series["tags"] = []
+        app.process_series(series, [{"Id": "jf-1", "ParentIndexNumber": 1, "IndexNumber": 1}])
+        self.assertEqual(app.sonarr.deletes, ["/api/v3/episodefile/11"])
+
+    def test_selective_mode_requires_rolling_tag(self):
+        app, series = self.make_app(self.episodes())
+        app.manage_all = False
+        series["tags"] = []
         app.process_series(series, [{"Id": "jf-1", "ParentIndexNumber": 1, "IndexNumber": 1}])
         self.assertFalse(app.sonarr.puts or app.sonarr.posts or app.sonarr.deletes)
 
