@@ -10,4 +10,4 @@ systemctl daemon-reload
 systemctl enable --now homelab-episode-buffer.timer
 systemctl start homelab-episode-buffer.service
 systemctl --no-pager --full status homelab-episode-buffer.timer
-printf 'EPISODE_BUFFER_INSTALL_OK mode=dry-run\n'
+printf 'EPISODE_BUFFER_INSTALL_OK mode=active\n'

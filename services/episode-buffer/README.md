@@ -21,16 +21,10 @@ sudo make episode-buffer-install
 sudo make episode-buffer-verify
 ```
 
-Configuration starts in `dry-run`. Add the `rolling-3` tag to one test series in Sonarr, watch an episode, wait for the 24-hour grace period (or temporarily lower it in `/etc/homelab/episode-buffer.env`), and inspect:
+Configuration becomes active immediately after a safe baseline records the existing watched history. Add the `rolling-3` tag only to series that should use rolling deletion. Newly watched episodes are evaluated by the next timer run. Inspect activity with:
 
 ```bash
 sudo journalctl -u homelab-episode-buffer.service --since today
-```
-
-After reviewing the dry-run output, activation requires a separate explicit confirmation:
-
-```bash
-sudo make episode-buffer-activate
 ```
 
 Sonarr's Recycle Bin retains removed files for seven days. qBittorrent seeding is separate: hard-linked torrent data remains until qBittorrent reaches its configured seed goal.

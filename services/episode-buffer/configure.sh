@@ -38,4 +38,4 @@ install -o root -g root -m 0600 "${temp_file}" "${config_file}"
 "${REPO_DIR}/services/episode-buffer/run.sh" prepare
 "${REPO_DIR}/services/episode-buffer/run.sh" baseline
 "${REPO_DIR}/services/episode-buffer/run.sh" verify
-printf 'EPISODE_BUFFER_CONFIGURE_OK mode=dry-run\n'
+printf 'EPISODE_BUFFER_CONFIGURE_OK mode=active\n'

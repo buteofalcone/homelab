@@ -2,7 +2,7 @@
 
 ## Rolling TV episode storage
 
-The tracked `services/episode-buffer` automation keeps a three-episode rolling buffer for explicitly tagged Sonarr series. It uses the primary Jellyfin user's watched state, Sonarr's seven-day Recycle Bin, a 24-hour grace period, and a mandatory dry-run before activation.
+The tracked `services/episode-buffer` automation keeps a three-episode rolling buffer for explicitly tagged Sonarr series. It uses the primary Jellyfin user's watched state, records a safe baseline before activation, and sends removed files to Sonarr's seven-day Recycle Bin.
 
 Last updated: **2026-10-11**.
 
