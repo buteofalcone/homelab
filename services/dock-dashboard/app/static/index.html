@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="uk" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080d13">
+  <title>HPServer Console</title>
+  <link rel="stylesheet" href="/static/vendor/bootstrap.min.css?v=5.3.8">
+  <link rel="stylesheet" href="/static/styles.css?v=3">
+</head>
+<body>
+  <div class="kiosk-shell">
+    <header class="topbar">
+      <div class="brand"><svg class="icon brand-icon"><use href="/static/vendor/bootstrap-icons.svg#server"></use></svg><div><span>HPServer</span><small id="last-update">підключення…</small></div></div>
+      <div class="header-actions">
+        <span id="overall-pill" class="health-pill unknown"><span id="overall-dot" class="state-dot"></span><span id="overall-label">—</span></span>
+        <button id="auth-button" class="icon-button" aria-label="Увійти"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#person-lock"></use></svg></button>
+      </div>
+    </header>
+
+    <main>
+      <section id="alert-strip" class="alert-strip hidden" aria-live="polite"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#exclamation-triangle"></use></svg><span id="alert-text"></span></section>
+
+      <section class="status-strip" aria-label="Швидкий стан">
+        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#router"></use></svg><span><b id="lan-address">—</b><small id="tail-state">TS —</small></span></div>
+        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#phone"></use></svg><span><b id="phone-state">GT —</b><small id="network-detail">TS IP</small></span></div>
+        <div class="status-chip"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#clock-history"></use></svg><span><b id="uptime-value">UP —</b><small id="backup-state">BKP —</small></span></div>
+      </section>
+
+      <section class="metrics-grid" aria-label="Основні метрики">
+        <article class="card metric-card cpu-card">
+          <div class="metric-title"><span><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#cpu"></use></svg>CPU</span><span class="temperature"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#thermometer-half"></use></svg><b id="cpu-temp">—</b></span></div>
+          <div class="metric-number"><strong id="cpu-value">—</strong><small id="cpu-detail">load —</small></div>
+          <canvas id="cpu-chart" class="cpu-chart" aria-label="CPU history"></canvas>
+          <div id="cpu-process" class="process-highlight"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#gear-wide-connected"></use></svg><span>—</span><b>—</b></div>
+        </article>
+
+        <article class="card metric-card ram-card">
+          <div class="metric-title"><span><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#memory"></use></svg>RAM</span><span id="ram-total" class="temperature">—</span></div>
+          <div class="metric-number ram-number"><strong id="ram-value">—</strong><small id="ram-detail">—</small></div>
+          <div id="ram-stack" class="progress-stacked ram-stack" aria-label="Використання RAM"></div>
+          <div id="ram-process" class="process-highlight"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#gear-wide-connected"></use></svg><span>—</span><b>—</b></div>
+        </article>
+      </section>
+
+      <section class="card storage-panel" aria-labelledby="storage-title">
+        <div class="storage-head"><h2 id="storage-title"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#device-hdd"></use></svg>Диски</h2><span id="storage-summary" class="count-badge">—</span></div>
+        <div id="disk-list" class="disk-list"><div class="skeleton-row"></div></div>
+        <div class="network-traffic">
+          <div class="network-head"><span><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#arrow-down-up"></use></svg>NET</span><span><b id="rx-rate">↓ —</b><b id="tx-rate">↑ —</b></span></div>
+          <canvas id="network-chart" aria-label="Network RX and TX traffic"></canvas>
+        </div>
+      </section>
+      <div id="job-toast" class="job-toast hidden" aria-live="polite"></div>
+    </main>
+
+    <nav class="bottom-bar" aria-label="Безпечні дії">
+      <button class="nav-action" id="restart-action"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#arrow-clockwise"></use></svg><span>RST</span></button>
+      <button class="nav-action" data-action="backup"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#cloud-arrow-up"></use></svg><span>BKP</span></button>
+      <button class="nav-action" id="smart-action"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#activity"></use></svg><span>SMART</span></button>
+      <button class="nav-action danger" data-action="reboot"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#bootstrap-reboot"></use></svg><span>REBOOT</span></button>
+      <button class="nav-action danger" data-action="shutdown"><svg class="icon"><use href="/static/vendor/bootstrap-icons.svg#power"></use></svg><span>OFF</span></button>
+    </nav>
+  </div>
+
+  <dialog id="login-dialog">
+    <form id="login-form" method="dialog">
+      <button type="button" class="dialog-close" data-close aria-label="Закрити">×</button>
+      <p class="dialog-kicker">SECURE SESSION</p><h2>Вхід оператора</h2>
+      <label>Користувач<input id="login-user" name="username" autocomplete="username" value="butenko" required></label>
+      <label>Пароль<input id="login-password" name="password" type="password" autocomplete="current-password" required></label>
+      <p id="login-error" class="form-error"></p>
+      <button class="primary-button" type="submit">Увійти</button>
+    </form>
+  </dialog>
+
+  <dialog id="target-dialog">
+    <form id="target-form" method="dialog">
+      <button type="button" class="dialog-close" data-close aria-label="Закрити">×</button>
+      <p class="dialog-kicker">ACTION</p><h2 id="target-title">Оберіть ціль</h2>
+      <label>Ціль<select id="action-target"></select></label>
+      <button class="primary-button" type="submit">Продовжити</button>
+    </form>
+  </dialog>
+
+  <dialog id="confirm-dialog">
+    <form id="confirm-form" method="dialog">
+      <button type="button" class="dialog-close" data-close aria-label="Закрити">×</button>
+      <p class="dialog-kicker">CONFIRM ACTION</p><h2 id="confirm-title">Підтвердити дію</h2>
+      <p id="confirm-copy" class="dialog-copy"></p>
+      <label id="confirm-text-wrap" class="hidden">Введіть <code>hp-server</code><input id="confirm-text" autocomplete="off"></label>
+      <label id="confirm-password-wrap" class="hidden">Повторіть пароль<input id="confirm-password" type="password" autocomplete="current-password"></label>
+      <p id="confirm-error" class="form-error"></p>
+      <button id="confirm-submit" class="primary-button" type="submit">Підтвердити</button>
+    </form>
+  </dialog>
+  <script src="/static/app.js?v=4" defer></script>
+</body>
+</html>
