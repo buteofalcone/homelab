@@ -10,7 +10,7 @@ photo_load_config
 
 readonly device="/dev/disk/by-uuid/${WD3TB_UUID}"
 readonly current_mount="$(findmnt -rn -S "${device}" -o TARGET | head -n1 || true)"
-readonly fstab_line="UUID=${WD3TB_UUID} ${WD3TB_MOUNT} ext4 defaults,nodev,nosuid 0 2"
+readonly fstab_line="UUID=${WD3TB_UUID} ${WD3TB_MOUNT} ext4 defaults,nofail,nodev,nosuid,x-systemd.automount,x-systemd.device-timeout=5s,x-systemd.mount-timeout=10s 0 2"
 
 [[ -e ${device} ]] || die "Expected wd3tb UUID does not exist: ${WD3TB_UUID}"
 actual_type="$(blkid -s TYPE -o value "${device}")"
@@ -48,7 +48,7 @@ fi
 install -d -m 0755 "${WD3TB_MOUNT}"
 fstab_backup="/etc/fstab.photo-pipeline.$(date -u +%Y%m%dT%H%M%SZ)"
 cp --preserve=all /etc/fstab "${fstab_backup}"
-printf '\n# wd3tb photo platform; required mount (no nofail)\n%s\n' "${fstab_line}" >> /etc/fstab
+printf '\n# wd3tb photo platform; optional protected automount\n%s\n' "${fstab_line}" >> /etc/fstab
 
 rollback() {
   local code=$?

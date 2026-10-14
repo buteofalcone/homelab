@@ -34,9 +34,18 @@ during an outage, but it is never part of `make immich`.
 /srv/appdata/photo-pipeline/postgres/        # SSD, separate AI DB
 ```
 
-The UUID mount is required and intentionally has no `nofail`. Every import,
-AI reconcile, backup bootstrap and storage migration checks the exact mount
-root and UUID so a missing disk cannot redirect writes to the system SSD.
+The UUID mount uses a protected systemd automount with `nofail` and a short
+device timeout. Ubuntu and unrelated containers therefore boot without the USB
+disk, while the automount prevents a missing disk from silently turning the
+mountpoint into ordinary storage on the internal HDD. Every import, AI
+reconcile, backup bootstrap and storage migration still checks the exact mount
+root and UUID.
+
+Use `make wd3tb-safe-remove` before unplugging the disk. It stops only running
+containers whose bind mounts live below `/srv/storage/wd3tb`, syncs writes and
+unmounts the filesystem. After reconnecting the disk, run `make wd3tb-attach`;
+it mounts the verified UUID and restarts only containers recorded by the safe
+remove operation. `make wd3tb-verify` audits the persistent policy.
 
 ## Ordered gates
 

@@ -4,7 +4,7 @@ PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallbac
 
 .DEFAULT_GOAL := help
 
-.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-dry-run immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-repair media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
+.PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate wd3tb-automount-install wd3tb-safe-remove wd3tb-attach wd3tb-verify immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-dry-run immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-repair media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update-check update update-all install-update-tools doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
 		check-lm-studio configure-cloudflare-dns caddy-reload episode-buffer-configure episode-buffer-install episode-buffer-run episode-buffer-verify stop down
 
@@ -26,6 +26,10 @@ help:
 	  'make photo-ai       Start private AI queue/API on HPServer' \
 	  'make immich-storage-plan  Print the wd3tb mount migration plan only' \
 	  'make immich-storage-apply Apply that plan only with PHOTO_STORAGE_APPROVAL' \
+	  'make wd3tb-automount-install  Make WD3TB optional at boot with protected automount' \
+	  'make wd3tb-safe-remove  Stop dependent containers and safely unmount WD3TB' \
+	  'make wd3tb-attach       Mount WD3TB and restart containers stopped by safe-remove' \
+	  'make wd3tb-verify       Verify the optional WD3TB automount policy' \
 	  'make immich-takeout-inspect  Build privacy-safe Takeout inventory' \
 	  'make immich-takeout-sample   Build a copy-only representative sample' \
 	  'make immich-pin-version  Pin live Immich release to the verified exact version' \
@@ -159,6 +163,18 @@ immich-storage-apply:
 
 immich-storage-migrate:
 	@sudo --preserve-env=PHOTO_STORAGE_APPROVAL ./services/immich-migration/migrate-library.sh
+
+wd3tb-automount-install:
+	@sudo ./services/immich-migration/wd3tb-mount-control.sh install
+
+wd3tb-safe-remove:
+	@sudo ./services/immich-migration/wd3tb-mount-control.sh safe-remove
+
+wd3tb-attach:
+	@sudo ./services/immich-migration/wd3tb-mount-control.sh attach
+
+wd3tb-verify:
+	@sudo ./services/immich-migration/wd3tb-mount-control.sh verify
 
 immich-migration-bootstrap:
 	@sudo ./services/immich-migration/bootstrap.sh
