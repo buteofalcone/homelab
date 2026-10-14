@@ -19,8 +19,12 @@ configured_containers() {
   local ids=()
   mapfile -t ids < <(docker ps -aq)
   ((${#ids[@]})) || return 0
-  docker inspect "${ids[@]}" | jq -r --arg root "${WD3TB_MOUNT}/" '
-    .[] | select(any(.Mounts[]?; ((.Source + "/") | startswith($root)))) | .Name | ltrimstr("/")
+  docker inspect "${ids[@]}" | jq -r --arg root "${WD3TB_MOUNT}" '
+    .[] | select(any(.Mounts[]?;
+      .Type == "bind" and .Source != "/" and
+      (((.Source + "/") | startswith($root + "/")) or
+       (($root + "/") | startswith(.Source + "/")))
+    )) | .Name | ltrimstr("/")
   '
 }
 
