@@ -24,9 +24,11 @@ photo_load_config() {
 photo_assert_mount() {
   local actual_uuid actual_target
   mountpoint -q "${WD3TB_MOUNT}" || die "Required storage is not mounted: ${WD3TB_MOUNT}"
-  actual_target="$(findmnt -n -o TARGET --target "${WD3TB_MOUNT}")"
+  # A systemd automount produces both an autofs row and the real filesystem
+  # row for the same target. Validate only the ext4 filesystem underneath it.
+  actual_target="$(findmnt -rn -t ext4 -o TARGET --target "${WD3TB_MOUNT}" | head -n1)"
   [[ ${actual_target} == "${WD3TB_MOUNT}" ]] || die "${WD3TB_MOUNT} is not the mount root (actual: ${actual_target})."
-  actual_uuid="$(findmnt -n -o UUID --target "${WD3TB_MOUNT}")"
+  actual_uuid="$(findmnt -rn -t ext4 -o UUID --target "${WD3TB_MOUNT}" | head -n1)"
   [[ ${actual_uuid} == "${WD3TB_UUID}" ]] || die "Unexpected UUID at ${WD3TB_MOUNT}: ${actual_uuid:-missing}"
 }
 
@@ -40,7 +42,7 @@ photo_assert_takeout() {
 photo_assert_immich_storage() {
   photo_assert_mount
   [[ -d ${IMMICH_UPLOAD_LOCATION} ]] || die "Immich storage is missing: ${IMMICH_UPLOAD_LOCATION}"
-  [[ $(findmnt -n -o UUID --target "${IMMICH_UPLOAD_LOCATION}") == "${WD3TB_UUID}" ]] ||
+  [[ $(findmnt -rn -t ext4 -o UUID --target "${IMMICH_UPLOAD_LOCATION}" | head -n1) == "${WD3TB_UUID}" ]] ||
     die "Immich storage is not on wd3tb: ${IMMICH_UPLOAD_LOCATION}"
 }
 
