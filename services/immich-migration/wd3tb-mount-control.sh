@@ -30,6 +30,7 @@ running_containers() {
     [[ -n ${name} ]] || continue
     [[ $(docker inspect -f '{{.State.Running}}' "${name}") == true ]] && printf '%s\n' "${name}"
   done < <(configured_containers)
+  return 0
 }
 
 verify_policy() {
