@@ -20,20 +20,21 @@ configured_containers() {
   mapfile -t ids < <(docker ps -aq)
   ((${#ids[@]})) || return 0
   docker inspect "${ids[@]}" | jq -r --arg root "${WD3TB_MOUNT}" '
-    .[] | select(any(.Mounts[]?;
-      .Type == "bind" and .Source != "/" and
-      (((.Source + "/") | startswith($root + "/")) or
-       (($root + "/") | startswith(.Source + "/")))
+    .[] | select(any(.Mounts[]?; . as $mount |
+      $mount.Type == "bind" and $mount.Source != "/" and
+      ((($mount.Source + "/") | startswith($root + "/")) or
+       (($root + "/") | startswith($mount.Source + "/")))
     )) | .Name | ltrimstr("/")
   '
 }
 
 running_containers() {
-  local name
+  local name configured
+  configured="$(configured_containers)"
   while IFS= read -r name; do
     [[ -n ${name} ]] || continue
     [[ $(docker inspect -f '{{.State.Running}}' "${name}") == true ]] && printf '%s\n' "${name}"
-  done < <(configured_containers)
+  done <<<"${configured}"
   return 0
 }
 
@@ -70,8 +71,9 @@ PY
     echo "WD3TB_AUTOMOUNT_INSTALL_OK backup=${backup}"
     ;;
   safe-remove)
+    containers="$(running_containers)"
     : >"${state_file}"
-    running_containers | tee "${state_file}"
+    printf '%s\n' "${containers}" | sed '/^$/d' | tee "${state_file}"
     if [[ -s ${state_file} ]]; then
       mapfile -t names <"${state_file}"
       docker stop "${names[@]}"
