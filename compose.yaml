@@ -17,6 +17,7 @@ include:
   - ./services/media-automation/compose.yaml
   - ./services/clickhouse/compose.yaml
   - ./services/photo-pipeline/compose.yaml
+  - ./services/paperless/compose.yaml
 
 networks:
   homelab:

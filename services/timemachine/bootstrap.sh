@@ -32,6 +32,7 @@ install -d -m 0770 -o "${PUID}" -g "${PGID}" \
   /srv/storage/incoming/calibre-merge \
   /srv/storage/incoming/torrents \
   /srv/storage/incoming/media \
+  /srv/storage/incoming/documents \
   /srv/storage/incoming/transfer \
   /srv/storage/incoming/google-photos-takeout \
   /srv/storage/incoming/google-photos-takeout/sample \

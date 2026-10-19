@@ -12,6 +12,13 @@
         server: local
         container: "nextcloud"
 
+    - "Paperless":
+        icon: "paperless-ngx.svg"
+        href: "https://paperless.{{HOMEPAGE_VAR_BASE_DOMAIN}}"
+        description: "Пошук у сканах, рахунках і гарантіях"
+        server: local
+        container: "paperless"
+
     - "Immich":
         icon: "immich.svg"
         href: "https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}"

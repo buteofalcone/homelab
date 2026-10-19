@@ -26,6 +26,13 @@ for dump in nextcloud.sql.gz immich.sql.gz; do
   stat -c 'OK   %n (%s bytes, modified %y)' "${path}"
 done
 
+if container_running paperless-db; then
+  paperless_dump=/srv/appdata/_backup-dumps/paperless.sql.gz
+  [[ -s ${paperless_dump} ]] || die "Missing or empty database dump: ${paperless_dump}"
+  gzip -t "${paperless_dump}"
+  stat -c 'OK   %n (%s bytes, modified %y)' "${paperless_dump}"
+fi
+
 if container_running open-webui; then
   open_webui_dump=/srv/appdata/_backup-dumps/open-webui.db
   [[ -s ${open_webui_dump} ]] || die "Missing or empty database dump: ${open_webui_dump}"

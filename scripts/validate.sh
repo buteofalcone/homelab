@@ -20,6 +20,6 @@ python3 "${REPO_DIR}/scripts/render-service-catalog.py" \
   --output "${REPO_DIR}/config/homepage/services.yaml" \
   --check
 
-compose --profile nextcloud --profile immich --profile immich-ml-fallback --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile clickhouse --profile photo-ai config --quiet
+compose --profile nextcloud --profile immich --profile immich-ml-fallback --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile clickhouse --profile photo-ai --profile paperless config --quiet
 
 echo "Shell, service catalog and Docker Compose validation passed."

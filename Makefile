@@ -1,12 +1,12 @@
 SHELL := /usr/bin/env bash
 COMPOSE := docker compose
-PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallback --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile media-automation --profile clickhouse --profile photo-ai
+PROFILES_ALL := --profile nextcloud --profile immich --profile immich-ml-fallback --profile jellyfin --profile beszel-agent --profile timemachine --profile agents --profile books --profile media-automation --profile clickhouse --profile photo-ai --profile paperless
 
 .DEFAULT_GOAL := help
 
 .PHONY: help bootstrap host-bootstrap recovery-preflight storage-inventory catalog validate install homepage-deploy base apps nextcloud nextcloud-talk-bootstrap nextcloud-talk-verify immich immich-ml-fallback immich-pin-version immich-remote-ml-configure immich-storage-plan immich-storage-apply immich-storage-migrate wd3tb-automount-install wd3tb-safe-remove wd3tb-attach wd3tb-verify immich-migration-bootstrap immich-migration-api-key immich-migration-api-key-verify immich-takeout-inspect immich-takeout-sample immich-takeout-preflight immich-takeout-dry-run immich-takeout-sample-import immich-takeout-full-dry-run immich-takeout-full-import immich-import-verify photo-ai-bootstrap photo-ai photo-ai-reconcile photo-ai-smoke-test jellyfin beszel-agent timemachine timemachine-bootstrap open-webui open-webui-bootstrap calibre calibre-bootstrap calibre-import calibre-verify calibre-migration-preflight calibre-migration-apply calibre-merge-preflight calibre-merge-apply clickhouse clickhouse-bootstrap clickhouse-verify clickhouse-inbox-bootstrap clickhouse-inbox-import media-automation-bootstrap media-automation-verify media-automation-repair media-automation-toloka media-automation-test media-automation-test-verify repair-family-access verify-lan-access rdp-reconfigure \
         ps logs pull update-check update update-all install-update-tools doctor health install-monitoring-timer backup snapshots restore verify-backup verify-restore verify-database-restore verify-management-restore post-restore-check \
-		check-lm-studio configure-cloudflare-dns caddy-reload episode-buffer-configure episode-buffer-install episode-buffer-run episode-buffer-verify stop down
+		check-lm-studio configure-cloudflare-dns caddy-reload episode-buffer-configure episode-buffer-install episode-buffer-run episode-buffer-verify paperless-bootstrap paperless paperless-verify stop down
 
 help:
 	@printf '%s\n' \
@@ -75,6 +75,9 @@ help:
 	  'make episode-buffer-install    Install the 15-minute rolling-buffer timer' \
 	  'make episode-buffer-run        Run one buffer evaluation now' \
 	  'make episode-buffer-verify     Verify credentials, Sonarr policy and timer' \
+	  'make paperless-bootstrap       Provision the private searchable document archive' \
+	  'make paperless                 Start the provisioned Paperless-ngx stack' \
+	  'make paperless-verify          Verify Paperless, OCR, storage and database health' \
 	  'make ps             Show all containers' \
 	  'make logs           Follow logs; SERVICE=name is optional' \
 	  'make update-check   Show Ubuntu, Compose and Renovate update status' \
@@ -316,6 +319,15 @@ episode-buffer-run:
 
 episode-buffer-verify:
 	@sudo ./services/episode-buffer/verify.sh
+
+paperless-bootstrap:
+	@sudo ./services/paperless/bootstrap.sh
+
+paperless:
+	@$(COMPOSE) --profile paperless up -d paperless-broker paperless-db paperless-gotenberg paperless-tika paperless
+
+paperless-verify:
+	@sudo ./services/paperless/verify.sh
 
 ps:
 	@$(COMPOSE) $(PROFILES_ALL) ps

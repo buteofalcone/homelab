@@ -1,0 +1,119 @@
+services:
+  paperless-broker:
+    image: docker.io/valkey/valkey:9-alpine
+    container_name: paperless-broker
+    profiles: ["paperless"]
+    restart: unless-stopped
+    volumes:
+      - /srv/appdata/paperless/valkey:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: [homelab]
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+
+  paperless-db:
+    image: docker.io/library/postgres:18
+    container_name: paperless-db
+    profiles: ["paperless"]
+    restart: unless-stopped
+    env_file:
+      - path: /etc/homelab/paperless.env
+        required: false
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+    volumes:
+      - /srv/appdata/paperless/postgres:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U paperless -d paperless"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [homelab]
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+
+  paperless-gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.37
+    container_name: paperless-gotenberg
+    profiles: ["paperless"]
+    restart: unless-stopped
+    command:
+      - gotenberg
+      - --chromium-disable-javascript=true
+      - --chromium-allow-list=file:///tmp/.*
+    networks: [homelab]
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+
+  paperless-tika:
+    image: docker.io/apache/tika:3.3.1.0
+    container_name: paperless-tika
+    profiles: ["paperless"]
+    restart: unless-stopped
+    networks: [homelab]
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+
+  paperless:
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.2.1
+    container_name: paperless
+    profiles: ["paperless"]
+    restart: unless-stopped
+    depends_on:
+      paperless-db:
+        condition: service_healthy
+      paperless-broker:
+        condition: service_healthy
+      paperless-gotenberg:
+        condition: service_started
+      paperless-tika:
+        condition: service_started
+    env_file:
+      - path: /etc/homelab/paperless.env
+        required: false
+    environment:
+      USERMAP_UID: ${PUID}
+      USERMAP_GID: ${PGID}
+      PAPERLESS_REDIS: redis://paperless-broker:6379
+      PAPERLESS_DBENGINE: postgresql
+      PAPERLESS_DBHOST: paperless-db
+      PAPERLESS_DBNAME: paperless
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_URL: https://paperless.${BASE_DOMAIN}
+      PAPERLESS_ALLOWED_HOSTS: paperless.${BASE_DOMAIN},${SERVER_IP},localhost
+      PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperless.${BASE_DOMAIN}
+      PAPERLESS_TIME_ZONE: ${TZ}
+      PAPERLESS_OCR_LANGUAGE: eng
+      PAPERLESS_OCR_LANGUAGES: spa ukr
+      PAPERLESS_CONSUMER_POLLING_INTERVAL: 10
+      PAPERLESS_CONSUMER_RECURSIVE: "true"
+      PAPERLESS_CONSUMER_SUBDIRS_AS_TAGS: "true"
+      PAPERLESS_TIKA_ENABLED: "1"
+      PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
+    volumes:
+      - /srv/appdata/paperless/data:/usr/src/paperless/data
+      - /srv/storage/documents/paperless/media:/usr/src/paperless/media
+      - /srv/storage/documents/paperless/export:/usr/src/paperless/export
+      - /srv/storage/incoming/documents:/usr/src/paperless/consume
+    ports:
+      - 127.0.0.1:${PAPERLESS_PORT:-8010}:8000
+      - ${SERVER_IP}:${PAPERLESS_PORT:-8010}:8000
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:8000/"]
+      interval: 20s
+      timeout: 10s
+      retries: 12
+      start_period: 90s
+    networks: [homelab]
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
+
+networks:
+  homelab:
+    external: true

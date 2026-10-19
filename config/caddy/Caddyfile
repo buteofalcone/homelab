@@ -39,6 +39,11 @@ nextcloud.{$BASE_DOMAIN} {
 	reverse_proxy nextcloud:80
 }
 
+paperless.{$BASE_DOMAIN} {
+	import common
+	reverse_proxy paperless:8000
+}
+
 immich.{$BASE_DOMAIN} {
 	import common
 	reverse_proxy immich-server:2283

@@ -34,6 +34,7 @@ restic backup \
   --exclude='/srv/appdata/nextcloud/postgres' \
   --exclude='/srv/appdata/immich/postgres' \
   --exclude='/srv/appdata/photo-pipeline/postgres' \
+  --exclude='/srv/appdata/paperless/postgres' \
   --exclude='/opt/homelab/.git' \
   --exclude='/opt/homelab/.env' \
   --exclude='*.log' \

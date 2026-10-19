@@ -29,7 +29,18 @@ Required work:
 
 Time Machine is accepted as working after the successful A1466 test. Further A1502, encryption, and file-restore testing is intentionally paused by owner decision.
 
-### 2. Git-native agentic workflows
+### 2. Paperless-ngx document archive
+
+Deploy the approved searchable family archive before adding more automation services:
+
+- PostgreSQL, Valkey and the search index on the SSD under `/srv/appdata/paperless`;
+- originals, archived copies and exports on the storage HDD under `/srv/storage/documents/paperless`;
+- automatic recursive intake through the Samba `Inbox/documents` folder;
+- English, Ukrainian and Spanish OCR plus Tika/Gotenberg conversion for Office documents and email;
+- private HTTPS at `paperless.butenko.online`, a Homepage shortcut, and LAN fallback on port 8010;
+- root-only credentials, logical PostgreSQL dumps, Restic application-state coverage, and an explicit warning that document media still requires external/off-site backup.
+
+### 3. Git-native agentic workflows
 
 n8n is intentionally excluded. Build agentic workflows as small, reviewable Python services whose prompts, tool schemas, policies, tests, and deployment configuration live in Git.
 
@@ -60,7 +71,7 @@ First workflows should be narrow and measurable:
 
 The agent runtime must degrade safely when SilverBrick is asleep. Core monitoring, backups, DNS, and server administration must never depend on an LLM.
 
-### 3. Full Calibre and EPUB library for iPad
+### 4. Full Calibre and EPUB library for iPad
 
 Deploy the **full Calibre package**, not Calibre-Web. The primary requirement is server-side conversion to EPUB with Calibre's command-line tools. Calibre's Content server will provide browser access to the library without removing the conversion and metadata-maintenance capabilities.
 
@@ -80,7 +91,7 @@ Planned components and dependencies:
 
 Conversion must operate on copied input files and write new EPUB output; it must never silently replace the only source copy.
 
-### 4. Internal family chat
+### 5. Internal family chat
 
 **Nextcloud Talk** is installed because it reuses the existing Nextcloud accounts, HTTPS, database recovery, and mobile applications. Private text chat between two family accounts was verified on 2026-07-28.
 
@@ -91,7 +102,7 @@ Remaining work:
 - test text chat first, then voice and video calls;
 - add TURN or the High Performance Backend only if call testing demonstrates a real need.
 
-### 5. qBittorrent and Sonarr media automation
+### 6. qBittorrent and Sonarr media automation
 
 The services may be installed and tested after the initial Disaster Recovery bootstrap. One small lawful automatic-download test is allowed on the temporary disk. qBittorrent keeps a configurable free-space floor; high-volume monitoring remains deferred until the larger HDD is available.
 
@@ -110,7 +121,7 @@ Order and dependencies:
 
 If a commercial VPN is later required for qBittorrent, use a dedicated network container and route only qBittorrent through it. Do not change the default network route for the entire server.
 
-### 6. Google Photos Takeout migration and SilverBrick Immich ML
+### 7. Google Photos Takeout migration and SilverBrick Immich ML
 
 This milestone targets the existing final Immich instance on the HP Server. It has two independently reversible tracks: importing Google Photos data with `immich-go`, and moving normal machine-learning work to the SilverBrick RTX 4060 through Immich remote ML.
 
@@ -134,7 +145,7 @@ Remote ML order and gates:
 
 ## Deferred until September 2026
 
-### 7. Replace the storage HDD
+### 8. Replace the storage HDD
 
 - install and SMART-test an 8-16 TB HDD;
 - migrate or clone the current `/srv/storage` data;
@@ -142,13 +153,13 @@ Remote ML order and gates:
 - verify ownership, containers, Restic, and Time Machine;
 - increase Time Machine limits only after the new disk is verified.
 
-### 8. External or off-site backup
+### 9. External or off-site backup
 
 Select an external USB disk, another trusted machine, or object storage. Protect Nextcloud files, Immich photos, important media, Time Machine data where appropriate, and recovery secrets. The current local Restic repository remains on the same HDD and is not protection against loss of that disk.
 
-### 9. AdGuard Home
+### 10. AdGuard Home — paused by owner
 
-Deploy only after router access is available. It will provide local DNS through router DHCP and complement, not replace, Cloudflare DNS, `butenko.online`, Caddy, Let's Encrypt, or Tailscale.
+Skipped for now by owner decision. Revisit only after router access is available. It would provide local DNS through router DHCP and complement, not replace, Cloudflare DNS, `butenko.online`, Caddy, Let's Encrypt, or Tailscale.
 
 ## Later maintenance
 
@@ -166,7 +177,6 @@ These are recommendations, not approved installation tasks:
 - **Open WebUI** as the family-facing AI chat, model selector, knowledge interface, and approval surface for agentic workflows;
 - **Seerr** as the simple family request interface in front of Jellyfin and Sonarr, avoiding direct Sonarr access for family members;
 - **Bazarr** after Sonarr, for automatic Ukrainian and other preferred subtitles;
-- **Paperless-ngx** only if a searchable family archive of scanned documents, invoices, manuals, and warranties is desired;
 - **Navidrome** only if music is important enough to justify a dedicated low-resource, multi-user music server and iOS/Android clients instead of Jellyfin's music interface.
 
 These are candidates, not approved installations. Do not deploy them until the owner selects a concrete use case.

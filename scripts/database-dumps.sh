@@ -33,6 +33,14 @@ if container_running photo-ai-db; then
   echo "Created Photo AI database dump."
 fi
 
+if container_running paperless-db; then
+  tmp="${dump_dir}/paperless.sql.gz.tmp"
+  docker exec paperless-db pg_dump -U paperless --clean --if-exists paperless | gzip -9 > "${tmp}"
+  mv "${tmp}" "${dump_dir}/paperless.sql.gz"
+  chmod 0600 "${dump_dir}/paperless.sql.gz"
+  echo "Created Paperless database dump."
+fi
+
 if container_running open-webui; then
   tmp="${dump_dir}/open-webui.db.tmp"
   rm -f -- "${tmp}"

@@ -28,6 +28,13 @@
       "restart": ["nextcloud", "nextcloud-cron"]
     },
     {
+      "id": "paperless",
+      "label": "Paperless",
+      "containers": ["paperless", "paperless-db", "paperless-broker", "paperless-tika", "paperless-gotenberg"],
+      "probe": "http://127.0.0.1:8010/",
+      "restart": ["paperless"]
+    },
+    {
       "id": "calibre",
       "label": "Calibre",
       "containers": ["calibre"],
@@ -84,6 +91,7 @@
       "items": [
         {"name": "Як користуватися", "icon": "mdi-book-open-page-variant", "href": "https://github.com/buteofalcone/homelab/blob/feature/base-management-stack/docs/family-guide-uk.md", "description": "Коротка інструкція для всієї сім’ї"},
         {"name": "Nextcloud", "icon": "nextcloud.svg", "href": "https://nextcloud.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Документи, файли та сімейний чат", "container": "nextcloud"},
+        {"name": "Paperless", "icon": "paperless-ngx.svg", "href": "https://paperless.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Пошук у сканах, рахунках і гарантіях", "container": "paperless"},
         {"name": "Immich", "icon": "immich.svg", "href": "https://immich.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Приватна фотогалерея і синхронізація", "container": "immich-server"},
         {"name": "Jellyfin", "icon": "jellyfin.svg", "href": "https://jellyfin.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Фільми та серіали без реклами", "container": "jellyfin"},
         {"name": "Замовити фільм або серіал", "icon": "seerr.svg", "href": "https://requests.{{HOMEPAGE_VAR_BASE_DOMAIN}}", "description": "Зручний пошук у сімейній медіатеці", "container": "seerr"},
