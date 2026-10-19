@@ -15,10 +15,10 @@ readonly secret_file=/etc/homelab/paperless.env
 install -d -m 0700 /etc/homelab
 install -d -m 0750 -o "${PUID}" -g "${PGID}" \
   /srv/appdata/paperless/data \
-  /srv/appdata/paperless/postgres \
   /srv/appdata/paperless/valkey \
   /srv/storage/documents/paperless/media \
   /srv/storage/documents/paperless/export
+install -d -m 0700 -o 999 -g 999 /srv/appdata/paperless/postgres
 install -d -m 0770 -o "${PUID}" -g "${PGID}" /srv/storage/incoming/documents
 
 if [[ ! -s ${secret_file} ]]; then
