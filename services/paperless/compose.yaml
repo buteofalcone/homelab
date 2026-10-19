@@ -85,7 +85,7 @@ services:
       PAPERLESS_DBNAME: paperless
       PAPERLESS_DBUSER: paperless
       PAPERLESS_URL: https://paperless.${BASE_DOMAIN}
-      PAPERLESS_ALLOWED_HOSTS: paperless.${BASE_DOMAIN},${SERVER_IP},localhost
+      PAPERLESS_ALLOWED_HOSTS: paperless.${BASE_DOMAIN},${SERVER_IP},localhost,127.0.0.1
       PAPERLESS_CSRF_TRUSTED_ORIGINS: https://paperless.${BASE_DOMAIN}
       PAPERLESS_TIME_ZONE: ${TZ}
       PAPERLESS_OCR_LANGUAGE: eng
