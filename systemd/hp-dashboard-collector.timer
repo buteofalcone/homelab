@@ -1,0 +1,11 @@
+[Unit]
+Description=Refresh HPServer dashboard status
+
+[Timer]
+OnBootSec=5s
+OnUnitActiveSec=10s
+AccuracySec=1s
+Unit=hp-dashboard-collector.service
+
+[Install]
+WantedBy=timers.target

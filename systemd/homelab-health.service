@@ -1,0 +1,8 @@
+[Unit]
+Description=Homelab storage and SMART health checks
+RequiresMountsFor=/srv/storage
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/homelab/scripts/health-check.sh
