@@ -1,6 +1,6 @@
 services:
   paperless-broker:
-    image: docker.io/valkey/valkey:9-alpine
+    image: docker.io/valkey/valkey:9-alpine@sha256:bf09d58e96d6b4524a15396b65b242bbe18beebbcc15a04d8ee75ddac62fae0b
     container_name: paperless-broker
     profiles: ["paperless"]
     restart: unless-stopped
@@ -16,7 +16,7 @@ services:
       - com.centurylinklabs.watchtower.enable=false
 
   paperless-db:
-    image: docker.io/library/postgres:18
+    image: docker.io/library/postgres:18@sha256:979bccfde35445db618c65107d27d08c6c21339d8dc3ad4c830c6633947be0e4
     container_name: paperless-db
     profiles: ["paperless"]
     restart: unless-stopped
@@ -38,7 +38,7 @@ services:
       - com.centurylinklabs.watchtower.enable=false
 
   paperless-gotenberg:
-    image: docker.io/gotenberg/gotenberg:8.37
+    image: docker.io/gotenberg/gotenberg:8.37@sha256:f29984bd1e226bf1b93ba90af06000afa8b315853e99d27b9aaa41b93f15c769
     container_name: paperless-gotenberg
     profiles: ["paperless"]
     restart: unless-stopped
@@ -51,7 +51,7 @@ services:
       - com.centurylinklabs.watchtower.enable=false
 
   paperless-tika:
-    image: docker.io/apache/tika:3.3.1.0
+    image: docker.io/apache/tika:3.3.1.0@sha256:90b7fa1dc018434075fce9e1d9b88b1e3d0ea6979d0cf86e116c79a8073ae973
     container_name: paperless-tika
     profiles: ["paperless"]
     restart: unless-stopped
@@ -60,7 +60,7 @@ services:
       - com.centurylinklabs.watchtower.enable=false
 
   paperless:
-    image: ghcr.io/paperless-ngx/paperless-ngx:3.2.1
+    image: ghcr.io/paperless-ngx/paperless-ngx:3.2.1@sha256:5fa76604a81df6945086e0837b14b56543d137e8ce4f311cc5d9ebe907e74e79
     container_name: paperless
     profiles: ["paperless"]
     restart: unless-stopped
