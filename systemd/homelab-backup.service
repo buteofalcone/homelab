@@ -1,2 +1,12 @@
 [Unit]
-Description=Homelab backup
+Description=Homelab Restic backup
+RequiresMountsFor=/srv/storage
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/homelab/scripts/backup.sh
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

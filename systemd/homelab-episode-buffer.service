@@ -1,0 +1,9 @@
+[Unit]
+Description=Maintain a three-episode Sonarr buffer from Jellyfin watch state
+RequiresMountsFor=/srv/storage /srv/appdata
+After=docker.service network-online.target
+Wants=docker.service network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/opt/homelab/services/episode-buffer/run.sh run

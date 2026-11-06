@@ -1,0 +1,25 @@
+services:
+  kurhan:
+    build:
+      context: /srv/appdata/kurhan/build
+    container_name: kurhan
+    restart: unless-stopped
+    mem_limit: 1200m
+    cpus: 2.0
+    volumes:
+      - /srv/appdata/kurhan/root:/data
+      - /srv/storage/kurhan/maps:/maps:ro
+    networks:
+      - homelab
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - >-
+          import urllib.request;
+          urllib.request.urlopen('http://127.0.0.1:8765/api/config.json', timeout=10)
+      interval: 30s
+      timeout: 15s
+      retries: 3
+      start_period: 60s

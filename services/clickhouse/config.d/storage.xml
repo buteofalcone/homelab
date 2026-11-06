@@ -1,0 +1,5 @@
+<clickhouse>
+    <!-- This nested mount is on the SSD; persistent table parts remain on HDD. -->
+    <tmp_path>/var/lib/clickhouse/tmp/</tmp_path>
+    <user_files_path>/var/lib/clickhouse/user_files/</user_files_path>
+</clickhouse>

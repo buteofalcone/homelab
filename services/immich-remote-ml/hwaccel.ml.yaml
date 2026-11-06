@@ -1,0 +1,11 @@
+# Copied from the official Immich v3.0.3 hwaccel.ml.yml CUDA service.
+services:
+  cuda:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities:
+                - gpu
